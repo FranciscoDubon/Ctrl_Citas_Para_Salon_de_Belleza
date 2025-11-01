@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios Administrador | Salón de Belleza</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- CSS Global -->
+    <link rel="stylesheet" href="{{ asset('css/global-styles.css') }}">
+</head>
+<body>
+    
+    <!-- ============================================
+         SIDEBAR (MENÚ LATERAL)
+         ============================================ -->
+    <div class="sidebar">
+        <!-- Logo del Sistema -->
+        <div class="sidebar-logo">
+            <h3><i class="bi bi-scissors"></i> BeautySalon</h3>
+            <p>Sistema de Gestión</p>
+        </div>
+        
+        <!-- Menú de Navegación -->
+        <nav class="sidebar-menu">
+            <a href="{{ route('dashboardAdm') }}" class="menu-item">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+            <a href="{{ route('admin.citasAdm') }}" class="menu-item">
+                <i class="bi bi-calendar-check"></i> Citas
+            </a>
+            <a href="{{ route('admin.usuariosAdm') }}" class="menu-item active">
+                <i class="bi bi-people"></i> Usuarios
+            </a>
+            <a href="{{ route('admin.serviciosAdm') }}" class="menu-item">
+                <i class="bi bi-scissors"></i> Servicios
+            </a>
+            <a href="{{ route('admin.promocionesAdm') }}" class="menu-item">
+                <i class="bi bi-gift"></i> Promociones
+            </a>
+            <a href="{{ route('admin.reportesAdm') }}" class="menu-item">
+                <i class="bi bi-graph-up"></i> Reportes
+            </a>
+            <a href="{{ route('admin.configAdm') }}" class="menu-item">
+                <i class="bi bi-gear"></i> Configuración
+            </a>
+        </nav>
+    </div>
+
+    <!-- ============================================
+         HEADER (BARRA SUPERIOR)
+         ============================================ -->
+    <header class="top-header">
+        <div class="header-title">
+            <h1>Gestión de Usuarios</h1>
+            <p>Administra recepcionistas y estilistas.</p>
+        </div>
+        
+        <div class="header-actions">
+            <!-- Usuario -->
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <span class="user-name">Administrador</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ============================================
+         MAIN CONTENT (CONTENIDO PRINCIPAL)
+         ============================================ -->
+    <main class="main-content">
+        
+        <!-- Botones de Acción Superior -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <button class="btn btn-gold me-2" data-bs-toggle="modal" data-bs-target="#modalNuevoUsuario">
+                    <i class="bi bi-plus-circle"></i> Nuevo Usuario
+                </button>
+                <button class="btn btn-outline-gold">
+                    <i class="bi bi-funnel"></i> Filtros
+                </button>
+            </div>
+        </div>
+
+        <!-- KPI Cards - Resumen de Usuarios -->
+        <div class="row g-4 mb-4">
+            
+            <!-- 
+            ================================================
+            TODO BACKEND: Conectar con BD
+            ================================================
+            CONSULTA SQL:
+            SELECT COUNT(*) as total 
+            FROM usuarios 
+            WHERE rol = 'estilista' AND activo = 1
+            ================================================
+            -->
+            <div class="col-xl-3 col-md-6">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <div class="kpi-icon primary">
+                            <i class="bi bi-scissors"></i>
+                        </div>
+                    </div>
+                    <h3 class="kpi-value">8</h3>
+                    <p class="kpi-label">Estilistas Activos</p>
+                    <span class="kpi-badge badge-success">
+                        <i class="bi bi-check-circle"></i> Activos
+                    </span>
+                </div>
+            </div>
+
+            <!-- 
+            ================================================
+            TODO BACKEND: Conectar con BD
+            ================================================
+            CONSULTA SQL:
+            SELECT COUNT(*) as total 
+            FROM usuarios 
+            WHERE rol = 'recepcionista' AND activo = 1
+            ================================================
+            -->
+            <div class="col-xl-3 col-md-6">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <div class="kpi-icon success">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                    </div>
+                    <h3 class="kpi-value">3</h3>
+                    <p class="kpi-label">Recepcionistas Activos</p>
+                    <span class="kpi-badge badge-success">
+                        <i class="bi bi-check-circle"></i> Activos
+                    </span>
+                </div>
+            </div>
+
+            <!-- 
+            ================================================
+            TODO BACKEND: Conectar con BD
+            ================================================
+            CONSULTA SQL:
+            SELECT COUNT(*) as total 
+            FROM usuarios 
+            WHERE activo = 0
+            ================================================
+            -->
+            <div class="col-xl-3 col-md-6">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <div class="kpi-icon info">
+                            <i class="bi bi-person-x"></i>
+                        </div>
+                    </div>
+                    <h3 class="kpi-value">2</h3>
+                    <p class="kpi-label">Usuarios Inactivos</p>
+                    <span class="kpi-badge badge-neutral">
+                        <i class="bi bi-x-circle"></i> Inactivos
+                    </span>
+                </div>
+            </div>
+
+            <!-- 
+            ================================================
+            TODO BACKEND: Conectar con BD
+            ================================================
+            CONSULTA SQL:
+            SELECT COUNT(*) as total 
+            FROM usuarios 
+            WHERE DATE(fecha_creacion) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+            ================================================
+            -->
+            <div class="col-xl-3 col-md-6">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <div class="kpi-icon warning">
+                            <i class="bi bi-person-plus"></i>
+                        </div>
+                    </div>
+                    <h3 class="kpi-value">2</h3>
+                    <p class="kpi-label">Nuevos (30 días)</p>
+                    <span class="kpi-badge badge-success">
+                        <i class="bi bi-arrow-up"></i> Recientes
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Usuarios -->
+        <!-- 
+        ================================================
+        TODO BACKEND: Conectar con BD - Lista de Usuarios
+        ================================================
+        CONSULTA SQL:
+        SELECT u.id, u.nombre, u.apellido, u.email, u.telefono, 
+               u.rol, u.activo, u.fecha_creacion
+        FROM usuarios u
+        WHERE u.rol IN ('estilista', 'recepcionista')
+        ORDER BY u.activo DESC, u.rol, u.nombre
+        ================================================
+        -->
+        <div class="row g-4 mb-4">
+            <div class="col-12">
+                <div class="card-custom">
+                    <h5 class="card-title-custom">
+                        <i class="bi bi-people-fill"></i>
+                        Lista de Usuarios del Sistema
+                    </h5>
+
+                    <!-- Buscador -->
+                    <div class="mb-3">
+                        <input type="text" id="buscarUsuario" class="form-control" placeholder="Buscar usuario..." onkeyup="buscarTabla()">
+                    </div>
+                    
+                    <!-- Tabla Responsiva -->
+                    <div class="table-responsive">
+                        <table class="table-custom">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre Completo</th>
+                                    <th>Email</th>
+                                    <th>Teléfono</th>
+                                    <th>Rol</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Estilista 1 -->
+                                <tr>
+                                    <td>#001</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">A</div>
+                                            <strong>Ana López García</strong>
+                                        </div>
+                                    </td>
+                                    <td>ana.lopez@salon.com</td>
+                                    <td>(503) 7890-1234</td>
+                                    <td><span class="badge badge-luxury">ESTILISTA</span></td>
+                                    <td><span class="badge bg-success">Activo</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-soft me-1" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-gold me-1" data-bs-toggle="modal" data-bs-target="#modalPermisos" title="Permisos">
+                                            <i class="bi bi-shield-lock"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-premium" onclick="toggleEstado(1)" title="Desactivar">
+                                            <i class="bi bi-toggle-on"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Estilista 2 -->
+                                <tr>
+                                    <td>#002</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">M</div>
+                                            <strong>María Torres Sánchez</strong>
+                                        </div>
+                                    </td>
+                                    <td>maria.torres@salon.com</td>
+                                    <td>(503) 7890-5678</td>
+                                    <td><span class="badge badge-luxury">ESTILISTA</span></td>
+                                    <td><span class="badge bg-success">Activo</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-gold me-1" title="Permisos">
+                                            <i class="bi bi-shield-lock"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-premium" title="Desactivar">
+                                            <i class="bi bi-toggle-on"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Estilista 3 -->
+                                <tr>
+                                    <td>#003</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">S</div>
+                                            <strong>Sofía Ramírez Cruz</strong>
+                                        </div>
+                                    </td>
+                                    <td>sofia.ramirez@salon.com</td>
+                                    <td>(503) 7890-9012</td>
+                                    <td><span class="badge badge-luxury">ESTILISTA</span></td>
+                                    <td><span class="badge bg-success">Activo</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-gold me-1" title="Permisos">
+                                            <i class="bi bi-shield-lock"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-premium" title="Desactivar">
+                                            <i class="bi bi-toggle-on"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Recepcionista 1 -->
+                                <tr>
+                                    <td>#004</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">L</div>
+                                            <strong>Laura Hernández Díaz</strong>
+                                        </div>
+                                    </td>
+                                    <td>laura.hernandez@salon.com</td>
+                                    <td>(503) 7890-3456</td>
+                                    <td><span class="badge badge-gold">RECEPCIONISTA</span></td>
+                                    <td><span class="badge bg-success">Activo</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-gold me-1" title="Permisos">
+                                            <i class="bi bi-shield-lock"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-premium" title="Desactivar">
+                                            <i class="bi bi-toggle-on"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Recepcionista 2 -->
+                                <tr>
+                                    <td>#005</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">C</div>
+                                            <strong>Carla Morales Pérez</strong>
+                                        </div>
+                                    </td>
+                                    <td>carla.morales@salon.com</td>
+                                    <td>(503) 7890-7890</td>
+                                    <td><span class="badge badge-gold">RECEPCIONISTA</span></td>
+                                    <td><span class="badge bg-success">Activo</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-gold me-1" title="Permisos">
+                                            <i class="bi bi-shield-lock"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-premium" title="Desactivar">
+                                            <i class="bi bi-toggle-on"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Usuario Inactivo -->
+                                <tr style="opacity: 0.6;">
+                                    <td>#006</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">J</div>
+                                            <strong>Juan Martínez Gómez</strong>
+                                        </div>
+                                    </td>
+                                    <td>juan.martinez@salon.com</td>
+                                    <td>(503) 7890-1111</td>
+                                    <td><span class="badge badge-luxury">ESTILISTA</span></td>
+                                    <td><span class="badge bg-secondary">Inactivo</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-gold me-1" title="Permisos">
+                                            <i class="bi bi-shield-lock"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-gold" title="Activar">
+                                            <i class="bi bi-toggle-off"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ============================================
+         FOOTER
+         ============================================ -->
+    <footer class="main-footer">
+        <p>&copy; 2025 BeautySalon - Sistema de Control de Citas |
+            Desarrollado por <a href="#">Grupo 03 - IGF115</a>
+        </p>
+    </footer>
+
+    <!-- ============================================
+         MODAL: NUEVO USUARIO
+         ============================================ -->
+    <div class="modal fade" id="modalNuevoUsuario" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="background: linear-gradient(135deg, white 0%, var(--blanco-humo) 100%); border: 2px solid var(--rosa-empolvado);">
+                <div class="modal-header" style="border-bottom: 2px solid var(--dorado-palido);">
+                    <h5 class="modal-title" style="color: var(--borgona); font-weight: 700;">
+                        <i class="bi bi-person-plus" style="color: var(--dorado-palido);"></i> 
+                        Nuevo Usuario
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- 
+                    ================================================
+                    TODO BACKEND: Formulario de Creación
+                    ================================================
+                    ACCIÓN: Enviar a ruta POST /usuarios/crear
+                    VALIDACIONES:
+                    - Nombre: requerido, máx 50 caracteres
+                    - Apellido: requerido, máx 50 caracteres
+                    - Email: requerido, único, formato email
+                    - Teléfono: requerido, formato (503) ####-####
+                    - Rol: requerido, enum (estilista, recepcionista)
+                    - Contraseña: requerida, mín 8 caracteres
+                    ================================================
+                    -->
+                    <form id="formNuevoUsuario">
+                        <div class="row g-3">
+                            <!-- Nombre -->
+                            <div class="col-md-6">
+                                <label class="form-label">Nombre *</label>
+                                <input type="text" class="form-control" name="nombre" placeholder="Ej: Ana" required>
+                            </div>
+
+                            <!-- Apellido -->
+                            <div class="col-md-6">
+                                <label class="form-label">Apellido *</label>
+                                <input type="text" class="form-control" name="apellido" placeholder="Ej: López García" required>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6">
+                                <label class="form-label">Email *</label>
+                                <input type="email" class="form-control" name="email" placeholder="usuario@salon.com" required>
+                            </div>
+
+                            <!-- Teléfono -->
+                            <div class="col-md-6">
+                                <label class="form-label">Teléfono *</label>
+                                <input type="tel" class="form-control" name="telefono" placeholder="(503) 7890-1234" required>
+                            </div>
+
+                            <!-- Rol -->
+                            <div class="col-md-6">
+                                <label class="form-label">Rol *</label>
+                                <select class="form-select" name="rol" required>
+                                    <option value="">Seleccione un rol</option>
+                                    <option value="estilista">Estilista</option>
+                                    <option value="recepcionista">Recepcionista</option>
+                                </select>
+                            </div>
+
+                            <!-- Estado -->
+                            <div class="col-md-6">
+                                <label class="form-label">Estado *</label>
+                                <select class="form-select" name="activo" required>
+                                    <option value="1" selected>Activo</option>
+                                    <option value="0">Inactivo</option>
+                                </select>
+                            </div>
+
+                            <!-- Contraseña -->
+                            <div class="col-md-6">
+                                <label class="form-label">Contraseña *</label>
+                                <input type="password" class="form-control" name="password" placeholder="Mínimo 8 caracteres" required>
+                            </div>
+
+                            <!-- Confirmar Contraseña -->
+                            <div class="col-md-6">
+                                <label class="form-label">Confirmar Contraseña *</label>
+                                <input type="password" class="form-control" name="password_confirmation" placeholder="Repetir contraseña" required>
+                            </div>
+
+                            <!-- Dirección (Opcional) -->
+                            <div class="col-12">
+                                <label class="form-label">Dirección (Opcional)</label>
+                                <textarea class="form-control" name="direccion" rows="2" placeholder="Dirección completa"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid var(--rosa-empolvado);">
+                    <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="formNuevoUsuario" class="btn btn-gold">
+                        <i class="bi bi-save"></i> Guardar Usuario
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         MODAL: EDITAR USUARIO
+         ============================================ -->
+    <div class="modal fade" id="modalEditarUsuario" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="background: linear-gradient(135deg, white 0%, var(--blanco-humo) 100%); border: 2px solid var(--rosa-empolvado);">
+                <div class="modal-header" style="border-bottom: 2px solid var(--dorado-palido);">
+                    <h5 class="modal-title" style="color: var(--borgona); font-weight: 700;">
+                        <i class="bi bi-pencil" style="color: var(--dorado-palido);"></i> 
+                        Editar Usuario
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- 
+                    ================================================
+                    TODO BACKEND: Formulario de Edición
+                    ================================================
+                    ACCIÓN: Enviar a ruta PUT /usuarios/{id}/actualizar
+                    NOTA: Los campos vienen pre-llenados con los datos actuales
+                    ================================================
+                    -->
+                    <form id="formEditarUsuario">
+                        <input type="hidden" name="usuario_id" value="1">
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nombre *</label>
+                                <input type="text" class="form-control" name="nombre" value="Ana" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Apellido *</label>
+                                <input type="text" class="form-control" name="apellido" value="López García" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Email *</label>
+                                <input type="email" class="form-control" name="email" value="ana.lopez@salon.com" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Teléfono *</label>
+                                <input type="tel" class="form-control" name="telefono" value="(503) 7890-1234" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Rol *</label>
+                                <select class="form-select" name="rol" required>
+                                    <option value="estilista" selected>Estilista</option>
+                                    <option value="recepcionista">Recepcionista</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Estado *</label>
+                                <select class="form-select" name="activo" required>
+                                    <option value="1" selected>Activo</option>
+                                    <option value="0">Inactivo</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Dirección (Opcional)</label>
+                                <textarea class="form-control" name="direccion" rows="2">Calle Principal #123, Colonia Escalón</textarea>
+                            </div>
+
+                            <div class="col-12">
+                                <hr style="border-color: var(--rosa-empolvado);">
+                                <p class="text-muted mb-2"><small><i class="bi bi-info-circle"></i> Dejar en blanco para mantener la contraseña actual</small></p>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Nueva Contraseña</label>
+                                <input type="password" class="form-control" name="password" placeholder="Solo si desea cambiarla">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Confirmar Nueva Contraseña</label>
+                                <input type="password" class="form-control" name="password_confirmation" placeholder="Repetir nueva contraseña">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid var(--rosa-empolvado);">
+                    <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="formEditarUsuario" class="btn btn-gold">
+                        <i class="bi bi-save"></i> Actualizar Usuario
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         MODAL: GESTIÓN DE PERMISOS
+         ============================================ -->
+    <div class="modal fade" id="modalPermisos" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content" style="background: linear-gradient(135deg, white 0%, var(--blanco-humo) 100%); border: 2px solid var(--rosa-empolvado);">
+                <div class="modal-header" style="border-bottom: 2px solid var(--dorado-palido);">
+                    <h5 class="modal-title" style="color: var(--borgona); font-weight: 700;">
+                        <i class="bi bi-shield-lock" style="color: var(--dorado-palido);"></i> 
+                        Gestión de Permisos
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- 
+                    ================================================
+                    TODO BACKEND: Gestión de Permisos
+                    ================================================
+                    ACCIÓN: Enviar a ruta POST /usuarios/{id}/permisos
+                    TABLA: permisos_usuario
+                    CAMPOS: usuario_id, permiso_id, activo
+                    ================================================
+                    -->
+                    <div class="alert-custom mb-3">
+                        <i class="bi bi-person-circle"></i>
+                        <strong>Usuario:</strong> Ana López García <br>
+                        <strong>Rol:</strong> <span class="badge badge-luxury mt-1">ESTILISTA</span>
+                    </div>
+
+                    <form id="formPermisos">
+                        <input type="hidden" name="usuario_id" value="1">
+                        
+                        <p style="color: var(--borgona); font-weight: 600; margin-bottom: 1rem;">
+                            Seleccione los permisos:
+                        </p>
+
+                        <!-- Permisos según rol -->
+                        <div class="mb-3">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="permisos[]" value="ver_agenda" id="perm1" checked>
+                                <label class="form-check-label" for="perm1">
+                                    Ver agenda personal
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="permisos[]" value="gestionar_citas" id="perm2" checked>
+                                <label class="form-check-label" for="perm2">
+                                    Gestionar sus propias citas
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="permisos[]" value="ver_clientes" id="perm3">
+                                <label class="form-check-label" for="perm3">
+                                    Ver información de clientes
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="permisos[]" value="reportes_propios" id="perm4">
+                                <label class="form-check-label" for="perm4">
+                                    Ver sus propios reportes
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="permisos[]" value="aplicar_promociones" id="perm5">
+                                <label class="form-check-label" for="perm5">
+                                    Aplicar promociones
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid var(--rosa-empolvado);">
+                    <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="formPermisos" class="btn btn-gold">
+                        <i class="bi bi-shield-check"></i> Guardar Permisos
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script de Funciones -->
+    <script>
+        // 
+        // ================================================
+        // TODO BACKEND: Implementar funciones
+        // ================================================
+        //
+
+        // Función para toggle de estado activo/inactivo
+        function toggleEstado(usuarioId) {
+            // TODO: Hacer petición AJAX a /usuarios/{id}/toggle-estado
+            console.log('Toggle estado usuario:', usuarioId);
+            alert('Función de toggle estado - Conectar con backend');
+        }
+
+        // Validación de formulario nuevo usuario
+        document.getElementById('formNuevoUsuario')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = this.querySelector('[name="password"]').value;
+            const confirmation = this.querySelector('[name="password_confirmation"]').value;
+            
+            if (password !== confirmation) {
+                alert('Las contraseñas no coinciden');
+                return;
+            }
+            
+            // TODO: Enviar datos al backend
+            console.log('Crear nuevo usuario');
+            alert('Formulario validado - Conectar con backend');
+        });
+
+        // Validación de formulario editar usuario
+        document.getElementById('formEditarUsuario')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = this.querySelector('[name="password"]').value;
+            const confirmation = this.querySelector('[name="password_confirmation"]').value;
+            
+            if (password && password !== confirmation) {
+                alert('Las contraseñas no coinciden');
+                return;
+            }
+            
+            // TODO: Enviar datos al backend
+            console.log('Actualizar usuario');
+            alert('Formulario validado - Conectar con backend');
+        });
+
+        // Guardar permisos
+        document.getElementById('formPermisos')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // TODO: Enviar permisos al backend
+            console.log('Guardar permisos');
+            alert('Permisos guardados - Conectar con backend');
+        });
+    </script>
+    
+</body>
+</html>
