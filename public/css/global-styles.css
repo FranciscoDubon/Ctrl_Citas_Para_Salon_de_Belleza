@@ -1,0 +1,848 @@
+/* ========================================
+   SISTEMA DE CONTROL DE CITAS - SALÓN DE BELLEZA
+   CSS GLOBAL - Usar en todas las vistas
+   PALETA: Lujo & Elegancia Premium
+   ======================================== */
+
+/* ========================================
+   VARIABLES GLOBALES - PALETA PREMIUM
+   ======================================== */
+:root {
+    /* Paleta Principal */
+    --borgona: #800020;              /* Lujo, pasión, exclusividad */
+    --rosa-empolvado: #E8B4B8;       /* Suavidad, elegancia, feminidad */
+    --champagne: #F4E1D2;            /* Glamour discreto, refinamiento */
+    --dorado-palido: #D4AF37;        /* Éxito, lujo, exclusividad */
+    --negro-carbon: #1C1C1C;         /* Profesionalismo, elegancia */
+    --blanco-humo: #F5F5F5;          /* Limpieza, pureza, contraste */
+    
+    /* Colores complementarios */
+    --borgona-hover: #660019;        /* Hover del borgoña */
+    --borgona-light: #A6002B;        /* Borgoña más claro */
+    --rosa-empolvado-light: #F5D5D8; /* Rosa empolvado más claro */
+    --champagne-light: #FAF0E6;      /* Champagne más claro */
+    --dorado-hover: #C19F2F;         /* Hover del dorado */
+    --negro-carbon-light: #2E2E2E;   /* Negro carbón más claro */
+    
+    --transition: 0.3s ease;
+}
+
+/* ========================================
+   RESET Y BASE
+   ======================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--champagne);
+    color: var(--negro-carbon);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ========================================
+   SIDEBAR (MENÚ LATERAL)
+   ======================================== */
+.sidebar {
+    background: linear-gradient(180deg, var(--negro-carbon) 0%, var(--borgona) 100%);
+    width: 260px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding: 0;
+    border-right: 3px solid var(--dorado-palido);
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 4px 0 20px rgba(212, 175, 55, 0.2);
+}
+
+.sidebar-logo {
+    padding: 2rem 1.5rem;
+    text-align: center;
+    border-bottom: 2px solid var(--dorado-palido);
+    background: rgba(212, 175, 55, 0.05);
+}
+
+.sidebar-logo h3 {
+    color: var(--dorado-palido);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.sidebar-logo p {
+    color: var(--rosa-empolvado);
+    font-size: 0.875rem;
+    margin: 0.5rem 0 0 0;
+    opacity: 0.9;
+}
+
+.sidebar-menu {
+    padding: 1rem 0;
+}
+
+.menu-item {
+    display: block;
+    padding: 1rem 1.5rem;
+    color: var(--blanco-humo);
+    text-decoration: none;
+    transition: all var(--transition);
+    border-left: 3px solid transparent;
+    font-weight: 500;
+}
+
+.menu-item:hover {
+    background-color: rgba(212, 175, 55, 0.15);
+    border-left-color: var(--dorado-palido);
+    color: var(--dorado-palido);
+    padding-left: 1.75rem;
+}
+
+.menu-item.active {
+    background-color: rgba(212, 175, 55, 0.2);
+    border-left-color: var(--dorado-palido);
+    color: var(--dorado-palido);
+    font-weight: 600;
+}
+
+.menu-item i {
+    margin-right: 0.75rem;
+    font-size: 1.125rem;
+}
+
+/* ========================================
+   HEADER (BARRA SUPERIOR)
+   ======================================== */
+.top-header {
+    background: linear-gradient(135deg, var(--borgona) 0%, var(--borgona-light) 100%);
+    border-bottom: 3px solid var(--dorado-palido);
+    padding: 1rem 2rem;
+    margin-left: 260px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(128, 0, 32, 0.3);
+}
+
+.header-title h1 {
+    color: var(--blanco-humo);
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.header-title p {
+    color: var(--dorado-palido);
+    font-size: 0.9rem;
+    margin: 0.25rem 0 0 0;
+    font-weight: 500;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    border: 1px solid var(--dorado-palido);
+    backdrop-filter: blur(10px);
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--dorado-palido), var(--dorado-hover));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--borgona);
+    font-weight: 700;
+    border: 2px solid var(--dorado-palido);
+}
+
+.user-name {
+    color: var(--blanco-humo);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* ========================================
+   MAIN CONTENT (CONTENIDO PRINCIPAL)
+   ======================================== */
+.main-content {
+    margin-left: 260px;
+    padding: 2rem;
+    min-height: calc(100vh - 140px);
+    flex: 1;
+    background-color: var(--champagne);
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+.main-footer {
+    background: linear-gradient(135deg, var(--negro-carbon) 0%, var(--borgona) 100%);
+    border-top: 3px solid var(--dorado-palido);
+    padding: 1.5rem 2rem;
+    margin-left: 260px;
+    text-align: center;
+}
+
+.main-footer p {
+    color: var(--blanco-humo);
+    margin: 0;
+    font-size: 0.875rem;
+    opacity: 0.8;
+}
+
+.main-footer a {
+    color: var(--dorado-palido);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all var(--transition);
+}
+
+.main-footer a:hover {
+    text-decoration: underline;
+    color: var(--rosa-empolvado);
+}
+
+/* ========================================
+   KPI CARDS
+   ======================================== */
+.kpi-card {
+    background: linear-gradient(135deg, var(--blanco-humo) 0%, white 100%);
+    border-radius: 15px;
+    padding: 1.5rem;
+    border: 2px solid var(--rosa-empolvado);
+    transition: transform var(--transition), box-shadow var(--transition);
+    height: 100%;
+    box-shadow: 0 4px 15px rgba(128, 0, 32, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, var(--rosa-empolvado-light), transparent);
+    border-radius: 0 0 0 100%;
+    opacity: 0.3;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(128, 0, 32, 0.2);
+    border-color: var(--dorado-palido);
+}
+
+.kpi-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.kpi-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.kpi-icon.primary {
+    background: linear-gradient(135deg, var(--borgona), var(--borgona-hover));
+    color: var(--dorado-palido);
+}
+
+.kpi-icon.success {
+    background: linear-gradient(135deg, var(--dorado-palido), var(--dorado-hover));
+    color: var(--borgona);
+}
+
+.kpi-icon.info {
+    background: linear-gradient(135deg, var(--rosa-empolvado), var(--rosa-empolvado-light));
+    color: var(--borgona);
+}
+
+.kpi-icon.warning {
+    background: linear-gradient(135deg, var(--champagne), var(--champagne-light));
+    color: var(--borgona);
+}
+
+.kpi-value {
+    color: var(--borgona);
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.kpi-label {
+    color: var(--negro-carbon);
+    font-size: 0.875rem;
+    margin: 0.25rem 0 0 0;
+    opacity: 0.7;
+    position: relative;
+    z-index: 1;
+}
+
+.kpi-badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+.badge-success {
+    background: linear-gradient(135deg, var(--dorado-palido), var(--dorado-hover));
+    color: var(--borgona);
+}
+
+.badge-neutral {
+    background-color: var(--rosa-empolvado);
+    color: var(--borgona);
+}
+
+/* ========================================
+   CARDS PERSONALIZADAS
+   ======================================== */
+.card-custom {
+    background: linear-gradient(135deg, white 0%, var(--blanco-humo) 100%);
+    border-radius: 15px;
+    padding: 1.5rem;
+    border: 2px solid var(--rosa-empolvado);
+    height: 100%;
+    box-shadow: 0 4px 15px rgba(128, 0, 32, 0.1);
+}
+
+.card-title-custom {
+    color: var(--borgona);
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--dorado-palido);
+    position: relative;
+}
+
+.card-title-custom::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background: var(--borgona);
+}
+
+.card-title-custom i {
+    color: var(--dorado-palido);
+    margin-right: 0.5rem;
+}
+
+/* ========================================
+   TABLAS
+   ======================================== */
+.table-custom {
+    width: 100%;
+    color: var(--negro-carbon);
+}
+
+.table-custom thead {
+    background: linear-gradient(135deg, var(--borgona) 0%, var(--borgona-light) 100%);
+}
+
+.table-custom thead th {
+    color: var(--dorado-palido);
+    font-weight: 700;
+    padding: 1rem;
+    border-bottom: 3px solid var(--dorado-palido);
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 1px;
+}
+
+.table-custom tbody td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--rosa-empolvado);
+    color: var(--negro-carbon);
+}
+
+.table-custom tbody tr {
+    background-color: white;
+    transition: all var(--transition);
+}
+
+.table-custom tbody tr:hover {
+    background-color: var(--champagne-light);
+    box-shadow: 0 2px 8px rgba(128, 0, 32, 0.1);
+}
+
+/* ========================================
+   LISTAS
+   ======================================== */
+.list-custom {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.list-item-custom {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, white 0%, var(--blanco-humo) 100%);
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--rosa-empolvado);
+    transition: all var(--transition);
+}
+
+.list-item-custom:hover {
+    background: linear-gradient(135deg, var(--champagne-light) 0%, white 100%);
+    border-color: var(--dorado-palido);
+    box-shadow: 0 4px 15px rgba(128, 0, 32, 0.15);
+    transform: translateX(5px);
+}
+
+.list-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--borgona), var(--borgona-light));
+    color: var(--dorado-palido);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+    border: 2px solid var(--dorado-palido);
+    box-shadow: 0 2px 8px rgba(128, 0, 32, 0.3);
+}
+
+.list-content {
+    flex: 1;
+}
+
+.list-content h6 {
+    color: var(--borgona);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.25rem 0;
+}
+
+.list-content p {
+    color: var(--negro-carbon);
+    font-size: 0.85rem;
+    margin: 0;
+    opacity: 0.7;
+}
+
+.list-badge {
+    color: var(--dorado-palido);
+    font-size: 1.25rem;
+}
+
+/* ========================================
+   BOTONES
+   ======================================== */
+.btn-gold {
+    background: linear-gradient(135deg, var(--borgona), var(--borgona-light));
+    color: var(--dorado-palido);
+    border: 2px solid var(--dorado-palido);
+    font-weight: 700;
+    transition: all var(--transition);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 10px rgba(128, 0, 32, 0.3);
+}
+
+.btn-gold:hover {
+    background: linear-gradient(135deg, var(--borgona-hover), var(--borgona));
+    color: var(--dorado-palido);
+    border-color: var(--dorado-palido);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(128, 0, 32, 0.4);
+}
+
+.btn-outline-gold {
+    border: 2px solid var(--borgona);
+    color: var(--borgona);
+    background: transparent;
+    font-weight: 700;
+    transition: all var(--transition);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-outline-gold:hover {
+    background: linear-gradient(135deg, var(--borgona), var(--borgona-light));
+    color: var(--dorado-palido);
+    border-color: var(--dorado-palido);
+}
+
+/* Botón Dorado Premium */
+.btn-premium {
+    background: linear-gradient(135deg, var(--dorado-palido), var(--dorado-hover));
+    color: var(--borgona);
+    border: none;
+    font-weight: 700;
+    transition: all var(--transition);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+}
+
+.btn-premium:hover {
+    background: linear-gradient(135deg, var(--dorado-hover), var(--dorado-palido));
+    color: var(--borgona);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+}
+
+/* Botón Rosa Suave */
+.btn-soft {
+    background: linear-gradient(135deg, var(--rosa-empolvado), var(--rosa-empolvado-light));
+    color: var(--borgona);
+    border: none;
+    font-weight: 600;
+    transition: all var(--transition);
+}
+
+.btn-soft:hover {
+    background: linear-gradient(135deg, var(--rosa-empolvado-light), var(--rosa-empolvado));
+    color: var(--borgona);
+    transform: translateY(-2px);
+}
+
+/* ========================================
+   FORMULARIOS
+   ======================================== */
+.form-control,
+.form-select {
+    background-color: white;
+    color: var(--negro-carbon);
+    border: 2px solid var(--rosa-empolvado);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: all var(--transition);
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--champagne-light);
+    color: var(--negro-carbon);
+    border-color: var(--dorado-palido);
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+}
+
+.form-control::placeholder {
+    color: var(--rosa-empolvado);
+    opacity: 0.7;
+}
+
+.form-label {
+    color: var(--borgona);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* ========================================
+   BADGES Y ESTADOS
+   ======================================== */
+.badge-luxury {
+    background: linear-gradient(135deg, var(--borgona), var(--borgona-light));
+    color: var(--dorado-palido);
+    padding: 0.4rem 0.9rem;
+    border-radius: 25px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 1px solid var(--dorado-palido);
+}
+
+.badge-gold {
+    background: linear-gradient(135deg, var(--dorado-palido), var(--dorado-hover));
+    color: var(--borgona);
+    padding: 0.4rem 0.9rem;
+    border-radius: 25px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.badge-soft {
+    background-color: var(--rosa-empolvado);
+    color: var(--borgona);
+    padding: 0.4rem 0.9rem;
+    border-radius: 25px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* ========================================
+   ALERTS Y NOTIFICACIONES
+   ======================================== */
+.alert-custom {
+    background: linear-gradient(135deg, var(--champagne-light), white);
+    border: 2px solid var(--dorado-palido);
+    border-left: 5px solid var(--borgona);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    color: var(--negro-carbon);
+    box-shadow: 0 4px 10px rgba(128, 0, 32, 0.1);
+}
+
+.alert-custom i {
+    color: var(--dorado-palido);
+    margin-right: 0.5rem;
+    font-size: 1.25rem;
+}
+
+/* ========================================
+   DIVISORES DECORATIVOS
+   ======================================== */
+.divider-luxury {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--dorado-palido), transparent);
+    margin: 2rem 0;
+    position: relative;
+}
+
+.divider-luxury::before {
+    content: '◆';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--champagne);
+    padding: 0 1rem;
+    color: var(--dorado-palido);
+    font-size: 1rem;
+}
+
+/* ========================================
+   TARJETAS PREMIUM
+   ======================================== */
+.premium-card {
+    background: linear-gradient(135deg, var(--negro-carbon) 0%, var(--borgona) 100%);
+    border: 3px solid var(--dorado-palido);
+    border-radius: 15px;
+    padding: 2rem;
+    color: var(--blanco-humo);
+    box-shadow: 0 8px 25px rgba(128, 0, 32, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.premium-card::before {
+    content: '✦';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 3rem;
+    color: var(--dorado-palido);
+    opacity: 0.2;
+}
+
+.premium-card h3 {
+    color: var(--dorado-palido);
+    margin-bottom: 1rem;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    
+    .top-header,
+    .main-content,
+    .main-footer {
+        margin-left: 0;
+    }
+    
+    .header-title h1 {
+        font-size: 1.25rem;
+    }
+    
+    .user-info {
+        padding: 0.5rem;
+    }
+    
+    .user-name {
+        display: none;
+    }
+    
+    .kpi-value {
+        font-size: 1.75rem;
+    }
+}
+
+/* ========================================
+   SCROLLBAR PERSONALIZADA
+   ======================================== */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--champagne);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--borgona), var(--borgona-light));
+    border-radius: 5px;
+    border: 2px solid var(--champagne);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--dorado-palido), var(--dorado-hover));
+}
+
+/* ========================================
+   ANIMACIONES
+   ======================================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.card-custom,
+.kpi-card,
+.list-item-custom {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.premium-highlight {
+    background: linear-gradient(90deg, transparent, var(--dorado-palido), transparent);
+    background-size: 1000px 100%;
+    animation: shimmer 3s infinite;
+}
+
+/* ========================================
+   UTILIDADES ADICIONALES
+   ======================================== */
+.text-burgundy {
+    color: var(--borgona) !important;
+}
+
+.text-gold {
+    color: var(--dorado-palido) !important;
+}
+
+.text-dusty-pink {
+    color: var(--rosa-empolvado) !important;
+}
+
+.bg-burgundy {
+    background-color: var(--borgona) !important;
+}
+
+.bg-gold {
+    background-color: var(--dorado-palido) !important;
+}
+
+.bg-dusty-pink {
+    background-color: var(--rosa-empolvado) !important;
+}
+
+.bg-champagne {
+    background-color: var(--champagne) !important;
+}
+
+.border-gold {
+    border-color: var(--dorado-palido) !important;
+}
+
+.border-burgundy {
+    border-color: var(--borgona) !important;
+}
+
+/* Gradiente de texto premium */
+.text-gradient-luxury {
+    background: linear-gradient(135deg, var(--borgona), var(--dorado-palido));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+}
+
+/* Efecto brillo dorado */
+.gold-shine {
+    position: relative;
+    overflow: hidden;
+}
+
+.gold-shine::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -100%;
+    }
+    50%, 100% {
+        left: 100%;
+    }
+}
