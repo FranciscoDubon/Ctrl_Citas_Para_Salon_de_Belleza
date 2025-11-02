@@ -1,8 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Iniciar Sesión | Salón de Belleza</title>
     
     <!-- Bootstrap 5 CSS -->
@@ -228,27 +230,6 @@
 
             </form>
 
-            <!-- Divider -->
-            <div class="divider">
-                <span>O continúa con</span>
-            </div>
-
-            <!-- Login Social -->
-            <div class="row g-2 mb-3">
-                <div class="col-6">
-                    <button class="social-login-btn" onclick="loginConGoogle()">
-                        <i class="bi bi-google" style="color: #EA4335;"></i>
-                        Google
-                    </button>
-                </div>
-                <div class="col-6">
-                    <button class="social-login-btn" onclick="loginConFacebook()">
-                        <i class="bi bi-facebook" style="color: #1877F2;"></i>
-                        Facebook
-                    </button>
-                </div>
-            </div>
-
             <!-- Link de Registro -->
             <div class="footer-links">
                 <p style="color: var(--borgona); margin: 0 0 0.5rem 0;">
@@ -270,24 +251,7 @@
             </small>
         </div>
 
-        <!-- Selector de Rol (Demo) -->
-        <div class="card-custom mt-4" style="padding: 1rem; background: rgba(255, 255, 255, 0.8);">
-            <h6 style="color: var(--borgona); font-weight: 600; margin-bottom: 0.75rem; text-align: center;">
-                <i class="bi bi-person-badge"></i> Demo - Selecciona un Rol
-            </h6>
-            <div class="d-flex gap-2 flex-wrap justify-content-center">
-                <button class="btn btn-sm btn-outline-gold" onclick="loginDemo('administrador')">
-                    <i class="bi bi-shield-check"></i> Administrador
-                </button>
-                <button class="btn btn-sm btn-outline-gold" onclick="loginDemo('estilista')">
-                    <i class="bi bi-scissors"></i> Estilista
-                </button>
-                <button class="btn btn-sm btn-outline-gold" onclick="loginDemo('cliente')">
-                    <i class="bi bi-person-circle"></i> Cliente
-                </button>
-            </div>
-        </div>
-
+    
     </div>
 
     <!-- Modal: Recuperar Contraseña -->
@@ -610,36 +574,49 @@
         // Manejar submit del formulario de login
         function handleLogin(event) {
             event.preventDefault();
-            
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const recordarme = document.getElementById('recordarme').checked;
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            console.log('Intentando login:', { email, recordarme });
-
-            // Simulación de validación
-            if (email && password) {
-                // Simulación de login exitoso
-                mostrarExito();
-                
-                // Simular redirección después de 1.5 segundos
-                setTimeout(() => {
-                    // Determinar rol basado en el email (simulación)
-                    let rol = 'cliente';
-                    if (email.includes('admin')) {
-                        rol = 'administrador';
-                    } else if (email.includes('estilista')) {
-                        rol = 'estilista';
-                    }
-                    
-                    redirigirSegunRol(rol);
-                }, 1500);
-            } else {
-                mostrarError('Por favor completa todos los campos');
+            if (!email || !password) {
+            mostrarError('Por favor completa todos los campos');
+            return false;
             }
 
-            return false;
+            fetch("/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-CSRF-TOKEN": token
+            },
+            body: JSON.stringify({
+            correoElectronico: email,
+            clave: password,
+            recordarme: recordarme ? 1 : 0
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+            if (data.success) {
+                mostrarExito();
+
+            setTimeout(() => {
+                redirigirSegunRol(data.rol || 'cliente');
+            }, 1500);
+        } else {
+            mostrarError(data.message || 'Correo o contraseña incorrectos');
         }
+    })
+    .catch(() => {
+        mostrarError('Error en el servidor. Intenta más tarde.');
+    });
+
+    return false;
+}
+
 
         // Mostrar error
         function mostrarError(mensaje) {
@@ -735,7 +712,7 @@
 
         // Manejar registro
         function handleRegistro(event) {
-            event.preventDefault();
+        event.preventDefault();
             
             const nombre = document.getElementById('registroNombre').value;
             const apellido = document.getElementById('registroApellido').value;
@@ -749,46 +726,76 @@
             const aceptaTerminos = document.getElementById('registroTerminos').checked;
             const newsletter = document.getElementById('registroNewsletter').checked;
 
-            // Validar que las contraseñas coincidan
-            if (password !== passwordConfirm) {
-                mostrarErrorRegistro('Las contraseñas no coinciden');
-                return false;
-            }
+    // Validar que las contraseñas coincidan
+    if (password !== passwordConfirm) {
+        mostrarErrorRegistro('Las contraseñas no coinciden');
+        return false;
+    }
 
-            // Validar términos
-            if (!aceptaTerminos) {
-                mostrarErrorRegistro('Debes aceptar los términos y condiciones');
-                return false;
-            }
+    // Validar términos
+    if (!aceptaTerminos) {
+        mostrarErrorRegistro('Debes aceptar los términos y condiciones');
+        return false;
+    }
 
-            console.log('Datos de registro:', {
-                nombre,
-                apellido,
-                email,
-                telefono,
-                fechaNacimiento,
-                genero,
-                comoConocio,
-                newsletter
-            });
+    // Crear el JSON que Laravel espera
+    const data = {
+        nombre,
+        apellido,
+        correoElectronico: email,
+        telefono,
+        fechaNacimiento,
+        clave: password,
+        clave_confirmation: passwordConfirm,
+        genero,
+        comoConocio,
+        suscripcionNewsletter: newsletter ? 1 : 0
+    };
+ const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            // Simulación de registro exitoso
+    fetch("/registro", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "X-CSRF-TOKEN": token
+    },
+    body: JSON.stringify(data)
+})
+    .then(res => res.json())
+    .then(data => {
+
+        // Si hubo errores de validación en Laravel
+        if (data.errors) {
+            const msg = Object.values(data.errors).flat().join(', ');
+            mostrarErrorRegistro(msg);
+            return;
+        }
+
+        // Éxito
+        if (data.success) {
             mostrarExitoRegistro();
-            
-            // Cerrar modal y limpiar formulario después de 2 segundos
+
             setTimeout(() => {
                 bootstrap.Modal.getInstance(document.getElementById('modalRegistro')).hide();
                 document.getElementById('formRegistro').reset();
-                
-                // Mostrar mensaje de bienvenida
-                alert('✅ ¡Bienvenida ' + nombre + '!\n\n' +
-                      'Tu cuenta ha sido creada exitosamente.\n' +
-                      'Te hemos enviado un correo de confirmación a: ' + email + '\n\n' +
-                      'Ya puedes iniciar sesión con tus credenciales.');
-            }, 2000);
 
-            return false;
+                alert(`✅ ¡Bienvenida ${nombre}!
+
+            Tu cuenta ha sido creada exitosamente.
+            Te hemos enviado un correo de confirmación a: ${email}
+
+            Ya puedes iniciar sesión.`);
+            }, 2000);
         }
+    })
+    .catch(() => {
+        mostrarErrorRegistro("Hubo un error en el servidor. Intenta más tarde.");
+    });
+
+    return false;
+}
+
 
         // Mostrar error en registro
         function mostrarErrorRegistro(mensaje) {
@@ -823,19 +830,7 @@
             alertRegistro.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        // Registro con Google
-        function registroConGoogle() {
-            console.log('Registro con Google');
-            alert('🔐 Función: Registro con Google\n\nEn producción, esto abrirá el flujo de OAuth de Google.');
-            // TODO: Implementar OAuth de Google
-        }
-
-        // Registro con Facebook
-        function registroConFacebook() {
-            console.log('Registro con Facebook');
-            alert('🔐 Función: Registro con Facebook\n\nEn producción, esto abrirá el flujo de OAuth de Facebook.');
-            // TODO: Implementar OAuth de Facebook
-        }
+       
 
         // Cerrar registro y volver al login
         function cerrarRegistroAbrirLogin() {
@@ -887,20 +882,20 @@
         // Redirigir según rol
         function redirigirSegunRol(rol) {
             switch(rol) {
-                case 'administrador':
+                case 'ADMIN':
                     console.log('Redirigir a: /admin/dashboard');
                     alert('Redirigiendo al Dashboard de Administrador...');
-                    // window.location.href = '/admin/dashboard';
+                    window.location.href = '/admin/dashboard';
                     break;
-                case 'estilista':
+                case 'ESTILISTA':
                     console.log('Redirigir a: /estilista/dashboard');
                     alert('Redirigiendo al Dashboard de Estilista...');
-                    // window.location.href = '/estilista/dashboard';
+                    window.location.href = '/estilista/dashboard';
                     break;
-                case 'cliente':
+                case 'CLIENTE':
                     console.log('Redirigir a: /cliente/dashboard');
                     alert('Redirigiendo al Dashboard de Cliente...');
-                    // window.location.href = '/cliente/dashboard';
+                    window.location.href = '/cliente/dashboard';
                     break;
                 default:
                     console.log('Rol desconocido');
@@ -927,4 +922,5 @@
     </script>
     
 </body>
+
 </html>
