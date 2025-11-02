@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Cliente;
+use Illuminate\Support\Facades\Hash;
+
+class ClienteController extends Controller
+{
+    public function login(Request $request)
+{
+    $request->validate([
+        'correoElectronico' => 'required|email',
+        'clave' => 'required'
+    ]);
+
+    $cliente = Cliente::where('correoElectronico', $request->correoElectronico)->first();
+
+    if (!$cliente ||!Hash::check($request->clave, $cliente->clave)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Correo o contraseña incorrectos'
+        ]);
+    }
+
+    return response()->json([
+        'success' => true,
+        'rol' => $cliente->rol
+    ]);
+}
+
+    public function registrar(Request $request)
+    {
+        $request->validate([
+            'nombre' => 'required|string|max:100',
+            'apellido' => 'required|string|max:100',
+            'correoElectronico' => 'required|email|unique:cliente,correoElectronico',
+            'telefono' => 'nullable|string|max:20',
+            'fechaNacimiento' => 'nullable|date',
+            'clave' => 'required|string|min:8|confirmed', // validated against clave_confirmation
+            'genero' => 'nullable|string|max:20',
+            'comoConocio' => 'nullable|string|max:50',
+            'suscripcionNewsletter' => 'boolean'
+        ]);
+
+        $cliente = Cliente::create([
+            'nombre' => $request->nombre,
+            'apellido' => $request->apellido,
+            'correoElectronico' => $request->correoElectronico,
+            'telefono' => $request->telefono,
+            'clave' => Hash::make($request->clave),
+            'rol' => 'CLIENTE',
+            'fechaNacimiento' => $request->fechaNacimiento,
+            'genero' => $request->genero,
+            'comoConocio' => $request->comoConocio,
+            'suscripcionNewsletter' => $request->suscripcionNewsletter ?? 1
+        ]);
+
+        return response()->json(['success' => 'Usuario registrado correctamente']);
+    }
+}

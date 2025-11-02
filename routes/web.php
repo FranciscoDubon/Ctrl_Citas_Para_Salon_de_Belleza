@@ -4,8 +4,8 @@ use Illuminate\Support\Facades\Route;
 
 // Ruta Dashboard Admin
 Route::get('/', function () {
-    return view('admin.dashboardAdmin');
-})->name('dashboardAdm');
+    return view('login');
+})->name('logn');
 
 // Ruta Gestión de Usuarios Admin
 Route::get('/admin/usuariosAdm', function () {
@@ -108,7 +108,20 @@ Route::get('/cliente/configCli', function () {
 })->name('cliente.configCli');
 
 //Ruta Gestión de Login
-Route::get('logn', function () {
+Route::get('login', function () {
     return view('login');
-})->name('logn');
+})->name('login');
 
+use App\Http\Controllers\ClienteController;
+// Ruta POST para registrar cliente
+Route::post('/registro', [ClienteController::class, 'registrar'])->name('registro');
+Route::post('/login', [ClienteController::class, 'login'])->name('login.post');
+
+Route::get('/admin/dashboard', function () {
+    return view('admin.dashboardAdmin');
+})->name('dashboardAdm');
+
+
+Route::get('/cliente/dashboard', function () {
+    return view('admin.dashboardAdmin');
+})->name('dashboardCliente');
