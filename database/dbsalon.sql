@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 29-10-2025 a las 06:43:55
+-- Tiempo de generación: 02-11-2025 a las 17:35:43
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `dbsalon`
 --
+CREATE DATABASE IF NOT EXISTS `dbsalon` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `dbsalon`;
 
 -- --------------------------------------------------------
 
@@ -61,8 +63,19 @@ CREATE TABLE `cliente` (
   `telefono` varchar(20) DEFAULT NULL,
   `correoElectronico` varchar(100) DEFAULT NULL,
   `clave` varchar(255) NOT NULL,
-  `perfil` varchar(100) DEFAULT NULL
+  `rol` enum('CLIENTE','ESTILISSTA','ADMIN') DEFAULT 'CLIENTE',
+  `fechaNacimiento` date DEFAULT NULL,
+  `genero` varchar(20) DEFAULT NULL,
+  `comoConocio` varchar(50) DEFAULT NULL,
+  `suscripcionNewsletter` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `cliente`
+--
+
+INSERT INTO `cliente` (`idCliente`, `nombre`, `apellido`, `telefono`, `correoElectronico`, `clave`, `rol`, `fechaNacimiento`, `genero`, `comoConocio`, `suscripcionNewsletter`) VALUES
+(1, 'Francisco', 'Dubón', '7777-7777', 'paco@gmail.com', '$2y$12$/AiQ/LPy9WGgOGE7haK7lu9.SncwCKsunmq5yFncFEmREUbtm02n.', 'ADMIN', '2002-02-20', 'masculino', 'redes_sociales', 1);
 
 -- --------------------------------------------------------
 
@@ -97,6 +110,7 @@ CREATE TABLE `empleado` (
   `idEmpleado` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL,
   `usuario` varchar(50) NOT NULL,
+  `correoElectronico` varchar(100) DEFAULT NULL,
   `clave` varchar(255) NOT NULL,
   `idRol` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -115,12 +129,24 @@ CREATE TABLE `estilista` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `migrations`
+--
+
+CREATE TABLE `migrations` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `migration` varchar(255) NOT NULL,
+  `batch` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `passwordreset`
 --
 
 CREATE TABLE `passwordreset` (
   `idReset` int(11) NOT NULL,
-  `tipoUsuario` varchar(20) NOT NULL CHECK (`tipoUsuario` in ('Empleado','Cliente')),
+  `tipoUsuario` enum('Empleado','Cliente') NOT NULL,
   `idUsuario` int(11) NOT NULL,
   `token` varchar(255) NOT NULL,
   `fechaExpiracion` datetime NOT NULL,
@@ -136,8 +162,8 @@ CREATE TABLE `passwordreset` (
 CREATE TABLE `perfilcliente` (
   `idCliente` int(11) NOT NULL,
   `largoCabello` varchar(50) DEFAULT NULL,
-  `tinturado` bit(1) DEFAULT NULL,
-  `esmaltePrevio` bit(1) DEFAULT NULL,
+  `tinturado` tinyint(1) DEFAULT 0,
+  `esmaltePrevio` tinyint(1) DEFAULT 0,
   `tipoEsmaltado` varchar(50) DEFAULT NULL,
   `otrosTratamientos` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -262,6 +288,7 @@ ALTER TABLE `comboservicio`
 ALTER TABLE `empleado`
   ADD PRIMARY KEY (`idEmpleado`),
   ADD UNIQUE KEY `usuario` (`usuario`),
+  ADD UNIQUE KEY `correoElectronico` (`correoElectronico`),
   ADD KEY `idRol` (`idRol`);
 
 --
@@ -269,6 +296,12 @@ ALTER TABLE `empleado`
 --
 ALTER TABLE `estilista`
   ADD PRIMARY KEY (`idEstilista`);
+
+--
+-- Indices de la tabla `migrations`
+--
+ALTER TABLE `migrations`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `passwordreset`
@@ -336,7 +369,7 @@ ALTER TABLE `cita`
 -- AUTO_INCREMENT de la tabla `cliente`
 --
 ALTER TABLE `cliente`
-  MODIFY `idCliente` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idCliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `combo`
@@ -351,10 +384,10 @@ ALTER TABLE `empleado`
   MODIFY `idEmpleado` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `estilista`
+-- AUTO_INCREMENT de la tabla `migrations`
 --
-ALTER TABLE `estilista`
-  MODIFY `idEstilista` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `migrations`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `passwordreset`
