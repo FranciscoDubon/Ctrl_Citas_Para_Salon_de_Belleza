@@ -123,5 +123,5 @@ Route::get('/admin/dashboard', function () {
 
 
 Route::get('/cliente/dashboard', function () {
-    return view('admin.dashboardAdmin');
+    return view('cliente.dashboardCliente');
 })->name('dashboardCliente');
