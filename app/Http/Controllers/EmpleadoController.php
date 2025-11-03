@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Empleado;
 use App\Models\Cliente;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class EmpleadoController extends Controller
 {
@@ -59,8 +60,9 @@ class EmpleadoController extends Controller
 
     $empleados = Empleado::with('rol')->get(); 
     $clientes = Cliente::all();
+    $clientesRecientes = \App\Models\Cliente::where('fechaRegistro', '>=', Carbon::now()->subDays(30))->count();
 
-    return view('admin.usuariosAdmin', compact('roles', 'empleados', 'clientes','estilistas', 'recepcionistas', 'inactivos'));
+    return view('admin.usuariosAdmin', compact('roles', 'empleados', 'clientes','estilistas', 'recepcionistas', 'inactivos','clientesRecientes'));
 }
 
 }

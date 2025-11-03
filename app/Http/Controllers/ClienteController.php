@@ -55,6 +55,8 @@ class ClienteController extends Controller
             'genero' => $request->genero,
             'comoConocio' => $request->comoConocio,
             'suscripcionNewsletter' => $request->suscripcionNewsletter ?? 1
+            
+
         ]);
 
         return response()->json(['success' => 'Usuario registrado correctamente']);

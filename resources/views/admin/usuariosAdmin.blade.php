@@ -58,7 +58,7 @@
          ============================================ -->
     <header class="top-header">
         <div class="header-title">
-            <h1>Gestión de Empleadoss</h1>
+            <h1>Gestión de Empleados</h1>
             <p>Administra recepcionistas y estilistas.</p>
         </div>
         
@@ -183,8 +183,8 @@
                             <i class="bi bi-person-plus"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">2</h3>
-                    <p class="kpi-label">Nuevos (30 días)</p>
+                    <h3 class="kpi-value">{{ $clientesRecientes }}</h3>
+                    <p class="kpi-label">Clientes Nuevos (30 días)</p>
                     <span class="kpi-badge badge-success">
                         <i class="bi bi-arrow-up"></i> Recientes
                     </span>
