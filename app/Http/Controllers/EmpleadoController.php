@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Empleado;
+use App\Models\Cliente;
 use Illuminate\Support\Facades\Hash;
 
 class EmpleadoController extends Controller
@@ -42,4 +43,25 @@ class EmpleadoController extends Controller
 
          return response()->json(['success' => true, 'empleado' => $empleado]);
     }
+   public function index()
+{
+    $roles = \App\Models\Rol::all();
+
+    $estilistas = Empleado::whereHas('rol', function ($query) {
+        $query->where('nombre', 'estilista');
+    })->where('activo', 1)->count();
+
+    $recepcionistas = Empleado::whereHas('rol', function ($query) {
+        $query->where('nombre', 'recepcionistas');
+    })->where('activo', 1)->count();
+
+    $inactivos = Empleado::where('activo', 0)->count();
+
+    $empleados = Empleado::with('rol')->get(); 
+    $clientes = Cliente::all();
+
+    return view('admin.usuariosAdmin', compact('roles', 'empleados', 'clientes','estilistas', 'recepcionistas', 'inactivos'));
 }
+
+}
+

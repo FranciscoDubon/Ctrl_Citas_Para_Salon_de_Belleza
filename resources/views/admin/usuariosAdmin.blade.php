@@ -36,7 +36,7 @@
                 <i class="bi bi-calendar-check"></i> Citas
             </a>
             <a href="{{ route('admin.usuariosAdm') }}" class="menu-item active">
-                <i class="bi bi-people"></i> Usuarios
+                <i class="bi bi-people"></i> Empleados & Usuarios 
             </a>
             <a href="{{ route('admin.serviciosAdm') }}" class="menu-item">
                 <i class="bi bi-scissors"></i> Servicios
@@ -108,7 +108,7 @@
                             <i class="bi bi-scissors"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">8</h3>
+                    <h3 class="kpi-value">{{ $estilistas }}</h3>
                     <p class="kpi-label">Estilistas Activos</p>
                     <span class="kpi-badge badge-success">
                         <i class="bi bi-check-circle"></i> Activos
@@ -133,7 +133,7 @@
                             <i class="bi bi-person-badge"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">3</h3>
+                    <h3 class="kpi-value">{{ $recepcionistas }}</h3>
                     <p class="kpi-label">Recepcionistas Activos</p>
                     <span class="kpi-badge badge-success">
                         <i class="bi bi-check-circle"></i> Activos
@@ -158,7 +158,7 @@
                             <i class="bi bi-person-x"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">2</h3>
+                    <h3 class="kpi-value">{{ $inactivos }}</h3>
                     <p class="kpi-label">Usuarios Inactivos</p>
                     <span class="kpi-badge badge-neutral">
                         <i class="bi bi-x-circle"></i> Inactivos
@@ -227,168 +227,81 @@
                                     <th>Nombre Completo</th>
                                     <th>Email</th>
                                     <th>Teléfono</th>
-                                    <th>Rol</th>
+                                    <th>Tipo</th>
                                     <th>Estado</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Estilista 1 -->
-                                <tr>
-                                    <td>#001</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">A</div>
-                                            <strong>Ana López García</strong>
-                                        </div>
-                                    </td>
-                                    <td>ana.lopez@salon.com</td>
-                                    <td>(503) 7890-1234</td>
-                                    <td><span class="badge badge-luxury">ESTILISTA</span></td>
-                                    <td><span class="badge bg-success">Activo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" data-bs-toggle="modal" data-bs-target="#modalPermisos" title="Permisos">
-                                            <i class="bi bi-shield-lock"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" onclick="toggleEstado(1)" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+    @foreach ($empleados as $empleado)
+        <tr @if(!$empleado->activo) style="opacity: 0.6;" @endif>
+            <td>#{{ str_pad($empleado->idEmpleado, 3, '0', STR_PAD_LEFT) }}</td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">
+                        {{ strtoupper(substr($empleado->nombre, 0, 1)) }}
+                    </div>
+                    <strong>{{ $empleado->nombre }} {{ $empleado->apellido }}</strong>
+                </div>
+            </td>
+            <td>{{ $empleado->correoElectronico }}</td>
+            <td>{{ $empleado->telefono }}</td>
+            <td>
+                <span class="badge {{ $empleado->rol->nombre === 'estilista' ? 'badge-luxury' : 'badge-gold' }}">
+                    {{ strtoupper($empleado->rol->nombre) }}
+                </span>
+            </td>
+            <td>
+                <span class="badge {{ $empleado->activo ? 'bg-success' : 'bg-secondary' }}">
+                    {{ $empleado->activo ? 'Activo' : 'Inactivo' }}
+                </span>
+            </td>
+            <td>
+                <!-- Botones de acción -->
+                <button class="btn btn-sm btn-soft me-1" title="Editar">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-gold me-1" title="Permisos">
+                    <i class="bi bi-shield-lock"></i>
+                </button>
+                <button class="btn btn-sm {{ $empleado->activo ? 'btn-premium' : 'btn-gold' }}" title="{{ $empleado->activo ? 'Desactivar' : 'Activar' }}">
+                    <i class="bi {{ $empleado->activo ? 'bi-toggle-on' : 'bi-toggle-off' }}"></i>
+                </button>
+            </td>
+        </tr>
+    @endforeach
 
-                                <!-- Estilista 2 -->
-                                <tr>
-                                    <td>#002</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">M</div>
-                                            <strong>María Torres Sánchez</strong>
-                                        </div>
-                                    </td>
-                                    <td>maria.torres@salon.com</td>
-                                    <td>(503) 7890-5678</td>
-                                    <td><span class="badge badge-luxury">ESTILISTA</span></td>
-                                    <td><span class="badge bg-success">Activo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Permisos">
-                                            <i class="bi bi-shield-lock"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+    @foreach ($clientes as $cliente)
+        <tr>
+            <td>#C{{ str_pad($cliente->idCliente, 3, '0', STR_PAD_LEFT) }}</td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">
+                        {{ strtoupper(substr($cliente->nombre, 0, 1)) }}
+                    </div>
+                    <strong>{{ $cliente->nombre }} {{ $cliente->apellido }}</strong>
+                </div>
+            </td>
+            <td>{{ $cliente->correoElectronico }}</td>
+            <td>{{ $cliente->telefono }}</td>
+            <td><span class="badge bg-info">CLIENTE</span></td>
+            <td><span class="badge bg-success">Activo</span></td>
+            <td>
+                <!-- Botones de acción para cliente -->
+                <button class="btn btn-sm btn-soft me-1" title="Editar">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-gold me-1" title="Permisos">
+                    <i class="bi bi-shield-lock"></i>
+                </button>
+                <button class="btn btn-sm btn-premium" title="Desactivar">
+                    <i class="bi bi-toggle-on"></i>
+                </button>
+            </td>
+        </tr>
+    @endforeach
+</tbody>
 
-                                <!-- Estilista 3 -->
-                                <tr>
-                                    <td>#003</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">S</div>
-                                            <strong>Sofía Ramírez Cruz</strong>
-                                        </div>
-                                    </td>
-                                    <td>sofia.ramirez@salon.com</td>
-                                    <td>(503) 7890-9012</td>
-                                    <td><span class="badge badge-luxury">ESTILISTA</span></td>
-                                    <td><span class="badge bg-success">Activo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Permisos">
-                                            <i class="bi bi-shield-lock"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Recepcionista 1 -->
-                                <tr>
-                                    <td>#004</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">L</div>
-                                            <strong>Laura Hernández Díaz</strong>
-                                        </div>
-                                    </td>
-                                    <td>laura.hernandez@salon.com</td>
-                                    <td>(503) 7890-3456</td>
-                                    <td><span class="badge badge-gold">RECEPCIONISTA</span></td>
-                                    <td><span class="badge bg-success">Activo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Permisos">
-                                            <i class="bi bi-shield-lock"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Recepcionista 2 -->
-                                <tr>
-                                    <td>#005</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">C</div>
-                                            <strong>Carla Morales Pérez</strong>
-                                        </div>
-                                    </td>
-                                    <td>carla.morales@salon.com</td>
-                                    <td>(503) 7890-7890</td>
-                                    <td><span class="badge badge-gold">RECEPCIONISTA</span></td>
-                                    <td><span class="badge bg-success">Activo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Permisos">
-                                            <i class="bi bi-shield-lock"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Usuario Inactivo -->
-                                <tr style="opacity: 0.6;">
-                                    <td>#006</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">J</div>
-                                            <strong>Juan Martínez Gómez</strong>
-                                        </div>
-                                    </td>
-                                    <td>juan.martinez@salon.com</td>
-                                    <td>(503) 7890-1111</td>
-                                    <td><span class="badge badge-luxury">ESTILISTA</span></td>
-                                    <td><span class="badge bg-secondary">Inactivo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Permisos">
-                                            <i class="bi bi-shield-lock"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-gold" title="Activar">
-                                            <i class="bi bi-toggle-off"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -777,6 +690,8 @@
             alert('Permisos guardados - Conectar con backend');
         });
     </script>
+   
+
     
 </body>
 </html>
