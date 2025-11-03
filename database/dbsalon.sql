@@ -107,13 +107,18 @@ CREATE TABLE `comboservicio` (
 --
 
 CREATE TABLE `empleado` (
-  `idEmpleado` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
-  `usuario` varchar(50) NOT NULL,
-  `correoElectronico` varchar(100) DEFAULT NULL,
-  `clave` varchar(255) NOT NULL,
-  `idRol` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `idEmpleado` INT AUTO_INCREMENT PRIMARY KEY,
+  `nombre` VARCHAR(100) NOT NULL,
+  `apellido` VARCHAR(100) NOT NULL,
+  `telefono` VARCHAR(20) DEFAULT NULL,
+  `correoElectronico` VARCHAR(100) NOT NULL UNIQUE,
+  `clave` VARCHAR(255) NOT NULL,
+  `direccion` VARCHAR(255) DEFAULT NULL,
+  `idRol` INT NOT NULL,
+  `activo` TINYINT(1) DEFAULT 1,
+  `fechaRegistro` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`idRol`) REFERENCES `rol`(`idRol`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 

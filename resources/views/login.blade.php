@@ -675,19 +675,6 @@
             return false;
         }
 
-        // Login con Google
-        function loginConGoogle() {
-            console.log('Login con Google');
-            alert('🔐 Función: Login con Google\n\nEn producción, esto abrirá el flujo de OAuth de Google.');
-            // TODO: Implementar OAuth de Google
-        }
-
-        // Login con Facebook
-        function loginConFacebook() {
-            console.log('Login con Facebook');
-            alert('🔐 Función: Login con Facebook\n\nEn producción, esto abrirá el flujo de OAuth de Facebook.');
-            // TODO: Implementar OAuth de Facebook
-        }
 
         // Ir a página de registro (abrir modal)
         function irARegistro() {

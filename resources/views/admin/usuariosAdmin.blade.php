@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Usuarios Administrador | Salón de Belleza</title>
     
@@ -57,7 +58,7 @@
          ============================================ -->
     <header class="top-header">
         <div class="header-title">
-            <h1>Gestión de Usuarios</h1>
+            <h1>Gestión de Empleadoss</h1>
             <p>Administra recepcionistas y estilistas.</p>
         </div>
         
@@ -79,7 +80,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <button class="btn btn-gold me-2" data-bs-toggle="modal" data-bs-target="#modalNuevoUsuario">
-                    <i class="bi bi-plus-circle"></i> Nuevo Usuario
+                    <i class="bi bi-plus-circle"></i> Nuevo Empleado
                 </button>
                 <button class="btn btn-outline-gold">
                     <i class="bi bi-funnel"></i> Filtros
@@ -414,7 +415,7 @@
                 <div class="modal-header" style="border-bottom: 2px solid var(--dorado-palido);">
                     <h5 class="modal-title" style="color: var(--borgona); font-weight: 700;">
                         <i class="bi bi-person-plus" style="color: var(--dorado-palido);"></i> 
-                        Nuevo Usuario
+                        Nuevo Empleado
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
@@ -433,7 +434,7 @@
                     - Contraseña: requerida, mín 8 caracteres
                     ================================================
                     -->
-                    <form id="formNuevoUsuario">
+                   <form id="formNuevoUsuario" action="{{ route('empleado.store') }}" method="POST">
                         <div class="row g-3">
                             <!-- Nombre -->
                             <div class="col-md-6">
@@ -462,11 +463,13 @@
                             <!-- Rol -->
                             <div class="col-md-6">
                                 <label class="form-label">Rol *</label>
-                                <select class="form-select" name="rol" required>
+                                <select class="form-select" name="idRol" required>
                                     <option value="">Seleccione un rol</option>
-                                    <option value="estilista">Estilista</option>
-                                    <option value="recepcionista">Recepcionista</option>
+                                    @foreach($roles as $rol)
+                                    <option value="{{ $rol->idRol }}">{{ $rol->nombre }}</option>
+                                     @endforeach
                                 </select>
+
                             </div>
 
                             <!-- Estado -->
@@ -501,7 +504,7 @@
                 <div class="modal-footer" style="border-top: 1px solid var(--rosa-empolvado);">
                     <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" form="formNuevoUsuario" class="btn btn-gold">
-                        <i class="bi bi-save"></i> Guardar Usuario
+                        <i class="bi bi-save"></i> Guardar Empleado
                     </button>
                 </div>
             </div>
@@ -713,9 +716,39 @@
                 return;
             }
             
-            // TODO: Enviar datos al backend
-            console.log('Crear nuevo usuario');
-            alert('Formulario validado - Conectar con backend');
+            // Preparar los datos del formulario
+    const formData = new FormData(this);
+
+ fetch(this.action, {
+    method: 'POST',
+    headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        'Accept': 'application/json'
+    },
+    body: formData
+})
+.then(async response => {
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+        const data = await response.json();
+        console.log('JSON recibido:', data);
+
+        if (data.success) {
+            alert('Empleado creado correctamente');
+            this.reset(); // limpiar formulario
+        } else {
+            alert('Error al crear empleado');
+        }
+    } else {
+        const text = await response.text();
+        console.error('Respuesta no JSON:', text);
+        alert('El servidor devolvió una respuesta inesperada.');
+    }
+})
+.catch(error => {
+    console.error('Error en fetch:', error);
+    alert('Ocurrió un error al enviar el formulario');
+});
         });
 
         // Validación de formulario editar usuario

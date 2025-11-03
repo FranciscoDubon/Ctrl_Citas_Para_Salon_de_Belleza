@@ -110,7 +110,7 @@ Route::get('/cliente/configCli', function () {
 //Ruta Gestión de Login
 Route::get('login', function () {
     return view('login');
-})->name('login');
+})->name('logn');
 
 use App\Http\Controllers\ClienteController;
 // Ruta POST para registrar cliente
@@ -121,7 +121,11 @@ Route::get('/admin/dashboard', function () {
     return view('admin.dashboardAdmin');
 })->name('dashboardAdm');
 
-
 Route::get('/cliente/dashboard', function () {
     return view('cliente.dashboardCliente');
 })->name('dashboardCliente');
+
+use App\Http\Controllers\EmpleadoController;
+Route::post('/admin/usuariosAdm', [EmpleadoController::class, 'store'])->name('empleado.store');
+Route::get('/admin/usuariosAdm', function () {$roles = \App\Models\Rol::all();return view('admin.usuariosAdmin', compact('roles'));})->name('admin.usuariosAdm');
+
