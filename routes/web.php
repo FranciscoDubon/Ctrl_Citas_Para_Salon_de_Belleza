@@ -127,8 +127,15 @@ Route::get('/cliente/dashboard', function () {
 
 use App\Http\Controllers\EmpleadoController;
 Route::post('/admin/usuariosAdm', [EmpleadoController::class, 'store'])->name('empleado.store');
-Route::get('/admin/usuariosAdm', function () {$roles = \App\Models\Rol::all();return view('admin.usuariosAdmin', compact('roles'));})->name('admin.usuariosAdm');
-Route::get('/admin/usuariosAdm', [EmpleadoController::class, 'index'])->name('admin.usuariosAdm');
 
-//Route::get('/admin/usuariosAdm', [EmpleadoController::class, 'resumenKPI'])->name('admin.usuariosAdmin');
+/*
+Route::get('/admin/usuariosAdm', function () {$roles = \App\Models\Rol::all();return view('admin.usuariosAdmin', compact('roles'));})->name('admin.usuariosAdm');
+*/
+
+Route::get('/admin/usuariosAdm', [EmpleadoController::class, 'index'])->name('admin.usuariosAdm');
+Route::put('/admin/usuariosAdm/{id}', [EmpleadoController::class, 'update'])->name('empleado.update');
+Route::post('/admin/usuariosAdm/{id}/estado', [EmpleadoController::class, 'cambiarEstado'])->name('empleado.estado');
+
+
+
 

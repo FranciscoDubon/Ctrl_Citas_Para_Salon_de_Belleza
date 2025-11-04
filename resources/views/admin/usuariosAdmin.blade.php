@@ -82,9 +82,7 @@
                 <button class="btn btn-gold me-2" data-bs-toggle="modal" data-bs-target="#modalNuevoUsuario">
                     <i class="bi bi-plus-circle"></i> Nuevo Empleado
                 </button>
-                <button class="btn btn-outline-gold">
-                    <i class="bi bi-funnel"></i> Filtros
-                </button>
+                
             </div>
         </div>
 
@@ -210,7 +208,7 @@
                 <div class="card-custom">
                     <h5 class="card-title-custom">
                         <i class="bi bi-people-fill"></i>
-                        Lista de Usuarios del Sistema
+                        Lista de Empleados del Sistema
                     </h5>
 
                     <!-- Buscador -->
@@ -258,48 +256,33 @@
             </td>
             <td>
                 <!-- Botones de acción -->
-                <button class="btn btn-sm btn-soft me-1" title="Editar">
-                    <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-gold me-1" title="Permisos">
-                    <i class="bi bi-shield-lock"></i>
-                </button>
-                <button class="btn btn-sm {{ $empleado->activo ? 'btn-premium' : 'btn-gold' }}" title="{{ $empleado->activo ? 'Desactivar' : 'Activar' }}">
-                    <i class="bi {{ $empleado->activo ? 'bi-toggle-on' : 'bi-toggle-off' }}"></i>
-                </button>
+                <button class="btn btn-sm btn-soft me-1 btn-editar" 
+        data-bs-toggle="modal" 
+        data-bs-target="#modalEditarUsuario" 
+        data-id="{{ $empleado->idEmpleado }}"
+        data-nombre="{{ $empleado->nombre }}"
+        data-apellido="{{ $empleado->apellido }}"
+        data-email="{{ $empleado->correoElectronico }}"
+        data-telefono="{{ $empleado->telefono }}"
+        data-direccion="{{ $empleado->direccion }}"
+        data-rol="{{ $empleado->rol->idRol }}"
+        data-activo="{{ $empleado->activo }}">
+    <i class="bi bi-pencil"></i>
+</button>
+
+               
+                <button 
+    class="btn btn-sm btn-toggle-estado {{ $empleado->activo ? 'btn-premium' : 'btn-gold' }}" 
+    title="{{ $empleado->activo ? 'Desactivar' : 'Activar' }}"
+    data-id="{{ $empleado->idEmpleado }}"
+    data-estado="{{ $empleado->activo ? 1 : 0 }}">
+    <i class="bi {{ $empleado->activo ? 'bi-toggle-on' : 'bi-toggle-off' }}"></i>
+</button>
+
             </td>
         </tr>
     @endforeach
 
-    @foreach ($clientes as $cliente)
-        <tr>
-            <td>#C{{ str_pad($cliente->idCliente, 3, '0', STR_PAD_LEFT) }}</td>
-            <td>
-                <div class="d-flex align-items-center">
-                    <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">
-                        {{ strtoupper(substr($cliente->nombre, 0, 1)) }}
-                    </div>
-                    <strong>{{ $cliente->nombre }} {{ $cliente->apellido }}</strong>
-                </div>
-            </td>
-            <td>{{ $cliente->correoElectronico }}</td>
-            <td>{{ $cliente->telefono }}</td>
-            <td><span class="badge bg-info">CLIENTE</span></td>
-            <td><span class="badge bg-success">Activo</span></td>
-            <td>
-                <!-- Botones de acción para cliente -->
-                <button class="btn btn-sm btn-soft me-1" title="Editar">
-                    <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-gold me-1" title="Permisos">
-                    <i class="bi bi-shield-lock"></i>
-                </button>
-                <button class="btn btn-sm btn-premium" title="Desactivar">
-                    <i class="bi bi-toggle-on"></i>
-                </button>
-            </td>
-        </tr>
-    @endforeach
 </tbody>
 
                         </table>
@@ -446,7 +429,8 @@
                     NOTA: Los campos vienen pre-llenados con los datos actuales
                     ================================================
                     -->
-                    <form id="formEditarUsuario">
+                    <form id="formEditarUsuario" action="{{ route('empleado.update', ['id' => $empleado->idEmpleado]) }}" method="POST">
+                        <input type="hidden" name="_method" value="PUT">
                         <input type="hidden" name="usuario_id" value="1">
                         
                         <div class="row g-3">
@@ -472,10 +456,13 @@
 
                             <div class="col-md-6">
                                 <label class="form-label">Rol *</label>
-                                <select class="form-select" name="rol" required>
-                                    <option value="estilista" selected>Estilista</option>
-                                    <option value="recepcionista">Recepcionista</option>
-                                </select>
+                                <select name="idRol" class="form-select" id="idRol">
+
+    @foreach ($roles as $rol)
+        <option value="{{ $rol->idRol }}">{{ ucfirst($rol->nombre) }}</option>
+    @endforeach
+</select>
+
                             </div>
 
                             <div class="col-md-6">
@@ -518,89 +505,10 @@
         </div>
     </div>
 
-    <!-- ============================================
-         MODAL: GESTIÓN DE PERMISOS
-         ============================================ -->
-    <div class="modal fade" id="modalPermisos" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content" style="background: linear-gradient(135deg, white 0%, var(--blanco-humo) 100%); border: 2px solid var(--rosa-empolvado);">
-                <div class="modal-header" style="border-bottom: 2px solid var(--dorado-palido);">
-                    <h5 class="modal-title" style="color: var(--borgona); font-weight: 700;">
-                        <i class="bi bi-shield-lock" style="color: var(--dorado-palido);"></i> 
-                        Gestión de Permisos
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- 
-                    ================================================
-                    TODO BACKEND: Gestión de Permisos
-                    ================================================
-                    ACCIÓN: Enviar a ruta POST /usuarios/{id}/permisos
-                    TABLA: permisos_usuario
-                    CAMPOS: usuario_id, permiso_id, activo
-                    ================================================
-                    -->
-                    <div class="alert-custom mb-3">
-                        <i class="bi bi-person-circle"></i>
-                        <strong>Usuario:</strong> Ana López García <br>
-                        <strong>Rol:</strong> <span class="badge badge-luxury mt-1">ESTILISTA</span>
-                    </div>
-
-                    <form id="formPermisos">
-                        <input type="hidden" name="usuario_id" value="1">
-                        
-                        <p style="color: var(--borgona); font-weight: 600; margin-bottom: 1rem;">
-                            Seleccione los permisos:
-                        </p>
-
-                        <!-- Permisos según rol -->
-                        <div class="mb-3">
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" name="permisos[]" value="ver_agenda" id="perm1" checked>
-                                <label class="form-check-label" for="perm1">
-                                    Ver agenda personal
-                                </label>
-                            </div>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" name="permisos[]" value="gestionar_citas" id="perm2" checked>
-                                <label class="form-check-label" for="perm2">
-                                    Gestionar sus propias citas
-                                </label>
-                            </div>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" name="permisos[]" value="ver_clientes" id="perm3">
-                                <label class="form-check-label" for="perm3">
-                                    Ver información de clientes
-                                </label>
-                            </div>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" name="permisos[]" value="reportes_propios" id="perm4">
-                                <label class="form-check-label" for="perm4">
-                                    Ver sus propios reportes
-                                </label>
-                            </div>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" name="permisos[]" value="aplicar_promociones" id="perm5">
-                                <label class="form-check-label" for="perm5">
-                                    Aplicar promociones
-                                </label>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer" style="border-top: 1px solid var(--rosa-empolvado);">
-                    <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" form="formPermisos" class="btn btn-gold">
-                        <i class="bi bi-shield-check"></i> Guardar Permisos
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     
     <!-- Script de Funciones -->
     <script>
@@ -610,6 +518,27 @@
         // ================================================
         //
 
+        document.querySelectorAll('.btn-editar').forEach(button => {
+    button.addEventListener('click', () => {
+        const form = document.getElementById('formEditarUsuario');
+
+        form.usuario_id.value = button.dataset.id;
+        form.nombre.value = button.dataset.nombre;
+        form.apellido.value = button.dataset.apellido;
+        form.email.value = button.dataset.email;
+        form.telefono.value = button.dataset.telefono;
+        form.direccion.value = button.dataset.direccion;
+
+        form.idRol.value = button.dataset.rol;
+        form.activo.value = button.dataset.activo;
+
+        // Actualiza la acción del formulario con el ID correcto
+        form.setAttribute('action', `/admin/usuariosAdm/${button.dataset.id}`);
+        
+    });
+});
+
+
         // Función para toggle de estado activo/inactivo
         function toggleEstado(usuarioId) {
             // TODO: Hacer petición AJAX a /usuarios/{id}/toggle-estado
@@ -617,81 +546,201 @@
             alert('Función de toggle estado - Conectar con backend');
         }
 
-        // Validación de formulario nuevo usuario
-        document.getElementById('formNuevoUsuario')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const password = this.querySelector('[name="password"]').value;
-            const confirmation = this.querySelector('[name="password_confirmation"]').value;
-            
-            if (password !== confirmation) {
-                alert('Las contraseñas no coinciden');
-                return;
-            }
-            
-            // Preparar los datos del formulario
-    const formData = new FormData(this);
+        //----------------------------------//
 
- fetch(this.action, {
-    method: 'POST',
-    headers: {
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-        'Accept': 'application/json'
-    },
-    body: formData
-})
-.then(async response => {
-    const contentType = response.headers.get('content-type');
-    if (contentType && contentType.includes('application/json')) {
-        const data = await response.json();
-        console.log('JSON recibido:', data);
+                    //crear usuario// 
 
-        if (data.success) {
-            alert('Empleado creado correctamente');
-            this.reset(); // limpiar formulario
-        } else {
-            alert('Error al crear empleado');
-        }
-    } else {
-        const text = await response.text();
-        console.error('Respuesta no JSON:', text);
-        alert('El servidor devolvió una respuesta inesperada.');
+        //----------------------------------//  
+       document.getElementById('formNuevoUsuario')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const form = this;
+    const password = form.querySelector('[name="password"]').value;
+    const confirmation = form.querySelector('[name="password_confirmation"]').value;
+
+    if (password !== confirmation) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Contraseñas no coinciden',
+            text: 'Por favor verifica que ambas contraseñas sean iguales'
+        });
+        return;
     }
-})
-.catch(error => {
-    console.error('Error en fetch:', error);
-    alert('Ocurrió un error al enviar el formulario');
-});
-        });
 
-        // Validación de formulario editar usuario
-        document.getElementById('formEditarUsuario')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const password = this.querySelector('[name="password"]').value;
-            const confirmation = this.querySelector('[name="password_confirmation"]').value;
-            
-            if (password && password !== confirmation) {
-                alert('Las contraseñas no coinciden');
-                return;
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+        },
+        body: formData
+    })
+    .then(async response => {
+        const contentType = response.headers.get('content-type');
+
+        if (!response.ok) {
+            if (contentType && contentType.includes('application/json')) {
+                const errorData = await response.json();
+                const mensaje = Object.values(errorData.errors || {}).flat().join('\n') || 'Error al crear empleado.';
+                throw new Error(mensaje);
+            } else {
+                const text = await response.text();
+                throw new Error(text || 'Error desconocido');
             }
-            
-            // TODO: Enviar datos al backend
-            console.log('Actualizar usuario');
-            alert('Formulario validado - Conectar con backend');
+        }
+
+        return response.json();
+    })
+    .then(data => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Empleado creado',
+            text: 'El nuevo empleado fue registrado correctamente',
+            timer: 2000,
+            showConfirmButton: false
         });
 
-        // Guardar permisos
-        document.getElementById('formPermisos')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // TODO: Enviar permisos al backend
-            console.log('Guardar permisos');
-            alert('Permisos guardados - Conectar con backend');
-        });
-    </script>
-   
+        // ✅ Cerrar el modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalNuevoUsuario'));
+        modal.hide();
 
-    
+        // ✅ Limpiar el formulario
+        form.reset();
+
+        // ✅ Recargar la tabla o la página
+        setTimeout(() => {
+            location.reload();
+        }, 2000);
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al crear empleado',
+            text: error.message || 'Ocurrió un error inesperado'
+        });
+    });
+});
+
+//----------------------------------//
+
+        //editar usuario// 
+
+//----------------------------------//        
+document.getElementById('formEditarUsuario').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const id = form.querySelector('[name="usuario_id"]').value;
+    const formData = new FormData(form);
+
+    fetch(`/admin/usuariosAdm/${id}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+        },
+        body: formData
+    })
+    .then(async response => {
+        const contentType = response.headers.get('content-type');
+
+        if (!response.ok) {
+            if (contentType && contentType.includes('application/json')) {
+                const errorData = await response.json();
+                const mensaje = Object.values(errorData.errors || {}).flat().join('\n') || 'Error al actualizar.';
+                throw new Error(mensaje);
+            } else {
+                const text = await response.text();
+                throw new Error(text || 'Error desconocido');
+            }
+        }
+
+        return response.json(); // ✅ esto pasa al siguiente .then(data => ...)
+    })
+    .then(data => {
+        // ✅ Mostrar alerta de éxito
+        Swal.fire({
+            icon: 'success',
+            title: 'Usuario actualizado',
+            text: 'Los datos se modificaron correctamente',
+            timer: 2000,
+            showConfirmButton: false
+        });
+
+        // ✅ Cerrar el modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarUsuario'));
+        modal.hide();
+
+        // ✅ Recargar la tabla o la página
+        setTimeout(() => {
+            location.reload();
+        }, 2000);
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al actualizar',
+            text: error.message || 'Ocurrió un error inesperado'
+        });
+    });
+});
+
+document.querySelectorAll('.btn-toggle-estado').forEach(button => {
+    button.addEventListener('click', function () {
+        const id = this.dataset.id;
+        const estadoActual = parseInt(this.dataset.estado);
+        const nuevoEstado = estadoActual === 1 ? 0 : 1;
+
+        fetch(`/admin/usuariosAdm/${id}/estado`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ estado: nuevoEstado })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Estado actualizado',
+                    text: `El empleado fue ${data.nuevoEstado ? 'activado' : 'desactivado'} correctamente`,
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
+                setTimeout(() => {
+                    location.reload(); // o actualiza solo la fila si prefieres
+                }, 2000);
+            } else {
+                throw new Error('No se pudo actualizar el estado');
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message || 'Ocurrió un error inesperado'
+            });
+        });
+    });
+});
+
+function buscarTabla() {
+    const input = document.getElementById('buscarUsuario');
+    const filtro = input.value.toLowerCase();
+    const filas = document.querySelectorAll('.table-custom tbody tr');
+
+    filas.forEach(fila => {
+        const textoFila = fila.textContent.toLowerCase();
+        fila.style.display = textoFila.includes(filtro) ? '' : 'none';
+    });
+}
+
+</script>
 </body>
 </html>

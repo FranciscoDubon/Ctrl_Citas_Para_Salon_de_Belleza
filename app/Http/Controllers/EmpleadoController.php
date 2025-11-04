@@ -7,6 +7,7 @@ use App\Models\Empleado;
 use App\Models\Cliente;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use Illuminate\Validation\Rule;
 
 class EmpleadoController extends Controller
 {
@@ -64,6 +65,63 @@ class EmpleadoController extends Controller
 
     return view('admin.usuariosAdmin', compact('roles', 'empleados', 'clientes','estilistas', 'recepcionistas', 'inactivos','clientesRecientes'));
 }
+
+public function update(Request $request, $id)
+{
+    $empleado = Empleado::findOrFail($id);
+
+    // Validar datos
+    $request->merge([
+        'clave' => $request->password,
+        'clave_confirmation' => $request->password_confirmation,
+        'correoElectronico' => $request->email,
+    ]);
+
+    $request->validate([
+        'nombre' => 'required|string|max:100',
+        'apellido' => 'required|string|max:100',
+        'telefono' => 'required|string|max:20',
+        'correoElectronico' => [
+            'required',
+            'email',
+            Rule::unique('empleado', 'correoElectronico')->ignore($empleado->idEmpleado, 'idEmpleado')
+        ],
+        'direccion' => 'nullable|string',
+        'idRol' => 'required|exists:rol,idRol',
+        'activo' => 'required|boolean',
+        'clave' => 'nullable|min:8|confirmed'
+    ]);
+
+    // Actualizar campos
+    $empleado->nombre = $request->nombre;
+    $empleado->apellido = $request->apellido;
+    $empleado->telefono = $request->telefono;
+    $empleado->correoElectronico = $request->correoElectronico;
+    $empleado->idRol = $request->idRol;
+    $empleado->activo = $request->activo;
+    $empleado->direccion = $request->direccion;
+
+    if ($request->filled('clave')) {
+        $empleado->clave = Hash::make($request->clave);
+    }
+
+    $empleado->save();
+
+    return response()->json(['success' => true, 'empleado' => $empleado]);
+}
+
+public function cambiarEstado(Request $request, $id)
+{
+    $empleado = Empleado::findOrFail($id);
+    $empleado->activo = !$empleado->activo;
+    $empleado->save();
+
+    return response()->json([
+        'success' => true,
+        'nuevoEstado' => $empleado->activo
+    ]);
+}
+
 
 }
 
