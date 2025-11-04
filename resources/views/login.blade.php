@@ -601,6 +601,8 @@
             .then(res => res.json())
             .then(data => {
             if (data.success) {
+                localStorage.setItem('clienteNombre', data.nombre);
+                localStorage.setItem('clienteApellido', data.apellido);
                 mostrarExito();
 
             setTimeout(() => {

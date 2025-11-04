@@ -38,7 +38,7 @@
                 <i class="bi bi-calendar-check"></i> Citas
             </a>
             <a href="{{ route('admin.usuariosAdm') }}" class="menu-item">
-                <i class="bi bi-people"></i> Usuarios
+                <i class="bi bi-people"></i> Empleados & Usuarios
             </a>
             <a href="{{ route('admin.serviciosAdm') }}" class="menu-item">
                 <i class="bi bi-scissors"></i> Servicios
@@ -66,10 +66,10 @@
 
         <div class="header-actions">
             <!-- Usuario -->
-            <div class="user-info">
-                <div class="user-avatar">A</div>
-                <span class="user-name">Administrador</span>
-            </div>
+             <div class="user-info">
+            <div class="user-avatar" id="avatarInicial">A</div>
+            <span class="user-name" id="nombreCliente">Administrador</span>
+    </div>
         </div>
     </header>
 
@@ -438,6 +438,33 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+
+
+
+        // ========================================
+        // FUNCIONES PARA CARGAR NOMBRE DE USAURIO 
+        // ========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    const nombre = localStorage.getItem('clienteNombre') || 'Cliente';
+    const apellido = localStorage.getItem('clienteApellido') || '';
+    const inicial = nombre.charAt(0).toUpperCase();
+
+    // Insertar nombre completo
+    const nombreSpan = document.getElementById('nombreCliente');
+    if (nombreSpan) {
+        nombreSpan.textContent = `${nombre} ${apellido}`;
+    }
+
+    // Insertar inicial como avatar
+    const avatarDiv = document.getElementById('avatarInicial');
+    if (avatarDiv) {
+        avatarDiv.textContent = inicial;
+    }
+});
+</script>
+
 
 </body>
 

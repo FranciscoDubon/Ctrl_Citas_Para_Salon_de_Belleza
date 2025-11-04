@@ -64,9 +64,9 @@
         
         <div class="header-actions">
             <!-- Usuario -->
-            <div class="user-info">
-                <div class="user-avatar">A</div>
-                <span class="user-name">Administrador</span>
+             <div class="user-info">
+                <div class="user-avatar" id="avatarInicial">C</div>
+                <span class="user-name" id="nombreCliente">Cliente</span>
             </div>
         </div>
     </header>
@@ -740,6 +740,29 @@ function buscarTabla() {
         fila.style.display = textoFila.includes(filtro) ? '' : 'none';
     });
 }
+
+        // ========================================
+        // FUNCIONES PARA CARGAR NOMBRE DE USAURIO 
+        // ========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    const nombre = localStorage.getItem('clienteNombre') || 'Cliente';
+    const apellido = localStorage.getItem('clienteApellido') || '';
+    const inicial = nombre.charAt(0).toUpperCase();
+
+    // Insertar nombre completo
+    const nombreSpan = document.getElementById('nombreCliente');
+    if (nombreSpan) {
+        nombreSpan.textContent = `${nombre} ${apellido}`;
+    }
+
+    // Insertar inicial como avatar
+    const avatarDiv = document.getElementById('avatarInicial');
+    if (avatarDiv) {
+        avatarDiv.textContent = inicial;
+    }
+});
+
 
 </script>
 </body>

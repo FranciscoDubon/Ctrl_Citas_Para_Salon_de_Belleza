@@ -26,7 +26,10 @@ class ClienteController extends Controller
 
     return response()->json([
         'success' => true,
-        'rol' => $cliente->rol
+        'rol' => $cliente->rol,
+        'nombre' => $cliente->nombre,
+        'apellido' => $cliente->apellido
+        
     ]);
 }
 
