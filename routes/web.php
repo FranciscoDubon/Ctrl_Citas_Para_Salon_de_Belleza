@@ -27,15 +27,6 @@ Route::get('/admin/reportesAdm', function () {
     return view('admin.reportesAdmin'); 
 })->name('admin.reportesAdm');
 
-// Ruta Gestión de Citas Admin
-Route::get('/admin/citasAdm', function () {
-    return view('admin.citasAdmin'); 
-})->name('admin.citasAdm');
-
-//Ruta Gestión de Configuracion Cliente
-Route::get('/admin/configAdm', function () {
-    return view('admin.configAdmin');
-})->name('admin.configAdm');
 
 // Ruta Gestión de Dashboard Recepcionista
 Route::get('/recepcionista/dashboardRecep', function () {

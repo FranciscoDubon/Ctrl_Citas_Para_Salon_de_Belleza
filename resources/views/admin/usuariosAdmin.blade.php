@@ -32,9 +32,7 @@
             <a href="{{ route('dashboardAdm') }}" class="menu-item">
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
-            <a href="{{ route('admin.citasAdm') }}" class="menu-item">
-                <i class="bi bi-calendar-check"></i> Citas
-            </a>
+            
             <a href="{{ route('admin.usuariosAdm') }}" class="menu-item active">
                 <i class="bi bi-people"></i> Empleados & Usuarios 
             </a>
@@ -47,9 +45,7 @@
             <a href="{{ route('admin.reportesAdm') }}" class="menu-item">
                 <i class="bi bi-graph-up"></i> Reportes
             </a>
-            <a href="{{ route('admin.configAdm') }}" class="menu-item">
-                <i class="bi bi-gear"></i> Configuración
-            </a>
+            
         </nav>
     </div>
 
@@ -496,9 +492,9 @@
                             <div class="col-md-6">
     <label class="form-label">Nueva Contraseña</label>
     <div class="position-relative">
-        <input type="password" class="form-control" name="password" id="password" placeholder="Solo si desea cambiarla">
-        <i class="bi bi-eye toggle-password" id="togglePassword" 
-           onclick="togglePasswordRegistro('password', 'togglePassword')" 
+        <input type="password" class="form-control" name="password" id="password-edicion" placeholder="Solo si desea cambiarla">
+        <i class="bi bi-eye toggle-password" id="togglePasswordEdicion" 
+           onclick="togglePasswordRegistro('password-edicion', 'togglePasswordEdicion')" 
            style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); cursor: pointer;"></i>
     </div>
 </div>
@@ -506,9 +502,9 @@
 <div class="col-md-6">
     <label class="form-label">Confirmar Nueva Contraseña</label>
     <div class="position-relative">
-        <input type="password" class="form-control" name="password_confirmation" id="password_confirmation" placeholder="Repetir nueva contraseña">
-        <i class="bi bi-eye toggle-password" id="togglePasswordConfirm" 
-           onclick="togglePasswordRegistro('password_confirmation', 'togglePasswordConfirm')" 
+        <input type="password" class="form-control" name="password_confirmation" id="password_confirmation_edicion" placeholder="Repetir nueva contraseña">
+        <i class="bi bi-eye toggle-password" id="togglePasswordConfirmEdicion" 
+           onclick="togglePasswordRegistro('password_confirmation_edicion', 'togglePasswordConfirmEdicion')" 
            style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); cursor: pointer;"></i>
     </div>
 </div>
@@ -789,10 +785,10 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
-                toggleIcon.className = 'bi bi-eye-slash';
+                 toggleIcon.classList.replace('bi-eye', 'bi-eye-slash');
             } else {
                 passwordInput.type = 'password';
-                toggleIcon.className = 'bi bi-eye';
+                toggleIcon.classList.replace('bi-eye-slash', 'bi-eye');
             }
         }
 

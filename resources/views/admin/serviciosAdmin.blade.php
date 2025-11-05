@@ -31,9 +31,7 @@
             <a href="{{ route('dashboardAdm') }}" class="menu-item">
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
-            <a href="{{ route('admin.citasAdm') }}" class="menu-item">
-                <i class="bi bi-calendar-check"></i> Citas
-            </a>
+            
             <a href="{{ route('admin.usuariosAdm') }}" class="menu-item">
                 <i class="bi bi-people"></i> Empleados & Usuarios
             </a>
@@ -46,9 +44,7 @@
             <a href="{{ route('admin.reportesAdm') }}" class="menu-item">
                 <i class="bi bi-graph-up"></i> Reportes
             </a>
-            <a href="{{ route('admin.configAdm') }}" class="menu-item">
-                <i class="bi bi-gear"></i> Configuración
-            </a>
+            
         </nav>
     </div>
 
