@@ -30,7 +30,7 @@ Route::get('/admin/reportesAdm', function () {
 
 // Ruta Gestión de Dashboard Recepcionista
 Route::get('/recepcionista/dashboardRecep', function () {
-    return view('recepcionista.dashboardRecepcionista');
+     return view('recepcionista.dashboardRecepcionista');
 })->name('recepcionista.dashboardRecep');
 
 //Ruta Gestión de Servicios Recepcionista
@@ -128,5 +128,8 @@ Route::put('/admin/usuariosAdm/{id}', [EmpleadoController::class, 'update'])->na
 Route::post('/admin/usuariosAdm/{id}/estado', [EmpleadoController::class, 'cambiarEstado'])->name('empleado.estado');
 
 
+Route::get('/recepcionista/dashboard', function () {
+    return redirect()->route('recepcionista.dashboardRecep');
+});
 
 
