@@ -20,6 +20,10 @@ class Empleado extends Model
         'activo'
     ];
 
+     protected $hidden = [
+        'clave',
+    ];
+
     public $timestamps = false; // quitar si tu tabla NO usa created_at / updated_at
 
     public function rol()

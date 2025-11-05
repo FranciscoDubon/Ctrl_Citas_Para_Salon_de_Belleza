@@ -378,16 +378,26 @@
                             </div>
 
                             <!-- Contraseña -->
-                            <div class="col-md-6">
-                                <label class="form-label">Contraseña *</label>
-                                <input type="password" class="form-control" name="password" placeholder="Mínimo 8 caracteres" required>
-                            </div>
+<div class="col-md-6">
+    <label class="form-label">Contraseña *</label>
+    <div class="position-relative">
+        <input type="password" class="form-control" name="password" id="password" placeholder="Mínimo 8 caracteres" required>
+        <i class="bi bi-eye toggle-password" id="togglePassword"
+           onclick="togglePasswordRegistro('password', 'togglePassword')"
+           style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); cursor: pointer;"></i>
+    </div>
+</div>
 
-                            <!-- Confirmar Contraseña -->
-                            <div class="col-md-6">
-                                <label class="form-label">Confirmar Contraseña *</label>
-                                <input type="password" class="form-control" name="password_confirmation" placeholder="Repetir contraseña" required>
-                            </div>
+<!-- Confirmar Contraseña -->
+<div class="col-md-6">
+    <label class="form-label">Confirmar Contraseña *</label>
+    <div class="position-relative">
+        <input type="password" class="form-control" name="password_confirmation" id="password_confirmation" placeholder="Repetir contraseña" required>
+        <i class="bi bi-eye toggle-password" id="togglePasswordConfirm"
+           onclick="togglePasswordRegistro('password_confirmation', 'togglePasswordConfirm')"
+           style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); cursor: pointer;"></i>
+    </div>
+</div>
 
                             <!-- Dirección (Opcional) -->
                             <div class="col-12">
@@ -484,14 +494,24 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Nueva Contraseña</label>
-                                <input type="password" class="form-control" name="password" placeholder="Solo si desea cambiarla">
-                            </div>
+    <label class="form-label">Nueva Contraseña</label>
+    <div class="position-relative">
+        <input type="password" class="form-control" name="password" id="password" placeholder="Solo si desea cambiarla">
+        <i class="bi bi-eye toggle-password" id="togglePassword" 
+           onclick="togglePasswordRegistro('password', 'togglePassword')" 
+           style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); cursor: pointer;"></i>
+    </div>
+</div>
 
-                            <div class="col-md-6">
-                                <label class="form-label">Confirmar Nueva Contraseña</label>
-                                <input type="password" class="form-control" name="password_confirmation" placeholder="Repetir nueva contraseña">
-                            </div>
+<div class="col-md-6">
+    <label class="form-label">Confirmar Nueva Contraseña</label>
+    <div class="position-relative">
+        <input type="password" class="form-control" name="password_confirmation" id="password_confirmation" placeholder="Repetir nueva contraseña">
+        <i class="bi bi-eye toggle-password" id="togglePasswordConfirm" 
+           onclick="togglePasswordRegistro('password_confirmation', 'togglePasswordConfirm')" 
+           style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); cursor: pointer;"></i>
+    </div>
+</div>
                         </div>
                     </form>
                 </div>
@@ -762,7 +782,19 @@ document.addEventListener('DOMContentLoaded', () => {
         avatarDiv.textContent = inicial;
     }
 });
-
+// Toggle password en registro
+        function togglePasswordRegistro(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const toggleIcon = document.getElementById(iconId);
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.className = 'bi bi-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.className = 'bi bi-eye';
+            }
+        }
 
 </script>
 </body>
