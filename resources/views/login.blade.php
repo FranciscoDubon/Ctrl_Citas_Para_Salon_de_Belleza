@@ -521,21 +521,6 @@
                         <span>O regístrate con</span>
                     </div>
 
-                    <!-- Registro Social -->
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <button class="social-login-btn" onclick="registroConGoogle()">
-                                <i class="bi bi-google" style="color: #EA4335;"></i>
-                                Google
-                            </button>
-                        </div>
-                        <div class="col-6">
-                            <button class="social-login-btn" onclick="registroConFacebook()">
-                                <i class="bi bi-facebook" style="color: #1877F2;"></i>
-                                Facebook
-                            </button>
-                        </div>
-                    </div>
 
                     <!-- Ya tengo cuenta -->
                     <div class="text-center mt-3 pt-3" style="border-top: 1px solid var(--rosa-empolvado);">
