@@ -83,36 +83,37 @@ class PromocionController extends Controller
     }
 
     // Actualizar promoción
-    public function update(Request $request, $id)
-    {
-        try {
-            $promocion = Promocion::findOrFail($id);
+public function update(Request $request, $id)
+{
+    try {
+        $promocion = Promocion::findOrFail($id);
 
-            $validated = $request->validate([
-                'nombre' => 'required|string|max:100',
-                'descripcion' => 'nullable|string',
-                'tipoDescuento' => 'required|in:porcentaje,fijo',
-                'valorDescuento' => 'required|numeric|min:0',
-                'fechaInicio' => 'required|date',
-                'fechaFin' => 'required|date|after_or_equal:fechaInicio',
-                'codigoPromocional' => 'required|string|max:50|unique:promocion,codigoPromocional,' . $id . ',idPromocion',
-                'usosMaximos' => 'nullable|integer|min:1',
-                'usosPorCliente' => 'required|integer|min:1',
-                'dias' => 'nullable|array',
-                'activo' => 'nullable|boolean'
-            ]);
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:100',
+            'descripcion' => 'nullable|string',
+            'tipoDescuento' => 'required|in:porcentaje,fijo',
+            'valorDescuento' => 'required|numeric|min:0',
+            'fechaInicio' => 'required|date',
+            'fechaFin' => 'required|date|after_or_equal:fechaInicio',
+            'codigoPromocional' => 'required|string|max:50|unique:promocion,codigoPromocional,' . $id . ',idPromocion',
+            'usosMaximos' => 'nullable|integer|min:1',
+            'usosPorCliente' => 'required|integer|min:1',
+            'dias' => 'nullable|array',
+            'activo' => 'nullable|boolean'
+        ]);
 
-            $validated['codigoPromocional'] = strtoupper($validated['codigoPromocional']);
-            $validated['diasAplicables'] = $request->has('dias') ? json_encode($request->dias) : null;
-            $validated['activo'] = $request->has('activo') ? 1 : 0;
+        $validated['codigoPromocional'] = strtoupper($validated['codigoPromocional']);
+        $validated['diasAplicables'] = $request->has('dias') ? json_encode($request->dias) : null;
+        $validated['activo'] = $request->input('activo', 0);
 
-            $promocion->update($validated);
+        $promocion->update($validated);
 
-            return response()->json(['success' => true, 'promocion' => $promocion]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        return response()->json(['success' => true, 'promocion' => $promocion]);
+
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
     }
+}
 
     // Toggle estado promoción
     public function toggleEstado(Request $request, $id)
