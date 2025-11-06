@@ -139,5 +139,6 @@ Route::put('/servicios/{id}/actualizar', [ServicioController::class, 'update'])-
 Route::get('/servicios/{id}', [ServicioController::class, 'show'])->name('servicios.show');
 Route::put('/servicios/{id}/toggle-estado', [ServicioController::class, 'toggleEstado'])->name('servicios.toggleEstado');
 
-
+// Ruta Gestión de Servicios Admin
+Route::get('/admin/serviciosAdm', [ServicioController::class, 'indexAdmin'])->name('admin.serviciosAdm');
 

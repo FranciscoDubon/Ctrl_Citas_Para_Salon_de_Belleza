@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Servicios Administrador | Salón de Belleza</title>
     
@@ -44,7 +45,6 @@
             <a href="{{ route('admin.reportesAdm') }}" class="menu-item">
                 <i class="bi bi-graph-up"></i> Reportes
             </a>
-            
         </nav>
     </div>
 
@@ -55,15 +55,13 @@
         <div class="header-title">
             <h1>Gestión de Servicios</h1>
             <p>Administra el catálogo de servicios del salón.</p>
-
         </div>
         
         <div class="header-actions">
             <!-- Usuario -->
-             <div class="user-info">
+            <div class="user-info">
             <div class="user-avatar" id="avatarInicial">A</div>
             <span class="user-name" id="nombreCliente">Administrador</span>
-            </div>
         </div>
     </header>
 
@@ -107,7 +105,7 @@
                             <i class="bi bi-scissors"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">24</h3>
+                    <h3 class="kpi-value">{{ $totalActivos }}</h3>
                     <p class="kpi-label">Servicios Activos</p>
                     <span class="kpi-badge badge-success">
                         <i class="bi bi-check-circle"></i> Disponibles
@@ -132,8 +130,8 @@
                             <i class="bi bi-currency-dollar"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">$28.50</h3>
-                    <p class="kpi-label">Precio Promedio</p>
+                    <h3 class="kpi-value">${{ number_format($precioPromedio, 2) }}</h3>
+                    <p class="kpi-label">Precio promedio </p>
                     <span class="kpi-badge badge-neutral">
                         <i class="bi bi-graph-up"></i> Por servicio
                     </span>
@@ -156,8 +154,8 @@
                             <i class="bi bi-tags"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">6</h3>
-                    <p class="kpi-label">Categorías</p>
+                    <h3 class="kpi-value">{{ $totalCategorias }}</h3>
+                    <p class="kpi-label">Total por categoria</p>
                     <span class="kpi-badge badge-neutral">
                         <i class="bi bi-collection"></i> Activas
                     </span>
@@ -186,7 +184,7 @@
                         </div>
                     </div>
                     <h3 class="kpi-value">45</h3>
-                    <p class="kpi-label">Servicio Más Vendido</p>
+                    <p class="kpi-label">Servicio Más Vendido sigue en mantenimiento XD</p>
                     <span class="kpi-badge badge-success">
                         <i class="bi bi-trophy"></i> Corte de cabello
                     </span>
@@ -230,83 +228,33 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>#001</td>
-                                    <td><strong>Corte de Cabello</strong></td>
-                                    <td>Corte clásico o moderno para dama o caballero</td>
-                                    <td><span class="badge badge-gold">$15.00</span></td>
-                                    <td>30 min</td>
-                                    <td><span class="badge bg-success">Activo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" data-bs-toggle="modal" data-bs-target="#modalEditarServicio" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" data-bs-toggle="modal" data-bs-target="#modalVerServicio" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" onclick="toggleEstado(1)" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#002</td>
-                                    <td><strong>Tinte Completo</strong></td>
-                                    <td>Coloración completa del cabello, incluye aplicación y lavado</td>
-                                    <td><span class="badge badge-gold">$40.00</span></td>
-                                    <td>90 min</td>
-                                    <td><span class="badge bg-success">Activo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#003</td>
-                                    <td><strong>Peinado Especial</strong></td>
-                                    <td>Peinado para eventos especiales (bodas, graduaciones)</td>
-                                    <td><span class="badge badge-gold">$30.00</span></td>
-                                    <td>60 min</td>
-                                    <td><span class="badge bg-success">Activo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#004</td>
-                                    <td><strong>Tratamiento Capilar</strong></td>
-                                    <td>Tratamiento de hidratación profunda y reparación</td>
-                                    <td><span class="badge badge-gold">$35.00</span></td>
-                                    <td>45 min</td>
-                                    <td><span class="badge bg-success">Activo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
+    @foreach($servicios->where('categoria', 'cabello') as $servicio)
+    <tr>
+        <td>#{{ str_pad($servicio->idServicio, 3, '0', STR_PAD_LEFT) }}</td>
+        <td><strong>{{ $servicio->nombre }}</strong></td>
+        <td>{{ $servicio->descripcion }}</td>
+        <td><span class="badge badge-gold">${{ number_format($servicio->precioBase, 2) }}</span></td>
+        <td>{{ $servicio->duracionBase }} min</td>
+        <td>
+            <span class="badge bg-{{ $servicio->activo ? 'success' : 'secondary' }}">
+                {{ $servicio->activo ? 'Activo' : 'Inactivo' }}
+            </span>
+        </td>
+        <td>
+            <button class="btn btn-sm btn-soft me-1" data-bs-toggle="modal" data-bs-target="#modalEditarServicio" onclick="cargarServicio({{ $servicio->idServicio }})" title="Editar">
+                <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-gold me-1" data-bs-toggle="modal" data-bs-target="#modalVerServicio" onclick="verServicio({{ $servicio->idServicio }})" title="Ver detalles">
+                <i class="bi bi-eye"></i>
+            </button>
+            <button class="btn btn-sm btn-premium" onclick="toggleEstado({{ $servicio->idServicio }})" title="{{ $servicio->activo ? 'Desactivar' : 'Activar' }}">
+                <i class="bi bi-toggle-{{ $servicio->activo ? 'on' : 'off' }}"></i>
+            </button>
+        </td>
+    </tr>
+    @endforeach
+</tbody>
+
                         </table>
                     </div>
                 </div>
@@ -333,65 +281,31 @@
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>#005</td>
-                                    <td><strong>Manicure Básico</strong></td>
-                                    <td>Limpieza, limado, esmaltado y masaje de manos</td>
-                                    <td><span class="badge badge-gold">$10.00</span></td>
-                                    <td>30 min</td>
-                                    <td><span class="badge bg-success">Activo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#006</td>
-                                    <td><strong>Pedicure Spa</strong></td>
-                                    <td>Pedicure completo con exfoliación y masaje relajante</td>
-                                    <td><span class="badge badge-gold">$15.00</span></td>
-                                    <td>45 min</td>
-                                    <td><span class="badge bg-success">Activo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#007</td>
-                                    <td><strong>Uñas Acrílicas</strong></td>
-                                    <td>Aplicación de uñas acrílicas con diseño a elección</td>
-                                    <td><span class="badge badge-gold">$25.00</span></td>
-                                    <td>90 min</td>
-                                    <td><span class="badge bg-success">Activo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
+                            @foreach($servicios->where('categoria', 'unas') as $servicio)
+    <tr>
+        <td>#{{ str_pad($servicio->idServicio, 3, '0', STR_PAD_LEFT) }}</td>
+        <td><strong>{{ $servicio->nombre }}</strong></td>
+        <td>{{ $servicio->descripcion }}</td>
+        <td><span class="badge badge-gold">${{ number_format($servicio->precioBase, 2) }}</span></td>
+        <td>{{ $servicio->duracionBase }} min</td>
+        <td>
+            <span class="badge bg-{{ $servicio->activo ? 'success' : 'secondary' }}">
+                {{ $servicio->activo ? 'Activo' : 'Inactivo' }}
+            </span>
+        </td>
+        <td>
+            <button class="btn btn-sm btn-soft me-1" data-bs-toggle="modal" data-bs-target="#modalEditarServicio" onclick="cargarServicio({{ $servicio->idServicio }})" title="Editar">
+                <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-gold me-1" data-bs-toggle="modal" data-bs-target="#modalVerServicio" onclick="verServicio({{ $servicio->idServicio }})" title="Ver detalles">
+                <i class="bi bi-eye"></i>
+            </button>
+            <button class="btn btn-sm btn-premium" onclick="toggleEstado({{ $servicio->idServicio }})" title="{{ $servicio->activo ? 'Desactivar' : 'Activar' }}">
+                <i class="bi bi-toggle-{{ $servicio->activo ? 'on' : 'off' }}"></i>
+            </button>
+        </td>
+    </tr>
+    @endforeach
                         </table>
                     </div>
                 </div>
@@ -418,53 +332,187 @@
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            @foreach($servicios->where('categoria', 'facial') as $servicio)
+    <tr>
+        <td>#{{ str_pad($servicio->idServicio, 3, '0', STR_PAD_LEFT) }}</td>
+        <td><strong>{{ $servicio->nombre }}</strong></td>
+        <td>{{ $servicio->descripcion }}</td>
+        <td><span class="badge badge-gold">${{ number_format($servicio->precioBase, 2) }}</span></td>
+        <td>{{ $servicio->duracionBase }} min</td>
+        <td>
+            <span class="badge bg-{{ $servicio->activo ? 'success' : 'secondary' }}">
+                {{ $servicio->activo ? 'Activo' : 'Inactivo' }}
+            </span>
+        </td>
+        <td>
+            <button class="btn btn-sm btn-soft me-1" data-bs-toggle="modal" data-bs-target="#modalEditarServicio" onclick="cargarServicio({{ $servicio->idServicio }})" title="Editar">
+                <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-gold me-1" data-bs-toggle="modal" data-bs-target="#modalVerServicio" onclick="verServicio({{ $servicio->idServicio }})" title="Ver detalles">
+                <i class="bi bi-eye"></i>
+            </button>
+            <button class="btn btn-sm btn-premium" onclick="toggleEstado({{ $servicio->idServicio }})" title="{{ $servicio->activo ? 'Desactivar' : 'Activar' }}">
+                <i class="bi bi-toggle-{{ $servicio->activo ? 'on' : 'off' }}"></i>
+            </button>
+        </td>
+    </tr>
+    @endforeach
+                        </table>
+                    </div>
+                </div>
+            </div>
+<!-- Categoría: Corporales -->
+            <div class="col-12">
+                <div class="card-custom">
+                    <h5 class="card-title-custom">
+                        <i class="bi bi-emoji-smile"></i>
+                        Servicios Corporales
+                    </h5>
+                    
+                    <div class="table-responsive">
+                        <table class="table-custom">
+                            <thead>
                                 <tr>
-                                    <td>#008</td>
-                                    <td><strong>Limpieza Facial</strong></td>
-                                    <td>Limpieza profunda con extracción y mascarilla</td>
-                                    <td><span class="badge badge-gold">$20.00</span></td>
-                                    <td>60 min</td>
-                                    <td><span class="badge bg-success">Activo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
+                                    <th>ID</th>
+                                    <th>Nombre del Servicio</th>
+                                    <th>Descripción</th>
+                                    <th>Precio</th>
+                                    <th>Duración</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
                                 </tr>
+                            </thead>
+                            @foreach($servicios->where('categoria', 'corporal') as $servicio)
+    <tr>
+        <td>#{{ str_pad($servicio->idServicio, 3, '0', STR_PAD_LEFT) }}</td>
+        <td><strong>{{ $servicio->nombre }}</strong></td>
+        <td>{{ $servicio->descripcion }}</td>
+        <td><span class="badge badge-gold">${{ number_format($servicio->precioBase, 2) }}</span></td>
+        <td>{{ $servicio->duracionBase }} min</td>
+        <td>
+            <span class="badge bg-{{ $servicio->activo ? 'success' : 'secondary' }}">
+                {{ $servicio->activo ? 'Activo' : 'Inactivo' }}
+            </span>
+        </td>
+        <td>
+            <button class="btn btn-sm btn-soft me-1" data-bs-toggle="modal" data-bs-target="#modalEditarServicio" onclick="cargarServicio({{ $servicio->idServicio }})" title="Editar">
+                <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-gold me-1" data-bs-toggle="modal" data-bs-target="#modalVerServicio" onclick="verServicio({{ $servicio->idServicio }})" title="Ver detalles">
+                <i class="bi bi-eye"></i>
+            </button>
+            <button class="btn btn-sm btn-premium" onclick="toggleEstado({{ $servicio->idServicio }})" title="{{ $servicio->activo ? 'Desactivar' : 'Activar' }}">
+                <i class="bi bi-toggle-{{ $servicio->activo ? 'on' : 'off' }}"></i>
+            </button>
+        </td>
+    </tr>
+    @endforeach
+                        </table>
+                    </div>
+                </div>
+            </div>
+<!-- Categoría: Maquillaje -->
+            <div class="col-12">
+                <div class="card-custom">
+                    <h5 class="card-title-custom">
+                        <i class="bi bi-emoji-smile"></i>
+                        Servicios de Maquillaje
+                    </h5>
+                    
+                    <div class="table-responsive">
+                        <table class="table-custom">
+                            <thead>
                                 <tr>
-                                    <td>#009</td>
-                                    <td><strong>Depilación Facial</strong></td>
-                                    <td>Depilación de cejas y labio superior con cera</td>
-                                    <td><span class="badge badge-gold">$8.00</span></td>
-                                    <td>20 min</td>
-                                    <td><span class="badge bg-success">Activo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
+                                    <th>ID</th>
+                                    <th>Nombre del Servicio</th>
+                                    <th>Descripción</th>
+                                    <th>Precio</th>
+                                    <th>Duración</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
                                 </tr>
-                            </tbody>
+                            </thead>
+                            @foreach($servicios->where('categoria', 'maquillaje') as $servicio)
+    <tr>
+        <td>#{{ str_pad($servicio->idServicio, 3, '0', STR_PAD_LEFT) }}</td>
+        <td><strong>{{ $servicio->nombre }}</strong></td>
+        <td>{{ $servicio->descripcion }}</td>
+        <td><span class="badge badge-gold">${{ number_format($servicio->precioBase, 2) }}</span></td>
+        <td>{{ $servicio->duracionBase }} min</td>
+        <td>
+            <span class="badge bg-{{ $servicio->activo ? 'success' : 'secondary' }}">
+                {{ $servicio->activo ? 'Activo' : 'Inactivo' }}
+            </span>
+        </td>
+        <td>
+            <button class="btn btn-sm btn-soft me-1" data-bs-toggle="modal" data-bs-target="#modalEditarServicio" onclick="cargarServicio({{ $servicio->idServicio }})" title="Editar">
+                <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-gold me-1" data-bs-toggle="modal" data-bs-target="#modalVerServicio" onclick="verServicio({{ $servicio->idServicio }})" title="Ver detalles">
+                <i class="bi bi-eye"></i>
+            </button>
+            <button class="btn btn-sm btn-premium" onclick="toggleEstado({{ $servicio->idServicio }})" title="{{ $servicio->activo ? 'Desactivar' : 'Activar' }}">
+                <i class="bi bi-toggle-{{ $servicio->activo ? 'on' : 'off' }}"></i>
+            </button>
+        </td>
+    </tr>
+    @endforeach
+                        </table>
+                    </div>
+                </div>
+            </div>
+<!-- Categoría: Depilación -->
+            <div class="col-12">
+                <div class="card-custom">
+                    <h5 class="card-title-custom">
+                        <i class="bi bi-emoji-smile"></i>
+                        Servicios de depilación
+                    </h5>
+                    
+                    <div class="table-responsive">
+                        <table class="table-custom">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre del Servicio</th>
+                                    <th>Descripción</th>
+                                    <th>Precio</th>
+                                    <th>Duración</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            @foreach($servicios->where('categoria', 'depilacion') as $servicio)
+    <tr>
+        <td>#{{ str_pad($servicio->idServicio, 3, '0', STR_PAD_LEFT) }}</td>
+        <td><strong>{{ $servicio->nombre }}</strong></td>
+        <td>{{ $servicio->descripcion }}</td>
+        <td><span class="badge badge-gold">${{ number_format($servicio->precioBase, 2) }}</span></td>
+        <td>{{ $servicio->duracionBase }} min</td>
+        <td>
+            <span class="badge bg-{{ $servicio->activo ? 'success' : 'secondary' }}">
+                {{ $servicio->activo ? 'Activo' : 'Inactivo' }}
+            </span>
+        </td>
+        <td>
+            <button class="btn btn-sm btn-soft me-1" data-bs-toggle="modal" data-bs-target="#modalEditarServicio" onclick="cargarServicio({{ $servicio->idServicio }})" title="Editar">
+                <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-gold me-1" data-bs-toggle="modal" data-bs-target="#modalVerServicio" onclick="verServicio({{ $servicio->idServicio }})" title="Ver detalles">
+                <i class="bi bi-eye"></i>
+            </button>
+            <button class="btn btn-sm btn-premium" onclick="toggleEstado({{ $servicio->idServicio }})" title="{{ $servicio->activo ? 'Desactivar' : 'Activar' }}">
+                <i class="bi bi-toggle-{{ $servicio->activo ? 'on' : 'off' }}"></i>
+            </button>
+        </td>
+    </tr>
+    @endforeach
                         </table>
                     </div>
                 </div>
             </div>
 
         </div>
-
     </main>
 
     <!-- ============================================
@@ -537,14 +585,14 @@
                                 <label class="form-label">Precio (USD) *</label>
                                 <div class="input-group">
                                     <span class="input-group-text" style="background: var(--dorado-palido); color: var(--borgona); border: 2px solid var(--dorado-palido); font-weight: 700;">$</span>
-                                    <input type="number" class="form-control" name="precio" placeholder="0.00" step="0.01" min="0" required>
+                                    <input type="number" class="form-control" name="precioBase" placeholder="0.00" step="0.01" min="0" required>
                                 </div>
                             </div>
 
                             <!-- Duración -->
                             <div class="col-md-4">
                                 <label class="form-label">Duración (minutos) *</label>
-                                <input type="number" class="form-control" name="duracion_minutos" placeholder="Ej: 30" min="5" step="5" required>
+                                <input type="number" class="form-control" name="duracionBase" placeholder="Ej: 30" min="5" step="5" required>
                             </div>
 
                             <!-- Estado -->
@@ -572,7 +620,7 @@
                             <!-- Disponible para Promociones -->
                             <div class="col-12">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="permite_promociones" id="promociones" checked>
+                                    <input class="form-check-input" type="checkbox" name="permite_promociones" id="promociones" value="1" checked>
                                     <label class="form-check-label" for="promociones">
                                         Permitir que este servicio sea incluido en promociones
                                     </label>
@@ -643,13 +691,13 @@
                                 <label class="form-label">Precio (USD) *</label>
                                 <div class="input-group">
                                     <span class="input-group-text" style="background: var(--dorado-palido); color: var(--borgona); border: 2px solid var(--dorado-palido); font-weight: 700;">$</span>
-                                    <input type="number" class="form-control" name="precio" value="15.00" step="0.01" min="0" required>
+                                    <input type="number" class="form-control" name="precioBase" value="15.00" step="0.01" min="0" required>
                                 </div>
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label">Duración (minutos) *</label>
-                                <input type="number" class="form-control" name="duracion_minutos" value="30" min="5" step="5" required>
+                                <input type="number" class="form-control" name="duracionBase" value="30" min="5" step="5" required>
                             </div>
 
                             <div class="col-md-4">
@@ -667,7 +715,7 @@
 
                             <div class="col-12">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="permite_promociones" id="promocionesEdit" checked>
+                                    <input class="form-check-input" type="checkbox" name="permite_promociones" id="promocionesEdit" value="1" checked>
                                     <label class="form-check-label" for="promocionesEdit">
                                         Permitir que este servicio sea incluido en promociones
                                     </label>
@@ -809,9 +857,9 @@
                 </div>
                 <div class="modal-footer" style="border-top: 1px solid var(--rosa-empolvado);">
                     <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-gold" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalEditarServicio">
-                        <i class="bi bi-pencil"></i> Editar Servicio
-                    </button>
+                    <button type="button" class="btn btn-gold" data-bs-toggle="modal" data-bs-target="#modalEditarServicio">
+    <i class="bi bi-pencil"></i> Editar Servicio
+</button>
                 </div>
             </div>
         </div>
@@ -839,8 +887,8 @@
         document.getElementById('formNuevoServicio')?.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const precio = parseFloat(this.querySelector('[name="precio"]').value);
-            const duracion = parseInt(this.querySelector('[name="duracion_minutos"]').value);
+            const precio = parseFloat(this.querySelector('[name="precioBase"]').value);
+            const duracion = parseInt(this.querySelector('[name="duracionBase"]').value);
             
             if (precio <= 0) {
                 alert('El precio debe ser mayor a 0');
@@ -852,17 +900,15 @@
                 return;
             }
             
-            // TODO: Enviar datos al backend
-            console.log('Crear nuevo servicio');
-            alert('Formulario validado - Conectar con backend');
+           
         });
 
         // Validación de formulario editar servicio
         document.getElementById('formEditarServicio')?.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const precio = parseFloat(this.querySelector('[name="precio"]').value);
-            const duracion = parseInt(this.querySelector('[name="duracion_minutos"]').value);
+            const precio = parseFloat(this.querySelector('[name="precioBase"]').value);
+            const duracion = parseInt(this.querySelector('[name="duracionBase"]').value);
             
             if (precio <= 0) {
                 alert('El precio debe ser mayor a 0');
@@ -873,16 +919,11 @@
                 alert('La duración mínima es de 5 minutos');
                 return;
             }
-            
-            // TODO: Enviar datos al backend
-            console.log('Actualizar servicio');
-            alert('Formulario validado - Conectar con backend');
+           
         });
 
-        // ========================================
-        // FUNCIONES PARA CARGAR NOMBRE DE USAURIO 
-        // ========================================
 
+        
 document.addEventListener('DOMContentLoaded', () => {
     const nombre = localStorage.getItem('clienteNombre') || 'Cliente';
     const apellido = localStorage.getItem('clienteApellido') || '';
@@ -900,7 +941,159 @@ document.addEventListener('DOMContentLoaded', () => {
         avatarDiv.textContent = inicial;
     }
 });
+
+document.getElementById('formNuevoServicio').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const data = Object.fromEntries(formData.entries());
+    fetch('/recepcionista/servicios', {
+        method: 'POST',
+        headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "X-CSRF-TOKEN": token
+    },
+    body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('✅ Servicio creado exitosamente');
+            window.location.reload
+            // Opcional: cerrar modal y refrescar tabla
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalNuevoServicio'));
+            modal.hide();
+            location.reload();
+            const modalElement = document.getElementById('modalNuevoServicio');
+            //const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+            form.reset();
+        } else {
+            alert('❌ Error al crear el servicio');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('❌ Error en el servidor');
+    });
+});
+
+function actualizarKpis() {
+    fetch('/recepcionista/serviciosRecep')
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('kpi-activos').textContent = data.totalActivos;
+            document.getElementById('kpi-promedio').textContent = `$${parseFloat(data.precioPromedio).toFixed(2)}`;
+            document.getElementById('kpi-categorias').textContent = data.totalCategorias;
+            document.getElementById('kpi-mas-vendido').textContent = data.masVendido.total;
+        });
+}
+// Opcional: refrescar cada 30 segundos
+setInterval(actualizarKpis, 30000);
+
+document.getElementById('formEditarServicio').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const id = form.servicio_id.value;
+
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    // Asegurar que 'permite_promociones' esté presente como booleano
+    data.permite_promociones = form.permite_promociones.checked;
+
+    fetch(`/servicios/${id}/actualizar`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify(data)
+    })
+    .then(res => {
+        if (!res.ok) throw new Error(`Error ${res.status}`);
+        return res.json();
+    })
+    .then(response => {
+        if (response.success) {
+            alert('Servicio actualizado correctamente');
+            window.location.reload
+
+            // Opcional: cerrar modal y refrescar tabla
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarServicio'));
+            modal.hide();
+            location.reload();
+            // refrescarServicios(); // si tienes una función para recargar la lista
+        } else {
+            alert('Hubo un problema al actualizar el servicio');
+        }
+    })
+    .catch(error => {
+        console.error('Error al actualizar:', error);
+        alert('No se pudo actualizar el servicio. Intenta más tarde.');
+    });
+});
+
+
+function cargarServicio(id) {
+    fetch(`/servicios/${id}`)
+        .then(res => {
+        const contentType = res.headers.get('content-type');
+        if (!res.ok || !contentType || !contentType.includes('application/json')) {
+            throw new Error('Respuesta no válida: se esperaba JSON');
+        }
+        return res.json();
+    })
+        .then(data => {
+            const form = document.getElementById('formEditarServicio');
+            form.servicio_id.value = data.idServicio;
+            form.nombre.value = data.nombre;
+            form.categoria.value = data.categoria;
+            form.descripcion.value = data.descripcion;
+            form.precioBase.value = data.precioBase;
+            form.duracionBase.value = data.duracionBase;
+            form.activo.value = data.activo ? '1' : '0';
+            form.ajustes_especiales.value = data.ajustes_especiales;
+            form.permite_promociones.checked = data.permite_promociones;
+        })
+        .catch(error => {
+            console.error('Error al cargar el servicio:', error);
+            alert('No se pudo cargar el servicio. Verifica el ID o intenta más tarde.');
+        });
+}
+
+function toggleEstado(servicioId) {
+    fetch(`/servicios/${servicioId}/toggle-estado`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Estado actualizado. Nuevo estado: ${data.nuevo_estado ? 'Activo' : 'Inactivo'}`);
+            // Opcional: actualizar visualmente el estado en la tabla
+            location.reload();
+        } else {
+            alert('Error al cambiar el estado');
+        }
+    })
+    .catch(error => {
+        console.error('Error en toggleEstado:', error);
+        alert('Error de conexión con el servidor');
+    });
+}
+
+
 </script>
-    
+
+
 </body>
 </html>
+
