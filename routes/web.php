@@ -132,4 +132,12 @@ Route::get('/recepcionista/dashboard', function () {
     return redirect()->route('recepcionista.dashboardRecep');
 });
 
+use App\Http\Controllers\ServicioController;
+Route::post('/recepcionista/servicios', [ServicioController::class, 'store'])->name('servicios.store');
+Route::get('/recepcionista/serviciosRecep', [ServicioController::class, 'index'])->name('recepcionista.serviciosRecep');
+Route::put('/servicios/{id}/actualizar', [ServicioController::class, 'update'])->name('servicios.update');
+Route::get('/servicios/{id}', [ServicioController::class, 'show'])->name('servicios.show');
+Route::put('/servicios/{id}/toggle-estado', [ServicioController::class, 'toggleEstado'])->name('servicios.toggleEstado');
+
+
 
