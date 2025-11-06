@@ -133,6 +133,7 @@ Route::get('/recepcionista/dashboard', function () {
 });
 
 use App\Http\Controllers\ServicioController;
+use App\Http\Controllers\PromocionController;
 Route::post('/recepcionista/servicios', [ServicioController::class, 'store'])->name('servicios.store');
 Route::get('/recepcionista/serviciosRecep', [ServicioController::class, 'index'])->name('recepcionista.serviciosRecep');
 Route::put('/servicios/{id}/actualizar', [ServicioController::class, 'update'])->name('servicios.update');
