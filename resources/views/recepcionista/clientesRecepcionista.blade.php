@@ -161,7 +161,7 @@
                             <i class="bi bi-people-fill"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">247</h3>
+                    <h3 class="kpi-value">{{ $clientes->count() }}</h3>
                     <p class="kpi-label">Total Clientes</p>
                     <span class="kpi-badge badge-success">
                         <i class="bi bi-arrow-up"></i> +18 este mes
@@ -187,8 +187,8 @@
                             <i class="bi bi-calendar-check"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">142</h3>
-                    <p class="kpi-label">Clientes Activos (mes)</p>
+                    <h3 class="kpi-value">{{ $clientesRecientes }}</h3>
+                    <p class="kpi-label">Clientes Recientes (mes)</p>
                     <span class="kpi-badge badge-success">
                         <i class="bi bi-check-circle"></i> Con citas
                     </span>
@@ -213,8 +213,8 @@
                             <i class="bi bi-person-plus"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">18</h3>
-                    <p class="kpi-label">Nuevos (30 días)</p>
+                    <h3 class="kpi-value">{{ $clientesNewsletter }}</h3>
+                    <p class="kpi-label">Suscritos al Newsletter</p>
                     <span class="kpi-badge badge-neutral">
                         <i class="bi bi-calendar"></i> Este mes
                     </span>
@@ -243,8 +243,8 @@
                             <i class="bi bi-star-fill"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">23</h3>
-                    <p class="kpi-label">Clientes VIP</p>
+                    <h3 class="kpi-value">{{ $clientesNoNewsletter }}</h3>
+                    <p class="kpi-label">Clientes NO Suscritos</p>
                     <span class="kpi-badge badge-success">
                         <i class="bi bi-trophy"></i> 10+ visitas
                     </span>

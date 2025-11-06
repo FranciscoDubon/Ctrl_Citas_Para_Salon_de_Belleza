@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Cliente;
+use Carbon\Carbon;
 use App\Models\Empleado;
 use App\Models\Rol;
 use Illuminate\Support\Facades\Hash;
+
 
 class ClienteController extends Controller
 {
@@ -93,4 +95,21 @@ class ClienteController extends Controller
 
         return response()->json(['success' => 'Usuario registrado correctamente']);
     }
+
+public function dashboardRecepcionista()
+{
+    $clientes = Cliente::all();
+    $clientesRecientes = Cliente::where('fechaRegistro', '>=', Carbon::now()->subDays(30))->count();
+    $clientesNewsletter = Cliente::where('suscripcionNewsletter', 1)->count();
+    $clientesNoNewsletter = Cliente::where('suscripcionNewsletter', 0)->count();
+
+    return view('recepcionista.clientesRecepcionista', compact(
+        'clientes',
+        'clientesRecientes',
+        'clientesNewsletter',
+        'clientesNoNewsletter'
+    ));
+}
+
+
 }

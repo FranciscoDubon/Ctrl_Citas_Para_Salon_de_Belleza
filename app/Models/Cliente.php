@@ -23,7 +23,8 @@ class Cliente extends Authenticatable
         'fechaNacimiento',
         'genero',
         'comoConocio',
-        'suscripcionNewsletter'
+        'suscripcionNewsletter',
+        'fechaRegistro'
     ];
 
     protected $hidden = [
