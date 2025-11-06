@@ -61,9 +61,8 @@
         <div class="header-actions">
             <!-- Usuario -->
             <div class="user-info">
-                <div class="user-avatar">L</div>
-                <span class="user-name">Laura Hernández - Recepcionista</span>
-            </div>
+            <div class="user-avatar" id="avatarInicial">A</div>
+            <span class="user-name" id="nombreCliente">Administrador</span>
         </div>
     </header>
 
@@ -887,6 +886,26 @@
                 alert('✅ Todos los cambios guardados exitosamente');
             }
         }
+
+
+        
+document.addEventListener('DOMContentLoaded', () => {
+    const nombre = localStorage.getItem('clienteNombre') || 'Cliente';
+    const apellido = localStorage.getItem('clienteApellido') || '';
+    const inicial = nombre.charAt(0).toUpperCase();
+
+    // Insertar nombre completo
+    const nombreSpan = document.getElementById('nombreCliente');
+    if (nombreSpan) {
+        nombreSpan.textContent = `${nombre} ${apellido}`;
+    }
+
+    // Insertar inicial como avatar
+    const avatarDiv = document.getElementById('avatarInicial');
+    if (avatarDiv) {
+        avatarDiv.textContent = inicial;
+    }
+});
     </script>
     
 </body>

@@ -61,9 +61,8 @@
         <div class="header-actions">
             <!-- Usuario -->
             <div class="user-info">
-                <div class="user-avatar">L</div>
-                <span class="user-name">Laura Hernández - Recepcionista</span>
-            </div>
+            <div class="user-avatar" id="avatarInicial">A</div>
+            <span class="user-name" id="nombreCliente">Administrador</span>
         </div>
     </header>
 
@@ -931,7 +930,11 @@
     <script>
         // Establecer fecha actual por defecto
         document.getElementById('fechaFiltro').value = new Date().toISOString().split('T')[0];
-        document.getElementById('fechaCita')?.value = new Date().toISOString().split('T')[0];
+        const inputFecha = document.getElementById('fechaCita');
+if (inputFecha) {
+    inputFecha.value = new Date().toISOString().split('T')[0];
+}
+
 
         function actualizarAgenda() {
             console.log('Actualizar agenda');
@@ -1027,23 +1030,43 @@
         }
 
         // Validación formulario nueva cita
-        document.getElementById('formNuevaCita')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const cliente = this.querySelector('[name="cliente_id"]').value;
-            const servicio = this.querySelector('[name="servicio_id"]').value;
-            const estilista = this.querySelector('[name="estilista_id"]').value;
-            const fecha = this.querySelector('[name="fecha"]').value;
-            const hora = this.querySelector('[name="hora"]').value;
-            
-            if(!cliente || !servicio || !estilista || !fecha || !hora) {
-                alert('Complete todos los campos requeridos');
-                return;
-            }
-            
-            console.log('Crear nueva cita');
-            alert('Cita agendada exitosamente - Conectar con backend');
-        });
+        const form = document.getElementById('formNuevaCita');
+if (form) { form.addEventListener('submit', function(e) { e.preventDefault();
+
+        const cliente = this.querySelector('[name="cliente_id"]').value;
+        const servicio = this.querySelector('[name="servicio_id"]').value;
+        const estilista = this.querySelector('[name="estilista_id"]').value;
+        const fecha = this.querySelector('[name="fecha"]').value;
+        const hora = this.querySelector('[name="hora"]').value;
+
+        if(!cliente || !servicio || !estilista || !fecha || !hora) {
+            alert('Complete todos los campos requeridos');
+            return;
+        }
+
+        console.log('Crear nueva cita');
+        alert('Cita agendada exitosamente - Conectar con backend');
+    });
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const nombre = localStorage.getItem('clienteNombre') || 'Cliente';
+    const apellido = localStorage.getItem('clienteApellido') || '';
+    const inicial = nombre.charAt(0).toUpperCase();
+
+    // Insertar nombre completo
+    const nombreSpan = document.getElementById('nombreCliente');
+    if (nombreSpan) {
+        nombreSpan.textContent = `${nombre} ${apellido}`;
+    }
+
+    // Insertar inicial como avatar
+    const avatarDiv = document.getElementById('avatarInicial');
+    if (avatarDiv) {
+        avatarDiv.textContent = inicial;
+    }
+});
     </script>
     
 </body>

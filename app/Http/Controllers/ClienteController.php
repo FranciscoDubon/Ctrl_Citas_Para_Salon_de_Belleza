@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Cliente;
+use App\Models\Empleado;
+use App\Models\Rol;
 use Illuminate\Support\Facades\Hash;
 
 class ClienteController extends Controller
@@ -15,18 +17,48 @@ class ClienteController extends Controller
         'clave' => 'required'
     ]);
 
-    $cliente = Cliente::where('correoElectronico', $request->correoElectronico)->first();
+    // Intentar login como Empleado
+    $empleado = Empleado::where('correoElectronico', $request->correoElectronico)
+                        ->where('activo', 1)
+                        ->with('rol')
+                        ->first();
 
-    if (!$cliente ||!Hash::check($request->clave, $cliente->clave)) {
+    if ($empleado && Hash::check($request->clave, $empleado->clave)) {
+        $rolNombre = optional($empleado->rol)->nombre;
+
+        if (!$rolNombre) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El empleado no tiene un rol asignado válido'
+            ]);
+        }
+
         return response()->json([
-            'success' => false,
-            'message' => 'Correo o contraseña incorrectos'
+            'success' => true,
+            'rol' => $rolNombre,
+            'nombre' => $empleado->nombre,
+            'apellido' => $empleado->apellido,
+            'tipoUsuario' => 'empleado'
         ]);
     }
 
+    // Intentar login como Cliente
+    $cliente = Cliente::where('correoElectronico', $request->correoElectronico)->first();
+
+    if ($cliente && Hash::check($request->clave, $cliente->clave)) {
+        return response()->json([
+            'success' => true,
+            'rol' => $cliente->rol, // campo enum directo
+            'nombre' => $cliente->nombre,
+            'apellido' => $cliente->apellido,
+            'tipoUsuario' => 'cliente'
+        ]);
+    }
+
+    // Si no se encuentra en ninguna tabla
     return response()->json([
-        'success' => true,
-        'rol' => $cliente->rol
+        'success' => false,
+        'message' => 'Correo o contraseña incorrectos'
     ]);
 }
 
@@ -55,6 +87,8 @@ class ClienteController extends Controller
             'genero' => $request->genero,
             'comoConocio' => $request->comoConocio,
             'suscripcionNewsletter' => $request->suscripcionNewsletter ?? 1
+            
+
         ]);
 
         return response()->json(['success' => 'Usuario registrado correctamente']);
