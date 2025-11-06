@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Usuarios Administrador | Salón de Belleza</title>
     
@@ -31,11 +32,9 @@
             <a href="{{ route('dashboardAdm') }}" class="menu-item">
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
-            <a href="{{ route('admin.citasAdm') }}" class="menu-item">
-                <i class="bi bi-calendar-check"></i> Citas
-            </a>
+            
             <a href="{{ route('admin.usuariosAdm') }}" class="menu-item active">
-                <i class="bi bi-people"></i> Usuarios
+                <i class="bi bi-people"></i> Empleados & Usuarios 
             </a>
             <a href="{{ route('admin.serviciosAdm') }}" class="menu-item">
                 <i class="bi bi-scissors"></i> Servicios
@@ -46,9 +45,7 @@
             <a href="{{ route('admin.reportesAdm') }}" class="menu-item">
                 <i class="bi bi-graph-up"></i> Reportes
             </a>
-            <a href="{{ route('admin.configAdm') }}" class="menu-item">
-                <i class="bi bi-gear"></i> Configuración
-            </a>
+            
         </nav>
     </div>
 
@@ -57,15 +54,15 @@
          ============================================ -->
     <header class="top-header">
         <div class="header-title">
-            <h1>Gestión de Usuarios</h1>
+            <h1>Gestión de Empleados</h1>
             <p>Administra recepcionistas y estilistas.</p>
         </div>
         
         <div class="header-actions">
             <!-- Usuario -->
-            <div class="user-info">
-                <div class="user-avatar">A</div>
-                <span class="user-name">Administrador</span>
+             <div class="user-info">
+                <div class="user-avatar" id="avatarInicial">C</div>
+                <span class="user-name" id="nombreCliente">Cliente</span>
             </div>
         </div>
     </header>
@@ -79,11 +76,9 @@
         <div class="row mb-4">
             <div class="col-12">
                 <button class="btn btn-gold me-2" data-bs-toggle="modal" data-bs-target="#modalNuevoUsuario">
-                    <i class="bi bi-plus-circle"></i> Nuevo Usuario
+                    <i class="bi bi-plus-circle"></i> Nuevo Empleado
                 </button>
-                <button class="btn btn-outline-gold">
-                    <i class="bi bi-funnel"></i> Filtros
-                </button>
+                
             </div>
         </div>
 
@@ -107,7 +102,7 @@
                             <i class="bi bi-scissors"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">8</h3>
+                    <h3 class="kpi-value">{{ $estilistas }}</h3>
                     <p class="kpi-label">Estilistas Activos</p>
                     <span class="kpi-badge badge-success">
                         <i class="bi bi-check-circle"></i> Activos
@@ -132,7 +127,7 @@
                             <i class="bi bi-person-badge"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">3</h3>
+                    <h3 class="kpi-value">{{ $recepcionistas }}</h3>
                     <p class="kpi-label">Recepcionistas Activos</p>
                     <span class="kpi-badge badge-success">
                         <i class="bi bi-check-circle"></i> Activos
@@ -157,7 +152,7 @@
                             <i class="bi bi-person-x"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">2</h3>
+                    <h3 class="kpi-value">{{ $inactivos }}</h3>
                     <p class="kpi-label">Usuarios Inactivos</p>
                     <span class="kpi-badge badge-neutral">
                         <i class="bi bi-x-circle"></i> Inactivos
@@ -182,8 +177,8 @@
                             <i class="bi bi-person-plus"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">2</h3>
-                    <p class="kpi-label">Nuevos (30 días)</p>
+                    <h3 class="kpi-value">{{ $clientesRecientes }}</h3>
+                    <p class="kpi-label">Clientes Nuevos (30 días)</p>
                     <span class="kpi-badge badge-success">
                         <i class="bi bi-arrow-up"></i> Recientes
                     </span>
@@ -209,7 +204,7 @@
                 <div class="card-custom">
                     <h5 class="card-title-custom">
                         <i class="bi bi-people-fill"></i>
-                        Lista de Usuarios del Sistema
+                        Lista de Empleados del Sistema
                     </h5>
 
                     <!-- Buscador -->
@@ -226,168 +221,66 @@
                                     <th>Nombre Completo</th>
                                     <th>Email</th>
                                     <th>Teléfono</th>
-                                    <th>Rol</th>
+                                    <th>Tipo</th>
                                     <th>Estado</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Estilista 1 -->
-                                <tr>
-                                    <td>#001</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">A</div>
-                                            <strong>Ana López García</strong>
-                                        </div>
-                                    </td>
-                                    <td>ana.lopez@salon.com</td>
-                                    <td>(503) 7890-1234</td>
-                                    <td><span class="badge badge-luxury">ESTILISTA</span></td>
-                                    <td><span class="badge bg-success">Activo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" data-bs-toggle="modal" data-bs-target="#modalPermisos" title="Permisos">
-                                            <i class="bi bi-shield-lock"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" onclick="toggleEstado(1)" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+    @foreach ($empleados as $empleado)
+        <tr @if(!$empleado->activo) style="opacity: 0.6;" @endif>
+            <td>#{{ str_pad($empleado->idEmpleado, 3, '0', STR_PAD_LEFT) }}</td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">
+                        {{ strtoupper(substr($empleado->nombre, 0, 1)) }}
+                    </div>
+                    <strong>{{ $empleado->nombre }} {{ $empleado->apellido }}</strong>
+                </div>
+            </td>
+            <td>{{ $empleado->correoElectronico }}</td>
+            <td>{{ $empleado->telefono }}</td>
+            <td>
+                <span class="badge {{ $empleado->rol->nombre === 'estilista' ? 'badge-luxury' : 'badge-gold' }}">
+                    {{ strtoupper($empleado->rol->nombre) }}
+                </span>
+            </td>
+            <td>
+                <span class="badge {{ $empleado->activo ? 'bg-success' : 'bg-secondary' }}">
+                    {{ $empleado->activo ? 'Activo' : 'Inactivo' }}
+                </span>
+            </td>
+            <td>
+                <!-- Botones de acción -->
+                <button class="btn btn-sm btn-soft me-1 btn-editar" 
+        data-bs-toggle="modal" 
+        data-bs-target="#modalEditarUsuario" 
+        data-id="{{ $empleado->idEmpleado }}"
+        data-nombre="{{ $empleado->nombre }}"
+        data-apellido="{{ $empleado->apellido }}"
+        data-email="{{ $empleado->correoElectronico }}"
+        data-telefono="{{ $empleado->telefono }}"
+        data-direccion="{{ $empleado->direccion }}"
+        data-rol="{{ $empleado->rol->idRol }}"
+        data-activo="{{ $empleado->activo }}">
+    <i class="bi bi-pencil"></i>
+</button>
 
-                                <!-- Estilista 2 -->
-                                <tr>
-                                    <td>#002</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">M</div>
-                                            <strong>María Torres Sánchez</strong>
-                                        </div>
-                                    </td>
-                                    <td>maria.torres@salon.com</td>
-                                    <td>(503) 7890-5678</td>
-                                    <td><span class="badge badge-luxury">ESTILISTA</span></td>
-                                    <td><span class="badge bg-success">Activo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Permisos">
-                                            <i class="bi bi-shield-lock"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+               
+                <button 
+    class="btn btn-sm btn-toggle-estado {{ $empleado->activo ? 'btn-premium' : 'btn-gold' }}" 
+    title="{{ $empleado->activo ? 'Desactivar' : 'Activar' }}"
+    data-id="{{ $empleado->idEmpleado }}"
+    data-estado="{{ $empleado->activo ? 1 : 0 }}">
+    <i class="bi {{ $empleado->activo ? 'bi-toggle-on' : 'bi-toggle-off' }}"></i>
+</button>
 
-                                <!-- Estilista 3 -->
-                                <tr>
-                                    <td>#003</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">S</div>
-                                            <strong>Sofía Ramírez Cruz</strong>
-                                        </div>
-                                    </td>
-                                    <td>sofia.ramirez@salon.com</td>
-                                    <td>(503) 7890-9012</td>
-                                    <td><span class="badge badge-luxury">ESTILISTA</span></td>
-                                    <td><span class="badge bg-success">Activo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Permisos">
-                                            <i class="bi bi-shield-lock"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+            </td>
+        </tr>
+    @endforeach
 
-                                <!-- Recepcionista 1 -->
-                                <tr>
-                                    <td>#004</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">L</div>
-                                            <strong>Laura Hernández Díaz</strong>
-                                        </div>
-                                    </td>
-                                    <td>laura.hernandez@salon.com</td>
-                                    <td>(503) 7890-3456</td>
-                                    <td><span class="badge badge-gold">RECEPCIONISTA</span></td>
-                                    <td><span class="badge bg-success">Activo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Permisos">
-                                            <i class="bi bi-shield-lock"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+</tbody>
 
-                                <!-- Recepcionista 2 -->
-                                <tr>
-                                    <td>#005</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">C</div>
-                                            <strong>Carla Morales Pérez</strong>
-                                        </div>
-                                    </td>
-                                    <td>carla.morales@salon.com</td>
-                                    <td>(503) 7890-7890</td>
-                                    <td><span class="badge badge-gold">RECEPCIONISTA</span></td>
-                                    <td><span class="badge bg-success">Activo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Permisos">
-                                            <i class="bi bi-shield-lock"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Usuario Inactivo -->
-                                <tr style="opacity: 0.6;">
-                                    <td>#006</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">J</div>
-                                            <strong>Juan Martínez Gómez</strong>
-                                        </div>
-                                    </td>
-                                    <td>juan.martinez@salon.com</td>
-                                    <td>(503) 7890-1111</td>
-                                    <td><span class="badge badge-luxury">ESTILISTA</span></td>
-                                    <td><span class="badge bg-secondary">Inactivo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Permisos">
-                                            <i class="bi bi-shield-lock"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-gold" title="Activar">
-                                            <i class="bi bi-toggle-off"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -414,7 +307,7 @@
                 <div class="modal-header" style="border-bottom: 2px solid var(--dorado-palido);">
                     <h5 class="modal-title" style="color: var(--borgona); font-weight: 700;">
                         <i class="bi bi-person-plus" style="color: var(--dorado-palido);"></i> 
-                        Nuevo Usuario
+                        Nuevo Empleado
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
@@ -433,7 +326,7 @@
                     - Contraseña: requerida, mín 8 caracteres
                     ================================================
                     -->
-                    <form id="formNuevoUsuario">
+                   <form id="formNuevoUsuario" action="{{ route('empleado.store') }}" method="POST">
                         <div class="row g-3">
                             <!-- Nombre -->
                             <div class="col-md-6">
@@ -462,11 +355,13 @@
                             <!-- Rol -->
                             <div class="col-md-6">
                                 <label class="form-label">Rol *</label>
-                                <select class="form-select" name="rol" required>
+                                <select class="form-select" name="idRol" required>
                                     <option value="">Seleccione un rol</option>
-                                    <option value="estilista">Estilista</option>
-                                    <option value="recepcionista">Recepcionista</option>
+                                    @foreach($roles as $rol)
+                                    <option value="{{ $rol->idRol }}">{{ $rol->nombre }}</option>
+                                     @endforeach
                                 </select>
+
                             </div>
 
                             <!-- Estado -->
@@ -479,16 +374,26 @@
                             </div>
 
                             <!-- Contraseña -->
-                            <div class="col-md-6">
-                                <label class="form-label">Contraseña *</label>
-                                <input type="password" class="form-control" name="password" placeholder="Mínimo 8 caracteres" required>
-                            </div>
+<div class="col-md-6">
+    <label class="form-label">Contraseña *</label>
+    <div class="position-relative">
+        <input type="password" class="form-control" name="password" id="password" placeholder="Mínimo 8 caracteres" required>
+        <i class="bi bi-eye toggle-password" id="togglePassword"
+           onclick="togglePasswordRegistro('password', 'togglePassword')"
+           style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); cursor: pointer;"></i>
+    </div>
+</div>
 
-                            <!-- Confirmar Contraseña -->
-                            <div class="col-md-6">
-                                <label class="form-label">Confirmar Contraseña *</label>
-                                <input type="password" class="form-control" name="password_confirmation" placeholder="Repetir contraseña" required>
-                            </div>
+<!-- Confirmar Contraseña -->
+<div class="col-md-6">
+    <label class="form-label">Confirmar Contraseña *</label>
+    <div class="position-relative">
+        <input type="password" class="form-control" name="password_confirmation" id="password_confirmation" placeholder="Repetir contraseña" required>
+        <i class="bi bi-eye toggle-password" id="togglePasswordConfirm"
+           onclick="togglePasswordRegistro('password_confirmation', 'togglePasswordConfirm')"
+           style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); cursor: pointer;"></i>
+    </div>
+</div>
 
                             <!-- Dirección (Opcional) -->
                             <div class="col-12">
@@ -501,7 +406,7 @@
                 <div class="modal-footer" style="border-top: 1px solid var(--rosa-empolvado);">
                     <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" form="formNuevoUsuario" class="btn btn-gold">
-                        <i class="bi bi-save"></i> Guardar Usuario
+                        <i class="bi bi-save"></i> Guardar Empleado
                     </button>
                 </div>
             </div>
@@ -530,7 +435,8 @@
                     NOTA: Los campos vienen pre-llenados con los datos actuales
                     ================================================
                     -->
-                    <form id="formEditarUsuario">
+                    <form id="formEditarUsuario" action="{{ route('empleado.update', ['id' => $empleado->idEmpleado]) }}" method="POST">
+                        <input type="hidden" name="_method" value="PUT">
                         <input type="hidden" name="usuario_id" value="1">
                         
                         <div class="row g-3">
@@ -556,10 +462,13 @@
 
                             <div class="col-md-6">
                                 <label class="form-label">Rol *</label>
-                                <select class="form-select" name="rol" required>
-                                    <option value="estilista" selected>Estilista</option>
-                                    <option value="recepcionista">Recepcionista</option>
-                                </select>
+                                <select name="idRol" class="form-select" id="idRol">
+
+    @foreach ($roles as $rol)
+        <option value="{{ $rol->idRol }}">{{ ucfirst($rol->nombre) }}</option>
+    @endforeach
+</select>
+
                             </div>
 
                             <div class="col-md-6">
@@ -581,14 +490,24 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Nueva Contraseña</label>
-                                <input type="password" class="form-control" name="password" placeholder="Solo si desea cambiarla">
-                            </div>
+    <label class="form-label">Nueva Contraseña</label>
+    <div class="position-relative">
+        <input type="password" class="form-control" name="password" id="password-edicion" placeholder="Solo si desea cambiarla">
+        <i class="bi bi-eye toggle-password" id="togglePasswordEdicion" 
+           onclick="togglePasswordRegistro('password-edicion', 'togglePasswordEdicion')" 
+           style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); cursor: pointer;"></i>
+    </div>
+</div>
 
-                            <div class="col-md-6">
-                                <label class="form-label">Confirmar Nueva Contraseña</label>
-                                <input type="password" class="form-control" name="password_confirmation" placeholder="Repetir nueva contraseña">
-                            </div>
+<div class="col-md-6">
+    <label class="form-label">Confirmar Nueva Contraseña</label>
+    <div class="position-relative">
+        <input type="password" class="form-control" name="password_confirmation" id="password_confirmation_edicion" placeholder="Repetir nueva contraseña">
+        <i class="bi bi-eye toggle-password" id="togglePasswordConfirmEdicion" 
+           onclick="togglePasswordRegistro('password_confirmation_edicion', 'togglePasswordConfirmEdicion')" 
+           style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); cursor: pointer;"></i>
+    </div>
+</div>
                         </div>
                     </form>
                 </div>
@@ -602,89 +521,10 @@
         </div>
     </div>
 
-    <!-- ============================================
-         MODAL: GESTIÓN DE PERMISOS
-         ============================================ -->
-    <div class="modal fade" id="modalPermisos" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content" style="background: linear-gradient(135deg, white 0%, var(--blanco-humo) 100%); border: 2px solid var(--rosa-empolvado);">
-                <div class="modal-header" style="border-bottom: 2px solid var(--dorado-palido);">
-                    <h5 class="modal-title" style="color: var(--borgona); font-weight: 700;">
-                        <i class="bi bi-shield-lock" style="color: var(--dorado-palido);"></i> 
-                        Gestión de Permisos
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- 
-                    ================================================
-                    TODO BACKEND: Gestión de Permisos
-                    ================================================
-                    ACCIÓN: Enviar a ruta POST /usuarios/{id}/permisos
-                    TABLA: permisos_usuario
-                    CAMPOS: usuario_id, permiso_id, activo
-                    ================================================
-                    -->
-                    <div class="alert-custom mb-3">
-                        <i class="bi bi-person-circle"></i>
-                        <strong>Usuario:</strong> Ana López García <br>
-                        <strong>Rol:</strong> <span class="badge badge-luxury mt-1">ESTILISTA</span>
-                    </div>
-
-                    <form id="formPermisos">
-                        <input type="hidden" name="usuario_id" value="1">
-                        
-                        <p style="color: var(--borgona); font-weight: 600; margin-bottom: 1rem;">
-                            Seleccione los permisos:
-                        </p>
-
-                        <!-- Permisos según rol -->
-                        <div class="mb-3">
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" name="permisos[]" value="ver_agenda" id="perm1" checked>
-                                <label class="form-check-label" for="perm1">
-                                    Ver agenda personal
-                                </label>
-                            </div>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" name="permisos[]" value="gestionar_citas" id="perm2" checked>
-                                <label class="form-check-label" for="perm2">
-                                    Gestionar sus propias citas
-                                </label>
-                            </div>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" name="permisos[]" value="ver_clientes" id="perm3">
-                                <label class="form-check-label" for="perm3">
-                                    Ver información de clientes
-                                </label>
-                            </div>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" name="permisos[]" value="reportes_propios" id="perm4">
-                                <label class="form-check-label" for="perm4">
-                                    Ver sus propios reportes
-                                </label>
-                            </div>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" name="permisos[]" value="aplicar_promociones" id="perm5">
-                                <label class="form-check-label" for="perm5">
-                                    Aplicar promociones
-                                </label>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer" style="border-top: 1px solid var(--rosa-empolvado);">
-                    <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" form="formPermisos" class="btn btn-gold">
-                        <i class="bi bi-shield-check"></i> Guardar Permisos
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     
     <!-- Script de Funciones -->
     <script>
@@ -694,6 +534,27 @@
         // ================================================
         //
 
+        document.querySelectorAll('.btn-editar').forEach(button => {
+    button.addEventListener('click', () => {
+        const form = document.getElementById('formEditarUsuario');
+
+        form.usuario_id.value = button.dataset.id;
+        form.nombre.value = button.dataset.nombre;
+        form.apellido.value = button.dataset.apellido;
+        form.email.value = button.dataset.email;
+        form.telefono.value = button.dataset.telefono;
+        form.direccion.value = button.dataset.direccion;
+
+        form.idRol.value = button.dataset.rol;
+        form.activo.value = button.dataset.activo;
+
+        // Actualiza la acción del formulario con el ID correcto
+        form.setAttribute('action', `/admin/usuariosAdm/${button.dataset.id}`);
+        
+    });
+});
+
+
         // Función para toggle de estado activo/inactivo
         function toggleEstado(usuarioId) {
             // TODO: Hacer petición AJAX a /usuarios/{id}/toggle-estado
@@ -701,49 +562,236 @@
             alert('Función de toggle estado - Conectar con backend');
         }
 
-        // Validación de formulario nuevo usuario
-        document.getElementById('formNuevoUsuario')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const password = this.querySelector('[name="password"]').value;
-            const confirmation = this.querySelector('[name="password_confirmation"]').value;
-            
-            if (password !== confirmation) {
-                alert('Las contraseñas no coinciden');
-                return;
+        //----------------------------------//
+
+                    //crear usuario// 
+
+        //----------------------------------//  
+       document.getElementById('formNuevoUsuario')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const form = this;
+    const password = form.querySelector('[name="password"]').value;
+    const confirmation = form.querySelector('[name="password_confirmation"]').value;
+
+    if (password !== confirmation) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Contraseñas no coinciden',
+            text: 'Por favor verifica que ambas contraseñas sean iguales'
+        });
+        return;
+    }
+
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+        },
+        body: formData
+    })
+    .then(async response => {
+        const contentType = response.headers.get('content-type');
+
+        if (!response.ok) {
+            if (contentType && contentType.includes('application/json')) {
+                const errorData = await response.json();
+                const mensaje = Object.values(errorData.errors || {}).flat().join('\n') || 'Error al crear empleado.';
+                throw new Error(mensaje);
+            } else {
+                const text = await response.text();
+                throw new Error(text || 'Error desconocido');
             }
-            
-            // TODO: Enviar datos al backend
-            console.log('Crear nuevo usuario');
-            alert('Formulario validado - Conectar con backend');
+        }
+
+        return response.json();
+    })
+    .then(data => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Empleado creado',
+            text: 'El nuevo empleado fue registrado correctamente',
+            timer: 2000,
+            showConfirmButton: false
         });
 
-        // Validación de formulario editar usuario
-        document.getElementById('formEditarUsuario')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const password = this.querySelector('[name="password"]').value;
-            const confirmation = this.querySelector('[name="password_confirmation"]').value;
-            
-            if (password && password !== confirmation) {
-                alert('Las contraseñas no coinciden');
-                return;
+        // ✅ Cerrar el modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalNuevoUsuario'));
+        modal.hide();
+
+        // ✅ Limpiar el formulario
+        form.reset();
+
+        // ✅ Recargar la tabla o la página
+        setTimeout(() => {
+            location.reload();
+        }, 2000);
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al crear empleado',
+            text: error.message || 'Ocurrió un error inesperado'
+        });
+    });
+});
+
+//----------------------------------//
+
+        //editar usuario// 
+
+//----------------------------------//        
+document.getElementById('formEditarUsuario').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const id = form.querySelector('[name="usuario_id"]').value;
+    const formData = new FormData(form);
+
+    fetch(`/admin/usuariosAdm/${id}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+        },
+        body: formData
+    })
+    .then(async response => {
+        const contentType = response.headers.get('content-type');
+
+        if (!response.ok) {
+            if (contentType && contentType.includes('application/json')) {
+                const errorData = await response.json();
+                const mensaje = Object.values(errorData.errors || {}).flat().join('\n') || 'Error al actualizar.';
+                throw new Error(mensaje);
+            } else {
+                const text = await response.text();
+                throw new Error(text || 'Error desconocido');
             }
-            
-            // TODO: Enviar datos al backend
-            console.log('Actualizar usuario');
-            alert('Formulario validado - Conectar con backend');
+        }
+
+        return response.json(); // ✅ esto pasa al siguiente .then(data => ...)
+    })
+    .then(data => {
+        // ✅ Mostrar alerta de éxito
+        Swal.fire({
+            icon: 'success',
+            title: 'Usuario actualizado',
+            text: 'Los datos se modificaron correctamente',
+            timer: 2000,
+            showConfirmButton: false
         });
 
-        // Guardar permisos
-        document.getElementById('formPermisos')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // TODO: Enviar permisos al backend
-            console.log('Guardar permisos');
-            alert('Permisos guardados - Conectar con backend');
+        // ✅ Cerrar el modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarUsuario'));
+        modal.hide();
+
+        // ✅ Recargar la tabla o la página
+        setTimeout(() => {
+            location.reload();
+        }, 2000);
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al actualizar',
+            text: error.message || 'Ocurrió un error inesperado'
         });
-    </script>
-    
+    });
+});
+
+document.querySelectorAll('.btn-toggle-estado').forEach(button => {
+    button.addEventListener('click', function () {
+        const id = this.dataset.id;
+        const estadoActual = parseInt(this.dataset.estado);
+        const nuevoEstado = estadoActual === 1 ? 0 : 1;
+
+        fetch(`/admin/usuariosAdm/${id}/estado`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ estado: nuevoEstado })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Estado actualizado',
+                    text: `El empleado fue ${data.nuevoEstado ? 'activado' : 'desactivado'} correctamente`,
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
+                setTimeout(() => {
+                    location.reload(); // o actualiza solo la fila si prefieres
+                }, 2000);
+            } else {
+                throw new Error('No se pudo actualizar el estado');
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message || 'Ocurrió un error inesperado'
+            });
+        });
+    });
+});
+
+function buscarTabla() {
+    const input = document.getElementById('buscarUsuario');
+    const filtro = input.value.toLowerCase();
+    const filas = document.querySelectorAll('.table-custom tbody tr');
+
+    filas.forEach(fila => {
+        const textoFila = fila.textContent.toLowerCase();
+        fila.style.display = textoFila.includes(filtro) ? '' : 'none';
+    });
+}
+
+        // ========================================
+        // FUNCIONES PARA CARGAR NOMBRE DE USAURIO 
+        // ========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    const nombre = localStorage.getItem('clienteNombre') || 'Cliente';
+    const apellido = localStorage.getItem('clienteApellido') || '';
+    const inicial = nombre.charAt(0).toUpperCase();
+
+    // Insertar nombre completo
+    const nombreSpan = document.getElementById('nombreCliente');
+    if (nombreSpan) {
+        nombreSpan.textContent = `${nombre} ${apellido}`;
+    }
+
+    // Insertar inicial como avatar
+    const avatarDiv = document.getElementById('avatarInicial');
+    if (avatarDiv) {
+        avatarDiv.textContent = inicial;
+    }
+});
+// Toggle password en registro
+        function togglePasswordRegistro(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const toggleIcon = document.getElementById(iconId);
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                 toggleIcon.classList.replace('bi-eye', 'bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.replace('bi-eye-slash', 'bi-eye');
+            }
+        }
+
+</script>
 </body>
 </html>

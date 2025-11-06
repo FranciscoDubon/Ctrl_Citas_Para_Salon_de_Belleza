@@ -27,19 +27,10 @@ Route::get('/admin/reportesAdm', function () {
     return view('admin.reportesAdmin'); 
 })->name('admin.reportesAdm');
 
-// Ruta Gestión de Citas Admin
-Route::get('/admin/citasAdm', function () {
-    return view('admin.citasAdmin'); 
-})->name('admin.citasAdm');
-
-//Ruta Gestión de Configuracion Cliente
-Route::get('/admin/configAdm', function () {
-    return view('admin.configAdmin');
-})->name('admin.configAdm');
 
 // Ruta Gestión de Dashboard Recepcionista
 Route::get('/recepcionista/dashboardRecep', function () {
-    return view('recepcionista.dashboardRecepcionista');
+     return view('recepcionista.dashboardRecepcionista');
 })->name('recepcionista.dashboardRecep');
 
 //Ruta Gestión de Servicios Recepcionista
@@ -110,7 +101,7 @@ Route::get('/cliente/configCli', function () {
 //Ruta Gestión de Login
 Route::get('login', function () {
     return view('login');
-})->name('login');
+})->name('logn');
 
 use App\Http\Controllers\ClienteController;
 // Ruta POST para registrar cliente
@@ -121,7 +112,32 @@ Route::get('/admin/dashboard', function () {
     return view('admin.dashboardAdmin');
 })->name('dashboardAdm');
 
-
 Route::get('/cliente/dashboard', function () {
-    return view('admin.dashboardAdmin');
+    return view('cliente.dashboardCliente');
 })->name('dashboardCliente');
+
+use App\Http\Controllers\EmpleadoController;
+Route::post('/admin/usuariosAdm', [EmpleadoController::class, 'store'])->name('empleado.store');
+
+/*
+Route::get('/admin/usuariosAdm', function () {$roles = \App\Models\Rol::all();return view('admin.usuariosAdmin', compact('roles'));})->name('admin.usuariosAdm');
+*/
+
+Route::get('/admin/usuariosAdm', [EmpleadoController::class, 'index'])->name('admin.usuariosAdm');
+Route::put('/admin/usuariosAdm/{id}', [EmpleadoController::class, 'update'])->name('empleado.update');
+Route::post('/admin/usuariosAdm/{id}/estado', [EmpleadoController::class, 'cambiarEstado'])->name('empleado.estado');
+
+
+Route::get('/recepcionista/dashboard', function () {
+    return redirect()->route('recepcionista.dashboardRecep');
+});
+
+use App\Http\Controllers\ServicioController;
+Route::post('/recepcionista/servicios', [ServicioController::class, 'store'])->name('servicios.store');
+Route::get('/recepcionista/serviciosRecep', [ServicioController::class, 'index'])->name('recepcionista.serviciosRecep');
+Route::put('/servicios/{id}/actualizar', [ServicioController::class, 'update'])->name('servicios.update');
+Route::get('/servicios/{id}', [ServicioController::class, 'show'])->name('servicios.show');
+Route::put('/servicios/{id}/toggle-estado', [ServicioController::class, 'toggleEstado'])->name('servicios.toggleEstado');
+
+
+

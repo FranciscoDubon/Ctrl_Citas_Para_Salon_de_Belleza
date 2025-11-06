@@ -521,21 +521,6 @@
                         <span>O regístrate con</span>
                     </div>
 
-                    <!-- Registro Social -->
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <button class="social-login-btn" onclick="registroConGoogle()">
-                                <i class="bi bi-google" style="color: #EA4335;"></i>
-                                Google
-                            </button>
-                        </div>
-                        <div class="col-6">
-                            <button class="social-login-btn" onclick="registroConFacebook()">
-                                <i class="bi bi-facebook" style="color: #1877F2;"></i>
-                                Facebook
-                            </button>
-                        </div>
-                    </div>
 
                     <!-- Ya tengo cuenta -->
                     <div class="text-center mt-3 pt-3" style="border-top: 1px solid var(--rosa-empolvado);">
@@ -601,6 +586,8 @@
             .then(res => res.json())
             .then(data => {
             if (data.success) {
+                localStorage.setItem('clienteNombre', data.nombre);
+                localStorage.setItem('clienteApellido', data.apellido);
                 mostrarExito();
 
             setTimeout(() => {
@@ -675,19 +662,6 @@
             return false;
         }
 
-        // Login con Google
-        function loginConGoogle() {
-            console.log('Login con Google');
-            alert('🔐 Función: Login con Google\n\nEn producción, esto abrirá el flujo de OAuth de Google.');
-            // TODO: Implementar OAuth de Google
-        }
-
-        // Login con Facebook
-        function loginConFacebook() {
-            console.log('Login con Facebook');
-            alert('🔐 Función: Login con Facebook\n\nEn producción, esto abrirá el flujo de OAuth de Facebook.');
-            // TODO: Implementar OAuth de Facebook
-        }
 
         // Ir a página de registro (abrir modal)
         function irARegistro() {
@@ -882,16 +856,23 @@
         // Redirigir según rol
         function redirigirSegunRol(rol) {
             switch(rol) {
-                case 'ADMIN':
+                case 'admin':
                     console.log('Redirigir a: /admin/dashboard');
                     alert('Redirigiendo al Dashboard de Administrador...');
                     window.location.href = '/admin/dashboard';
                     break;
-                case 'ESTILISTA':
+                case 'estilista':
                     console.log('Redirigir a: /estilista/dashboard');
                     alert('Redirigiendo al Dashboard de Estilista...');
                     window.location.href = '/estilista/dashboard';
                     break;
+
+                case 'recepcionista':
+                    console.log('Redirigir a: /recepcionista/dashboard');
+                    alert('Redirigiendo al Dashboard de recepcionista...');
+                    window.location.href = '/recepcionista/dashboard';
+                    break;
+
                 case 'CLIENTE':
                     console.log('Redirigir a: /cliente/dashboard');
                     alert('Redirigiendo al Dashboard de Cliente...');

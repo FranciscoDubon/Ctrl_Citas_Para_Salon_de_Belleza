@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Clientes Recepcionista | Salón de Belleza</title>
     
@@ -61,9 +62,8 @@
         <div class="header-actions">
             <!-- Usuario -->
             <div class="user-info">
-                <div class="user-avatar">L</div>
-                <span class="user-name">Laura Hernández - Recepcionista</span>
-            </div>
+            <div class="user-avatar" id="avatarInicial">A</div>
+            <span class="user-name" id="nombreCliente">Administrador</span>
         </div>
     </header>
 
@@ -610,134 +610,160 @@
          MODAL: NUEVO CLIENTE
          ============================================ -->
     <div class="modal fade" id="modalNuevoCliente" tabindex="-1">
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content" style="background: linear-gradient(135deg, white 0%, var(--blanco-humo) 100%); border: 2px solid var(--rosa-empolvado);">
                 <div class="modal-header" style="border-bottom: 2px solid var(--dorado-palido);">
                     <h5 class="modal-title" style="color: var(--borgona); font-weight: 700;">
                         <i class="bi bi-person-plus" style="color: var(--dorado-palido);"></i> 
-                        Registrar Nuevo Cliente
+                        Crear Cliente Nuevo
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
-                    <!-- 
-                    ================================================
-                    TODO BACKEND: Formulario de Registro de Cliente
-                    ================================================
-                    ACCIÓN: Enviar a ruta POST /clientes/crear
-                    TABLA: usuarios (rol = 'cliente')
-                    VALIDACIONES:
-                    - Nombre: requerido, máx 50 caracteres
-                    - Apellido: requerido, máx 50 caracteres
-                    - Teléfono: requerido, único, formato (503) ####-####
-                    - Email: opcional, único si se proporciona, formato email
-                    - Fecha nacimiento: opcional, formato fecha
-                    ================================================
-                    -->
-                    <form id="formNuevoCliente">
-                        <div class="row g-3">
-                            <!-- Información Personal -->
-                            <div class="col-12">
-                                <h6 style="color: var(--borgona); font-weight: 600; border-bottom: 2px solid var(--rosa-empolvado); padding-bottom: 0.5rem;">
-                                    <i class="bi bi-person-circle"></i> Información Personal
-                                </h6>
-                            </div>
+                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                    <p style="color: var(--borgona); margin-bottom: 1.5rem; text-align: center;">
+                        Únete a nuestra familia de belleza y comienza a disfrutar de nuestros servicios
+                    </p>
+                    
+                    <form id="formRegistro" onsubmit="handleRegistro(event)">
+    <!-- Nombre Completo -->
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input type="text" class="form-control" id="registroNombre" placeholder="Nombre" required>
+                <label for="registroNombre"><i class="bi bi-person"></i> Nombre</label>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input type="text" class="form-control" id="registroApellido" placeholder="Apellido" required>
+                <label for="registroApellido"><i class="bi bi-person"></i> Apellido</label>
+            </div>
+        </div>
+    </div>
 
-                            <div class="col-md-4">
-                                <label class="form-label">Nombre *</label>
-                                <input type="text" class="form-control" name="nombre" placeholder="Ej: María" required>
-                            </div>
+    <!-- Email -->
+    <div class="form-floating mb-3">
+        <input type="email" class="form-control" id="registroEmail" placeholder="correo@ejemplo.com" required>
+        <label for="registroEmail"><i class="bi bi-envelope"></i> Correo Electrónico</label>
+        <small class="text-muted ms-2">Usaremos este correo para enviarte confirmaciones de citas</small>
+    </div>
 
-                            <div class="col-md-4">
-                                <label class="form-label">Apellido *</label>
-                                <input type="text" class="form-control" name="apellido" placeholder="Ej: García López" required>
-                            </div>
+    <!-- Teléfono -->
+    <div class="form-floating mb-3">
+        <input type="tel" class="form-control" id="registroTelefono" placeholder="7777-7777" pattern="[0-9]{4}-[0-9]{4}" required>
+        <label for="registroTelefono"><i class="bi bi-telephone"></i> Teléfono</label>
+        <small class="text-muted ms-2">Formato: 7777-7777</small>
+    </div>
 
-                            <div class="col-md-4">
-                                <label class="form-label">Fecha de Nacimiento</label>
-                                <input type="date" class="form-control" name="fecha_nacimiento">
-                            </div>
+    <!-- Fecha de Nacimiento -->
+    <div class="form-floating mb-3">
+        <input type="date" class="form-control" id="registroFechaNacimiento" placeholder="Fecha de Nacimiento" required>
+        <label for="registroFechaNacimiento"><i class="bi bi-calendar-heart"></i> Fecha de Nacimiento</label>
+        <small class="text-muted ms-2">Te enviaremos una sorpresa especial en tu cumpleaños 🎂</small>
+    </div>
 
-                            <!-- Información de Contacto -->
-                            <div class="col-12 mt-4">
-                                <h6 style="color: var(--borgona); font-weight: 600; border-bottom: 2px solid var(--rosa-empolvado); padding-bottom: 0.5rem;">
-                                    <i class="bi bi-telephone"></i> Información de Contacto
-                                </h6>
-                            </div>
+    <!-- Contraseña -->
+    <div class="form-floating mb-3 position-relative">
+        <input type="password" class="form-control" id="registroPassword" placeholder="Contraseña" minlength="8" required>
+        <label for="registroPassword"><i class="bi bi-lock"></i> Contraseña</label>
+        <span class="password-toggle" onclick="togglePasswordRegistro('registroPassword', 'toggleIconRegistro')">
+            <i class="bi bi-eye" id="toggleIconRegistro"></i>
+        </span>
+        <small class="text-muted ms-2">Mínimo 8 caracteres</small>
+    </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label">Teléfono *</label>
-                                <input type="tel" class="form-control" name="telefono" placeholder="(503) 7890-1234" required>
-                            </div>
+    <!-- Confirmar Contraseña -->
+    <div class="form-floating mb-3 position-relative">
+        <input type="password" class="form-control" id="registroPasswordConfirm" placeholder="Confirmar Contraseña" minlength="8" required>
+        <label for="registroPasswordConfirm"><i class="bi bi-lock-fill"></i> Confirmar Contraseña</label>
+        <span class="password-toggle" onclick="togglePasswordRegistro('registroPasswordConfirm', 'toggleIconRegistroConfirm')">
+            <i class="bi bi-eye" id="toggleIconRegistroConfirm"></i>
+        </span>
+    </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" name="email" placeholder="cliente@email.com">
-                            </div>
+    <!-- Género -->
+    <div class="mb-3">
+        <label class="form-label fw-semibold text-borgona"><i class="bi bi-gender-ambiguous"></i> Género (Opcional)</label>
+        <div class="d-flex gap-3">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="genero" id="generoFemenino" value="femenino">
+                <label class="form-check-label" for="generoFemenino">Femenino</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="genero" id="generoMasculino" value="masculino">
+                <label class="form-check-label" for="generoMasculino">Masculino</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="genero" id="generoOtro" value="otro">
+                <label class="form-check-label" for="generoOtro">Otro</label>
+            </div>
+        </div>
+    </div>
 
-                            <div class="col-12">
-                                <label class="form-label">Dirección Completa</label>
-                                <textarea class="form-control" name="direccion" rows="2" placeholder="Dirección completa del cliente"></textarea>
-                            </div>
+    <!-- Cómo nos conociste -->
+    <div class="form-floating mb-3">
+        <select class="form-control" id="registroComoConocio">
+            <option value="">Selecciona una opción</option>
+            <option value="redes_sociales">Redes Sociales</option>
+            <option value="recomendacion">Recomendación de un amigo/a</option>
+            <option value="google">Búsqueda en Google</option>
+            <option value="publicidad">Publicidad</option>
+            <option value="paso_por_aqui">Pasé por aquí</option>
+            <option value="otro">Otro</option>
+        </select>
+        <label for="registroComoConocio"><i class="bi bi-question-circle"></i> ¿Cómo nos conociste?</label>
+    </div>
 
-                            <!-- Notas Adicionales -->
-                            <div class="col-12 mt-4">
-                                <h6 style="color: var(--borgona); font-weight: 600; border-bottom: 2px solid var(--rosa-empolvado); padding-bottom: 0.5rem;">
-                                    <i class="bi bi-journal-text"></i> Notas y Observaciones
-                                </h6>
-                            </div>
+    <!-- Términos y Condiciones -->
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="registroTerminos" required>
+        <label class="form-check-label text-borgona" for="registroTerminos">
+            Acepto los <a href="#" class="text-dorado fw-semibold text-decoration-none">Términos y Condiciones</a> y la <a href="#" class="text-dorado fw-semibold text-decoration-none">Política de Privacidad</a>
+        </label>
+    </div>
 
-                            <div class="col-12">
-                                <label class="form-label">Notas Adicionales</label>
-                                <textarea class="form-control" name="notas" rows="3" placeholder="Preferencias, alergias, observaciones importantes..."></textarea>
-                            </div>
+    <!-- Newsletter -->
+    <div class="form-check mb-4">
+        <input class="form-check-input" type="checkbox" id="registroNewsletter" checked>
+        <label class="form-check-label text-borgona" for="registroNewsletter">
+            <i class="bi bi-envelope-heart"></i> Quiero recibir promociones y novedades por correo
+        </label>
+    </div>
 
-                            <!-- Preferencias -->
-                            <div class="col-md-6">
-                                <label class="form-label">Estilista Preferido</label>
-                                <select class="form-select" name="estilista_preferido_id">
-                                    <option value="">Sin preferencia</option>
-                                    <option value="1">Ana López García</option>
-                                    <option value="2">María Torres Sánchez</option>
-                                    <option value="3">Sofía Ramírez Cruz</option>
-                                    <option value="4">Laura Gómez Ortiz</option>
-                                </select>
-                            </div>
+    <!-- Alertas -->
+    <div id="alertRegistro" class="alert-custom" style="display: none;">
+        <i class="bi bi-info-circle"></i>
+        <span id="mensajeRegistro"></span>
+    </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label">¿Cómo nos conoció?</label>
-                                <select class="form-select" name="fuente_conocimiento">
-                                    <option value="">Seleccionar...</option>
-                                    <option value="facebook">Facebook</option>
-                                    <option value="instagram">Instagram</option>
-                                    <option value="recomendacion">Recomendación</option>
-                                    <option value="google">Búsqueda Google</option>
-                                    <option value="volante">Volante/Publicidad</option>
-                                    <option value="otro">Otro</option>
-                                </select>
-                            </div>
+    <!-- Botones -->
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-soft flex-fill" data-bs-dismiss="modal">
+            <i class="bi bi-x-circle"></i> Cancelar
+        </button>
+        <button type="submit" class="btn btn-gold flex-fill">
+            <i class="bi bi-check-circle"></i> Crear Cuenta
+        </button>
+    </div>
+</form>
 
-                            <!-- Consentimiento -->
-                            <div class="col-12">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="acepta_promociones" id="aceptaPromos" checked>
-                                    <label class="form-check-label" for="aceptaPromos">
-                                        Desea recibir información sobre promociones y novedades
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer" style="border-top: 1px solid var(--rosa-empolvado);">
-                    <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" form="formNuevoCliente" class="btn btn-gold">
-                        <i class="bi bi-save"></i> Registrar Cliente
-                    </button>
+            
+
+                    <!-- Ya tengo cuenta -->
+                    <div class="text-center mt-3 pt-3" style="border-top: 1px solid var(--rosa-empolvado);">
+                        <small style="color: var(--borgona);">
+                            ¿Ya tienes una cuenta? 
+                            <a href="#" onclick="cerrarRegistroAbrirLogin()" style="color: var(--dorado-palido); text-decoration: none; font-weight: 600;">
+                                Iniciar Sesión
+                            </a>
+                        </small>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
+
 
     <!-- ============================================
          MODAL: EDITAR CLIENTE
@@ -1098,6 +1124,175 @@
                 buscarCliente();
             }
         });
+
+        
+document.addEventListener('DOMContentLoaded', () => {
+    const nombre = localStorage.getItem('clienteNombre') || 'Cliente';
+    const apellido = localStorage.getItem('clienteApellido') || '';
+    const inicial = nombre.charAt(0).toUpperCase();
+
+    // Insertar nombre completo
+    const nombreSpan = document.getElementById('nombreCliente');
+    if (nombreSpan) {
+        nombreSpan.textContent = `${nombre} ${apellido}`;
+    }
+
+    // Insertar inicial como avatar
+    const avatarDiv = document.getElementById('avatarInicial');
+    if (avatarDiv) {
+        avatarDiv.textContent = inicial;
+    }
+});
+
+
+
+        // Manejar registro
+        function handleRegistro(event) {
+        event.preventDefault();
+            
+            const nombre = document.getElementById('registroNombre').value;
+            const apellido = document.getElementById('registroApellido').value;
+            const email = document.getElementById('registroEmail').value;
+            const telefono = document.getElementById('registroTelefono').value;
+            const fechaNacimiento = document.getElementById('registroFechaNacimiento').value;
+            const password = document.getElementById('registroPassword').value;
+            const passwordConfirm = document.getElementById('registroPasswordConfirm').value;
+            const genero = document.querySelector('input[name="genero"]:checked')?.value || null;
+            const comoConocio = document.getElementById('registroComoConocio').value;
+            const aceptaTerminos = document.getElementById('registroTerminos').checked;
+            const newsletter = document.getElementById('registroNewsletter').checked;
+
+    // Validar que las contraseñas coincidan
+    if (password !== passwordConfirm) {
+        mostrarErrorRegistro('Las contraseñas no coinciden');
+        return false;
+    }
+
+    // Validar términos
+    if (!aceptaTerminos) {
+        mostrarErrorRegistro('Debes aceptar los términos y condiciones');
+        return false;
+    }
+
+    // Crear el JSON que Laravel espera
+    const data = {
+        nombre,
+        apellido,
+        correoElectronico: email,
+        telefono,
+        fechaNacimiento,
+        clave: password,
+        clave_confirmation: passwordConfirm,
+        genero,
+        comoConocio,
+        suscripcionNewsletter: newsletter ? 1 : 0
+    };
+ const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    fetch("/registro", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "X-CSRF-TOKEN": token
+    },
+    body: JSON.stringify(data)
+})
+    .then(res => res.json())
+    .then(data => {
+
+        // Si hubo errores de validación en Laravel
+        if (data.errors) {
+            const msg = Object.values(data.errors).flat().join(', ');
+            mostrarErrorRegistro(msg);
+            return;
+        }
+
+        // Éxito
+        if (data.success) {
+    mostrarExitoRegistro();
+
+    setTimeout(() => {
+        const modalElement = document.getElementById('modalNuevoCliente');
+        if (modalElement) {
+            let modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if (!modalInstance) {
+                modalInstance = new bootstrap.Modal(modalElement);
+            }
+            modalInstance.hide();
+        }
+
+        const form = document.getElementById('formRegistro');
+        if (form) {
+            form.reset();
+        }
+
+        document.getElementById('alertRegistro').style.display = 'none';
+
+        // Opcional: recargar lista de clientes
+        if (typeof cargarClientes === 'function') {
+            cargarClientes();
+        }
+    }, 2000);
+}
+
+    })
+    .catch(() => {
+        mostrarErrorRegistro("Hubo un error en el servidor. Intenta más tarde.");
+    });
+
+    return false;
+}
+
+
+        // Mostrar error en registro
+        function mostrarErrorRegistro(mensaje) {
+            const alertRegistro = document.getElementById('alertRegistro');
+            const mensajeRegistro = document.getElementById('mensajeRegistro');
+            
+            alertRegistro.style.background = 'rgba(220, 53, 69, 0.1)';
+            alertRegistro.style.borderLeftColor = '#dc3545';
+            mensajeRegistro.innerHTML = '<i class="bi bi-exclamation-triangle"></i> ' + mensaje;
+            alertRegistro.style.display = 'block';
+            
+            // Scroll al alert
+            alertRegistro.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            // Ocultar después de 5 segundos
+            setTimeout(() => {
+                alertRegistro.style.display = 'none';
+            }, 5000);
+        }
+
+        // Mostrar éxito en registro
+        function mostrarExitoRegistro() {
+            const alertRegistro = document.getElementById('alertRegistro');
+            const mensajeRegistro = document.getElementById('mensajeRegistro');
+            
+            alertRegistro.style.background = 'rgba(40, 167, 69, 0.1)';
+            alertRegistro.style.borderLeftColor = '#28a745';
+            mensajeRegistro.innerHTML = '<i class="bi bi-check-circle"></i> ¡Cuenta creada exitosamente! Redirigiendo...';
+            alertRegistro.style.display = 'block';
+            
+            // Scroll al alert
+            alertRegistro.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+       function togglePasswordRegistro(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove("bi-eye");
+        icon.classList.add("bi-eye-slash");
+    } else {
+        input.type = "password";
+        icon.classList.remove("bi-eye-slash");
+        icon.classList.add("bi-eye");
+    }
+}
+
     </script>
     
 </body>
