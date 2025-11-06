@@ -140,24 +140,15 @@ Route::put('/servicios/{id}/actualizar', [ServicioController::class, 'update'])-
 Route::get('/servicios/{id}', [ServicioController::class, 'show'])->name('servicios.show');
 Route::put('/servicios/{id}/toggle-estado', [ServicioController::class, 'toggleEstado'])->name('servicios.toggleEstado');
 
-// Ruta Gestión de Servicios Admin
-Route::get('/admin/serviciosAdm', [ServicioController::class, 'indexAdmin'])->name('admin.serviciosAdm');
+//clientes 
+Route::get('/cliente/clientes/dashboard', [ClienteController::class, 'index'])->name('clientes.dashboard');
+Route::get('/recepcionista/clientesRecep', [ClienteController::class, 'dashboardRecepcionista'])->name('recepcionista.clientesRecep');
 
-Route::prefix('admin')->name('admin.')->group(function () {
-    // ... tus otras rutas existentes ...
-    
-    // Gestión de Promociones
-    Route::get('/promocionesAdm', [PromocionController::class, 'indexAdmin'])->name('promocionesAdm');
-    
-    // CRUD Promociones
-    Route::post('/promociones', [PromocionController::class, 'store'])->name('promocion.store');
-    Route::get('/promociones/{id}', [PromocionController::class, 'show'])->name('promocion.show');
-    Route::put('/promociones/{id}', [PromocionController::class, 'update'])->name('promocion.update');
-    Route::post('/promociones/{id}/estado', [PromocionController::class, 'toggleEstado'])->name('promocion.toggleEstado');
-    
-    // CRUD Combos
-    Route::post('/combos', [PromocionController::class, 'storeCombo'])->name('combo.store');
-    Route::get('/combos/{id}', [PromocionController::class, 'showCombo'])->name('combo.show');
-    Route::put('/combos/{id}', [PromocionController::class, 'updateCombo'])->name('combo.update');
-    Route::post('/combos/{id}/estado', [PromocionController::class, 'toggleEstadoCombo'])->name('combo.toggleEstado');
-});  
+//citas
+
+Route::post('/citas/crear', [CitaController::class, 'store'])->name('citas.store');
+use App\Http\Controllers\CitaController;
+
+Route::get('/recepcionista/citasRecep', [CitaController::class, 'crear'])->name('recepcionista.citasRecep');
+Route::post('/citas/crear', [CitaController::class, 'store'])->name('citas.store');
+

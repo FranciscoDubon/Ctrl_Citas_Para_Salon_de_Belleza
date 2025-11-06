@@ -50,11 +50,11 @@ class EmpleadoController extends Controller
     $roles = \App\Models\Rol::all();
 
     $estilistas = Empleado::whereHas('rol', function ($query) {
-        $query->where('nombre', 'estilista');
+        $query->where('nombre', 'estilista ');
     })->where('activo', 1)->count();
 
     $recepcionistas = Empleado::whereHas('rol', function ($query) {
-        $query->where('nombre', 'recepcionistas');
+        $query->where('nombre', 'recepcionista');
     })->where('activo', 1)->count();
 
     $inactivos = Empleado::where('activo', 0)->count();
