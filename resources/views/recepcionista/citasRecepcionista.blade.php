@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Citas Recepcionista | Salón de Belleza</title>
     
@@ -672,7 +673,8 @@
                     - Verificar disponibilidad de estilista
                     ================================================
                     -->
-                    <form id="formNuevaCita">
+                    <form id="formNuevaCita" method="POST" action="{{ route('citas.store') }}">
+                        @csrf
                         <div class="row g-3">
                             <!-- Cliente -->
                             <div class="col-12">
@@ -683,20 +685,21 @@
 
                             <div class="col-md-9">
                                 <label class="form-label">Cliente *</label>
-                                <select class="form-select" name="cliente_id" id="clienteSelect" required>
+                                <select class="form-select" name="cliente_id" required>
                                     <option value="">Buscar cliente...</option>
-                                    <option value="1">María García López - (503) 7890-1234</option>
-                                    <option value="2">Ana Rodríguez Pérez - (503) 7890-5678</option>
-                                    <option value="3">Laura Martínez Díaz - (503) 7890-9012</option>
-                                    <option value="4">Carla Hernández Silva - (503) 7890-3456</option>
+                                    @foreach($clientes as $cliente)
+                                    <option value="{{ $cliente->idCliente }}">
+                                    {{ $cliente->nombre }} {{ $cliente->apellido }} - {{ $cliente->telefono }}
+                                    </option>
+                                    @endforeach
+
                                 </select>
+
                             </div>
 
                             <div class="col-md-3">
                                 <label class="form-label">&nbsp;</label>
-                                <button type="button" class="btn btn-soft w-100" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalNuevoCliente">
-                                    <i class="bi bi-person-plus"></i> Nuevo Cliente
-                                </button>
+                               
                             </div>
 
                             <!-- Servicio -->
@@ -710,25 +713,28 @@
                                 <label class="form-label">Servicio *</label>
                                 <select class="form-select" name="servicio_id" id="servicioSelect" onchange="actualizarDuracion()" required>
                                     <option value="">Seleccionar servicio...</option>
-                                    <option value="1" data-duracion="30" data-precio="15.00">Corte de Cabello - $15.00 (30 min)</option>
-                                    <option value="2" data-duracion="90" data-precio="40.00">Tinte Completo - $40.00 (90 min)</option>
-                                    <option value="3" data-duracion="60" data-precio="30.00">Peinado Especial - $30.00 (60 min)</option>
-                                    <option value="4" data-duracion="45" data-precio="35.00">Tratamiento Capilar - $35.00 (45 min)</option>
-                                    <option value="5" data-duracion="30" data-precio="10.00">Manicure Básico - $10.00 (30 min)</option>
-                                    <option value="6" data-duracion="45" data-precio="15.00">Pedicure Spa - $15.00 (45 min)</option>
-                                    <option value="7" data-duracion="90" data-precio="25.00">Uñas Acrílicas - $25.00 (90 min)</option>
+                                    @foreach($servicios as $servicio)
+                                    <option value="{{ $servicio->idServicio }}"
+                                    data-duracion="{{ $servicio->duracionBase }}"
+                                    data-precio="{{ $servicio->precioBase }}">
+                                    {{ $servicio->nombre }} - ${{ number_format($servicio->precioBase, 2) }} ({{ $servicio->duracionBase }} min)
+                                    </option>
+                                    @endforeach
                                 </select>
+
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label">Estilista *</label>
                                 <select class="form-select" name="estilista_id" required>
                                     <option value="">Seleccionar estilista...</option>
-                                    <option value="1">Ana López García</option>
-                                    <option value="2">María Torres Sánchez</option>
-                                    <option value="3">Sofía Ramírez Cruz</option>
-                                    <option value="4">Laura Gómez Ortiz</option>
+                                    @foreach($estilistas as $estilista)
+                                    <option value="{{ $estilista->idEmpleado }}">
+                                    {{ $estilista->nombre }} {{ $estilista->apellido }}
+                                    </option>
+                                    @endforeach
                                 </select>
+
                             </div>
 
                             <!-- Fecha y Hora -->
@@ -1043,9 +1049,6 @@ if (form) { form.addEventListener('submit', function(e) { e.preventDefault();
             alert('Complete todos los campos requeridos');
             return;
         }
-
-        console.log('Crear nueva cita');
-        alert('Cita agendada exitosamente - Conectar con backend');
     });
 }
 
@@ -1067,7 +1070,60 @@ document.addEventListener('DOMContentLoaded', () => {
         avatarDiv.textContent = inicial;
     }
 });
-    </script>
+
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('formNuevaCita');
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert(result.message);
+
+                // Opcional: cerrar modal y limpiar
+                form.reset();
+                document.getElementById('duracionEstimada').value = '-- min';
+                document.getElementById('precioBase').textContent = '$0.00';
+                document.getElementById('descuento').textContent = '$0.00';
+                document.getElementById('totalPagar').textContent = '$0.00';
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalNuevaCita'));
+                modal.hide();
+                location.reload();
+                form.reset();
+            } else {
+                alert('Error: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Error al enviar la cita:', error);
+            alert('Error inesperado al agendar la cita.');
+        }
+    });
+});
+
+function actualizarDuracion() {
+    const select = document.getElementById('servicioSelect');
+    const duracion = select.options[select.selectedIndex].getAttribute('data-duracion');
+    const precio = select.options[select.selectedIndex].getAttribute('data-precio');
+
+    document.getElementById('duracionEstimada').value = duracion + ' min';
+    document.getElementById('precioBase').textContent = '$' + precio;
+    document.getElementById('totalPagar').textContent = '$' + precio;
+}
+</script>
+
     
 </body>
 </html>
