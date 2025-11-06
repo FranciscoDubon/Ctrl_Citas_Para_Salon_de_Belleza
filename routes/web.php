@@ -139,5 +139,8 @@ Route::put('/servicios/{id}/actualizar', [ServicioController::class, 'update'])-
 Route::get('/servicios/{id}', [ServicioController::class, 'show'])->name('servicios.show');
 Route::put('/servicios/{id}/toggle-estado', [ServicioController::class, 'toggleEstado'])->name('servicios.toggleEstado');
 
+//clientes 
+Route::get('/cliente/clientes/dashboard', [ClienteController::class, 'index'])->name('clientes.dashboard');
 
+Route::get('/recepcionista/clientesRecep', [ClienteController::class, 'dashboardRecepcionista'])->name('recepcionista.clientesRecep');
 
