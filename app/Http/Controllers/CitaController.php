@@ -7,7 +7,8 @@ use App\Models\Cita;
 use App\Models\Servicio;
 use App\Models\Cliente;
 use App\Models\Empleado;
-
+use Carbon\Carbon; 
+use App\Models\Promocion;
 use Illuminate\Support\Facades\DB;
 
 class CitaController extends Controller
@@ -93,10 +94,23 @@ public function agendaSemana()
         ->orderBy('hora')
         ->get();
 
+    // KPIs
+    $hoy = Carbon::today();
+    $manana = Carbon::tomorrow();
+
+    $kpiCitas = [
+        'totalHoy' => Cita::whereDate('fecha', $hoy)->count(),
+        'completadasHoy' => Cita::whereDate('fecha', $hoy)->where('estado', 'COMPLETADA')->count(),
+        'pendientesHoy' => Cita::whereDate('fecha', $hoy)->where('estado', 'PENDIENTE')->count(),
+        'canceladasHoy' => Cita::whereDate('fecha', $hoy)->where('estado', 'CANCELADA')->count(),
+        'totalManana' => Cita::whereDate('fecha', $manana)->count(),
+    ];
+
     return view('recepcionista.citasRecepcionista', compact(
-        'clientes', 'estilistas', 'servicios', 'citas'
+        'clientes', 'estilistas', 'servicios', 'citas', 'kpiCitas', 'manana'
     ));
 }
+
 public function filtrarTabla(Request $request)
 {
     $fecha = $request->input('fecha') ?? now()->toDateString();
@@ -112,6 +126,62 @@ public function filtrarTabla(Request $request)
 
     return view('recepcionista.partials.filas-citas', compact('citas'))->render();
 }
+
+public function dashboardRecepcionista()
+{
+    $hoy = Carbon::now();
+ // Total de citas del día actual
+$totalCitasHoy = Cita::whereDate('fecha', $hoy)->count();
+
+// Total de citas completadas hoy
+$citasCompletadas = Cita::where('estado', 'COMPLETADA')
+                        ->whereDate('fecha', $hoy)
+                        ->count();
+
+// Total de citas pendientes hoy
+$citasPendientes = Cita::where('estado', 'PENDIENTE')
+                       ->whereDate('fecha', $hoy)
+                       ->count();
+
+    // Total de clientes
+    $totalClientes = Cliente::count();
+
+    // Total de empleados activos
+    $totalEmpleados = Empleado::where('activo', 1)->count();
+
+    // Promociones aplicadas (si tienes una tabla de promociones_citas o similar)
+    // ⚠️ Ajusta el modelo y la columna si el nombre es diferente
+    $promocionesAplicadas = Promocion::where('usosActuales', '>', 0)->count();
+      // KPI nuevo: promociones desactivadas
+    $promosDesactivadas = Promocion::where('activo', 0)->count();
+
+    // Últimas citas
+    $ultimasCitas = Cita::with('cliente')
+                        ->orderBy('fecha', 'desc')
+                        ->orderBy('hora', 'desc')
+                        ->take(5)
+                        ->get();
+    
+    $totalDescuento = \App\Models\Promocion::sum('valorDescuento');
+
+    return view('recepcionista.dashboardRecepcionista', compact(
+        'totalCitasHoy',
+        'citasCompletadas',
+        'citasPendientes',
+        'promocionesAplicadas',
+        'totalClientes',
+        'totalEmpleados',
+        'ultimasCitas',
+        'totalDescuento',
+        'promosDesactivadas'
+    ));
+
+    // --- DEPURACIÓN ---
+$debugCitasHoy = Cita::whereDate('fecha', $hoy)->get(['idCita', 'fecha', 'hora', 'estado']);
+dd($hoy, $debugCitasHoy);
+
+}
+
 
 
 }

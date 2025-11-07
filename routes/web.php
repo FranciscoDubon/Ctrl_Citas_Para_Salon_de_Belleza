@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ServicioController;
+use App\Http\Controllers\PromocionController;
+use App\Http\Controllers\CitaController;
+use App\Http\Controllers\ClienteController;
 
 // Ruta Dashboard Admin
 Route::get('/', function () {
@@ -103,7 +107,7 @@ Route::get('login', function () {
     return view('login');
 })->name('logn');
 
-use App\Http\Controllers\ClienteController;
+
 // Ruta POST para registrar cliente
 Route::post('/registro', [ClienteController::class, 'registrar'])->name('registro');
 Route::post('/login', [ClienteController::class, 'login'])->name('login.post');
@@ -132,8 +136,6 @@ Route::get('/recepcionista/dashboard', function () {
     return redirect()->route('recepcionista.dashboardRecep');
 });
 
-use App\Http\Controllers\ServicioController;
-use App\Http\Controllers\PromocionController;
 
 // Rutas de Admin
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -158,7 +160,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 // Rutas de Recepcionista
 Route::prefix('recepcionista')->name('recepcionista.')->group(function () {
     // ... otras rutas de recepcionista ...
-    
+    Route::get('/dashboardRecep', [CitaController::class, 'dashboardRecepcionista'])->name('dashboardRecep');
+
     // Vista de promociones recepcionista
     Route::get('/promocionesRecep', [PromocionController::class, 'indexRecepcionista'])->name('promocionesRecep');
 });
@@ -172,6 +175,8 @@ Route::put('/servicios/{id}/toggle-estado', [ServicioController::class, 'toggleE
 Route::prefix('recepcionista')->name('recepcionista.')->group(function () {
     // Gestión de Promociones para Recepcionista
     Route::get('/promocionesRecep', [PromocionController::class, 'indexRecepcionista'])->name('promocionesRecep');
+    // KPIs y citas de hoy/mañana
+    //Route::get('/kpiCitas', [CitaController::class, 'citaRecepcionista'])->name('kpiCitas');
 });
 
 //clientes 
@@ -181,7 +186,7 @@ Route::get('/recepcionista/clientesRecep', [ClienteController::class, 'dashboard
 //citas
 
 Route::post('/citas/crear', [CitaController::class, 'store'])->name('citas.store');
-use App\Http\Controllers\CitaController;
+
 
 Route::get('/recepcionista/citasRecep', [CitaController::class, 'crear'])->name('recepcionista.citasRecep');
 Route::post('/citas/crear', [CitaController::class, 'store'])->name('citas.store');

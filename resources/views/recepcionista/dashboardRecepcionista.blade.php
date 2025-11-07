@@ -78,24 +78,6 @@
             <a href="{{ route('cliente.dashboardCli') }}" class="text-decoration-none" style="color: #e91e63;">Cliente</a>
         </div>
 
-        <!-- Botones de Acción Rápida -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <button class="btn btn-gold me-2" data-bs-toggle="modal" data-bs-target="#modalNuevaCita">
-                    <i class="bi bi-plus-circle"></i> Nueva Cita
-                </button>
-                <button class="btn btn-premium me-2" data-bs-toggle="modal" data-bs-target="#modalBuscarCliente">
-                    <i class="bi bi-search"></i> Buscar Cliente
-                </button>
-                <button class="btn btn-outline-gold me-2" onclick="actualizarDashboard()">
-                    <i class="bi bi-arrow-clockwise"></i> Actualizar
-                </button>
-                <button class="btn btn-soft" data-bs-toggle="modal" data-bs-target="#modalPromocionesActivas">
-                    <i class="bi bi-gift"></i> Ver Promociones
-                </button>
-            </div>
-        </div>
-
         <!-- Alertas y Notificaciones -->
         <!-- 
         ================================================
@@ -149,10 +131,10 @@
                             <i class="bi bi-calendar-check"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">18</h3>
+                    <h3 class="kpi-value">{{ $totalCitasHoy }}</h3>
                     <p class="kpi-label">Citas de Hoy</p>
                     <span class="kpi-badge badge-success">
-                        <i class="bi bi-check-circle"></i> 12 completadas
+                        <i class="bi bi-check-circle"></i> {{ $citasCompletadas }} completadas
                     </span>
                 </div>
             </div>
@@ -175,7 +157,7 @@
                             <i class="bi bi-clock-history"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">6</h3>
+                    <h3 class="kpi-value">{{ $citasPendientes }}</h3>
                     <p class="kpi-label">Citas Pendientes</p>
                     <span class="kpi-badge badge-neutral">
                         <i class="bi bi-hourglass-split"></i> Por atender
@@ -201,10 +183,10 @@
                             <i class="bi bi-gift-fill"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">5</h3>
+                    <h3 class="kpi-value">{{ $promocionesAplicadas }}</h3>
                     <p class="kpi-label">Promociones Aplicadas</p>
                     <span class="kpi-badge badge-success">
-                        <i class="bi bi-percent"></i> $87 en descuentos
+                        <i class="bi bi-percent"></i> ${{ number_format($totalDescuento, 2) }} en descuentos
                     </span>
                 </div>
             </div>
@@ -220,19 +202,18 @@
             AND fecha_hora > NOW()
             ================================================
             -->
-            <div class="col-xl-3 col-md-6">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon info">
-                            <i class="bi bi-calendar-event"></i>
-                        </div>
-                    </div>
-                    <h3 class="kpi-value">4</h3>
-                    <p class="kpi-label">Próximas Citas</p>
-                    <span class="kpi-badge badge-neutral">
-                        <i class="bi bi-clock"></i> Resto del día
-                    </span>
-                </div>
+           <div class="col-xl-3 col-md-6">
+<div class="card kpi-card">
+    <div class="kpi-header">
+        <div class="kpi-icon warning">
+            <i class="bi bi-clock-history"></i>
+        </div>
+    </div>
+    <h3 class="kpi-value">{{ $promosDesactivadas }}</h3>
+    <p class="kpi-label">Promociones desactivadas</p>
+
+</div>
+
             </div>
         </div>
 
