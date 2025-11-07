@@ -80,9 +80,7 @@
                 </button>
 
 
-                <button class="btn btn-outline-gold" onclick="imprimirAgenda()">
-                    <i class="bi bi-printer"></i> Imprimir
-                </button>
+                
             </div>
             
            

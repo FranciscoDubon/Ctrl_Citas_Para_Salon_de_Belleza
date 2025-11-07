@@ -117,5 +117,20 @@ public function clientesRecepcionista()
     return view('recepcionista.clientesRecepcionista', compact('clientes'));
 }
 
+public function editarCliente($id)
+{
+    $cliente = Cliente::findOrFail($id);
+
+    return response()->json([
+        'idCliente' => $cliente->idCliente,
+        'nombre' => $cliente->nombre,
+        'apellido' => $cliente->apellido,
+        'fechaNacimiento' => $cliente->fechaNacimiento,
+        'telefono' => $cliente->telefono,
+        'correoElectronico' => $cliente->correoElectronico,
+        'fuente_conocimiento' => $cliente->comoConocio,
+        'acepta_promociones' => $cliente->suscripcionNewsletter,
+    ]);
+}
 
 }

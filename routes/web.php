@@ -177,6 +177,7 @@ Route::prefix('recepcionista')->name('recepcionista.')->group(function () {
 //clientes 
 Route::get('/cliente/clientes/dashboard', [ClienteController::class, 'index'])->name('clientes.dashboard');
 Route::get('/recepcionista/clientesRecep', [ClienteController::class, 'dashboardRecepcionista'])->name('recepcionista.clientesRecep');
+Route::get('/recepcionista/clientes/{id}/editar', [ClienteController::class, 'editarCliente']);
 
 //citas
 

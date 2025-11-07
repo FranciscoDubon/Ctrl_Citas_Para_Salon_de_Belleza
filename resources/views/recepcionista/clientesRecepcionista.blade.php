@@ -252,7 +252,6 @@
                                     <th>Contacto</th>
                                     <th>Visitas</th>
                                     <th>Total Gastado</th>
-                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -279,31 +278,27 @@
                     </div>
                 </td>
                 <td>
-                    <span class="badge badge-luxury" style="font-size: 0.95rem;">
-                        {{ $cliente->citas_count }} citas
+                   <span class="badge badge-luxury" style="font-size: 0.95rem;">
+                    {{ isset($cliente->citas_count) ? $cliente->citas_count : $cliente->citas->count() }} citas
                     </span>
+
                 </td>
-               @php
-$totalGastado = $cliente->citas && $cliente->citas->isNotEmpty()
-    ? $cliente->citas->flatMap->servicios->sum('precioBase')
-    : 0;
-@endphp
-<td>
-    <strong style="color: var(--borgona); font-size: 1.1rem;">
-        ${{ number_format($totalGastado, 2) }}
-    </strong>
-</td>
+                @php
+                $totalGastado = $cliente->citas && $cliente->citas->count() > 0
+                ? $cliente->citas->flatMap->servicios->sum('precioBase')
+                : 0;
+                @endphp
+                <td>
+                    <strong style="color: var(--borgona); font-size: 1.1rem;">
+                        ${{ number_format($totalGastado, 2) }}
+                    </strong>
+                </td>
+
 
                 <td>
-                    <button class="btn btn-sm btn-soft me-1" onclick="cargarCliente({{ $cliente->idCliente }})" title="Ver perfil">
-                        <i class="bi bi-eye"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-gold me-1" onclick="cargarEditarCliente({{ $cliente->idCliente }})" title="Editar">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-sm btn-premium" onclick="nuevaCitaCliente({{ $cliente->idCliente }})" title="Nueva cita">
-                        <i class="bi bi-calendar-plus"></i>
-                    </button>
+                    
+                  
+                    
                 </td>
             </tr>
             @endforeach
@@ -471,15 +466,7 @@ $totalGastado = $cliente->citas && $cliente->citas->isNotEmpty()
 
             
 
-                    <!-- Ya tengo cuenta -->
-                    <div class="text-center mt-3 pt-3" style="border-top: 1px solid var(--rosa-empolvado);">
-                        <small style="color: var(--borgona);">
-                            ¿Ya tienes una cuenta? 
-                            <a href="#" onclick="cerrarRegistroAbrirLogin()" style="color: var(--dorado-palido); text-decoration: none; font-weight: 600;">
-                                Iniciar Sesión
-                            </a>
-                        </small>
-                    </div>
+                  
 
                 </div>
             </div>
@@ -509,259 +496,25 @@ $totalGastado = $cliente->citas && $cliente->citas->isNotEmpty()
                     NOTA: Campos pre-llenados con datos actuales
                     ================================================
                     -->
-                    <form id="formEditarCliente">
-                        <input type="hidden" name="cliente_id" value="1">
-                        <!-- Mismo contenido que formNuevoCliente pero con valores -->
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <h6 style="color: var(--borgona); font-weight: 600; border-bottom: 2px solid var(--rosa-empolvado); padding-bottom: 0.5rem;">
-                                    <i class="bi bi-person-circle"></i> Información Personal
-                                </h6>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">Nombre *</label>
-                                <input type="text" class="form-control" name="nombre" value="María" required>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">Apellido *</label>
-                                <input type="text" class="form-control" name="apellido" value="García López" required>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">Fecha de Nacimiento</label>
-                                <input type="date" class="form-control" name="fecha_nacimiento" value="1990-01-15">
-                            </div>
-
-                            <div class="col-12 mt-4">
-                                <h6 style="color: var(--borgona); font-weight: 600; border-bottom: 2px solid var(--rosa-empolvado); padding-bottom: 0.5rem;">
-                                    <i class="bi bi-telephone"></i> Información de Contacto
-                                </h6>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Teléfono *</label>
-                                <input type="tel" class="form-control" name="telefono" value="(503) 7890-1234" required>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" name="email" value="maria.garcia@email.com">
-                            </div>
-
-                            <div class="col-12">
-                                <label class="form-label">Dirección Completa</label>
-                                <textarea class="form-control" name="direccion" rows="2">Col. Escalón, San Salvador</textarea>
-                            </div>
-
-                            <div class="col-12 mt-4">
-                                <h6 style="color: var(--borgona); font-weight: 600; border-bottom: 2px solid var(--rosa-empolvado); padding-bottom: 0.5rem;">
-                                    <i class="bi bi-journal-text"></i> Notas y Observaciones
-                                </h6>
-                            </div>
-
-                            <div class="col-12">
-                                <label class="form-label">Notas Adicionales</label>
-                                <textarea class="form-control" name="notas" rows="3">Cliente VIP. Prefiere citas por la tarde. Alérgica a productos con parabenos.</textarea>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Estilista Preferido</label>
-                                <select class="form-select" name="estilista_preferido_id">
-                                    <option value="">Sin preferencia</option>
-                                    <option value="1" selected>Ana López García</option>
-                                    <option value="2">María Torres Sánchez</option>
-                                    <option value="3">Sofía Ramírez Cruz</option>
-                                    <option value="4">Laura Gómez Ortiz</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">¿Cómo nos conoció?</label>
-                                <select class="form-select" name="fuente_conocimiento">
-                                    <option value="facebook">Facebook</option>
-                                    <option value="instagram" selected>Instagram</option>
-                                    <option value="recomendacion">Recomendación</option>
-                                    <option value="google">Búsqueda Google</option>
-                                    <option value="volante">Volante/Publicidad</option>
-                                    <option value="otro">Otro</option>
-                                </select>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="acepta_promociones" id="aceptaPromosEdit" checked>
-                                    <label class="form-check-label" for="aceptaPromosEdit">
-                                        Desea recibir información sobre promociones y novedades
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer" style="border-top: 1px solid var(--rosa-empolvado);">
-                    <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" form="formEditarCliente" class="btn btn-gold">
-                        <i class="bi bi-save"></i> Actualizar Cliente
-                    </button>
+                   
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ============================================
-         MODAL: VER PERFIL COMPLETO DEL CLIENTE
-         ============================================ -->
-    <div class="modal fade" id="modalVerCliente" tabindex="-1">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content" style="background: linear-gradient(135deg, white 0%, var(--blanco-humo) 100%); border: 2px solid var(--rosa-empolvado);">
-                <div class="modal-header" style="border-bottom: 2px solid var(--dorado-palido);">
-                    <h5 class="modal-title" style="color: var(--borgona); font-weight: 700;">
-                        <i class="bi bi-person-circle" style="color: var(--dorado-palido);"></i> 
-                        Perfil del Cliente
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Información del Cliente -->
-                    <div class="premium-card mb-4">
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <div class="d-flex align-items-center">
-                                    <div class="list-avatar me-3" style="width: 80px; height: 80px; font-size: 2rem;">M</div>
-                                    <div>
-                                        <h3 style="margin: 0;">María García López</h3>
-                                        <p style="margin: 0.5rem 0;">
-                                            <i class="bi bi-cake2"></i> 15 Ene 1990 (34 años) | 
-                                            <span class="badge bg-success"><i class="bi bi-star-fill"></i> Cliente VIP</span>
-                                        </p>
-                                        <p style="margin: 0; opacity: 0.9;">
-                                            <i class="bi bi-envelope"></i> maria.garcia@email.com | 
-                                            <i class="bi bi-phone"></i> (503) 7890-1234
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 text-end">
-                                <button class="btn btn-gold btn-sm mb-2" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalEditarCliente">
-                                    <i class="bi bi-pencil"></i> Editar
-                                </button>
-                                <button class="btn btn-premium btn-sm mb-2">
-                                    <i class="bi bi-calendar-plus"></i> Nueva Cita
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- KPIs del Cliente -->
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-3">
-                            <div class="kpi-card">
-                                <h3 class="kpi-value" style="font-size: 1.75rem;">18</h3>
-                                <p class="kpi-label">Total Visitas</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="kpi-card">
-                                <h3 class="kpi-value" style="font-size: 1.75rem;">$642</h3>
-                                <p class="kpi-label">Total Gastado</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="kpi-card">
-                                <h3 class="kpi-value" style="font-size: 1.75rem;">$35.67</h3>
-                                <p class="kpi-label">Ticket Promedio</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="kpi-card">
-                                <h3 class="kpi-value" style="font-size: 1.75rem;">28 Oct</h3>
-                                <p class="kpi-label">Última Visita</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Información Detallada -->
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <div class="card-custom">
-                                <h6 style="color: var(--borgona); font-weight: 600; margin-bottom: 1rem;">
-                                    <i class="bi bi-info-circle"></i> Información Personal
-                                </h6>
-                                <p><strong>Dirección:</strong> Col. Escalón, San Salvador</p>
-                                <p><strong>Estilista Preferido:</strong> Ana López García</p>
-                                <p><strong>Cómo nos conoció:</strong> Instagram</p>
-                                <p><strong>Cliente desde:</strong> 15 Enero 2024</p>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="card-custom">
-                                <h6 style="color: var(--borgona); font-weight: 600; margin-bottom: 1rem;">
-                                    <i class="bi bi-journal-text"></i> Notas Importantes
-                                </h6>
-                                <div class="alert-custom">
-                                    <i class="bi bi-exclamation-circle"></i>
-                                    Cliente VIP. Prefiere citas por la tarde. Alérgica a productos con parabenos.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                   
 
                     <!-- Historial de Citas -->
                     <div class="divider-luxury my-4"></div>
                     
                     <h6 style="color: var(--borgona); font-weight: 600; margin-bottom: 1rem;">
-                        <i class="bi bi-clock-history"></i> Últimas 10 Citas
+                       
                     </h6>
                     
-                    <div class="table-responsive">
-                        <table class="table-custom">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Servicio</th>
-                                    <th>Estilista</th>
-                                    <th>Monto</th>
-                                    <th>Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>28 Oct 2024, 9:00 AM</td>
-                                    <td>Corte de Cabello</td>
-                                    <td>Ana López</td>
-                                    <td>$15.00</td>
-                                    <td><span class="badge bg-success">Completada</span></td>
-                                </tr>
-                                <tr>
-                                    <td>15 Oct 2024, 2:00 PM</td>
-                                    <td>Tinte Completo + Tratamiento</td>
-                                    <td>Ana López</td>
-                                    <td>$75.00</td>
-                                    <td><span class="badge bg-success">Completada</span></td>
-                                </tr>
-                                <tr>
-                                    <td>02 Oct 2024, 3:30 PM</td>
-                                    <td>Manicure + Pedicure</td>
-                                    <td>Sofía Ramírez</td>
-                                    <td>$25.00</td>
-                                    <td><span class="badge bg-success">Completada</span></td>
-                                </tr>
-                                <!-- Más filas... -->
-                            </tbody>
-                        </table>
+                    
                     </div>
                 </div>
-                <div class="modal-footer" style="border-top: 1px solid var(--rosa-empolvado);">
-                    <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-outline-gold">
-                        <i class="bi bi-file-pdf"></i> Exportar Historial
-                    </button>
-                    <button type="button" class="btn btn-gold" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalEditarCliente">
-                        <i class="bi bi-pencil"></i> Editar Cliente
-                    </button>
+               
                 </div>
             </div>
         </div>
@@ -995,6 +748,9 @@ document.addEventListener('DOMContentLoaded', () => {
             alertRegistro.style.borderLeftColor = '#28a745';
             mensajeRegistro.innerHTML = '<i class="bi bi-check-circle"></i> ¡Cuenta creada exitosamente! Redirigiendo...';
             alertRegistro.style.display = 'block';
+            modal.hide();
+            location.reload();
+            form.reset();
             
             // Scroll al alert
             alertRegistro.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
