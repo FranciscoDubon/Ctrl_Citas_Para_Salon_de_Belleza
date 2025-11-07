@@ -44,9 +44,6 @@
             <a href="{{ route('recepcionista.promocionesRecep') }}" class="menu-item">
                 <i class="bi bi-gift"></i> Promociones
             </a>
-            <a href="{{ route('recepcionista.configRecep') }}" class="menu-item">
-                <i class="bi bi-gear"></i> Configuración
-            </a>
         </nav>
     </div>
 
