@@ -134,11 +134,45 @@ Route::get('/recepcionista/dashboard', function () {
 
 use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\PromocionController;
+
+// Rutas de Admin
+Route::prefix('admin')->name('admin.')->group(function () {
+    // ... otras rutas de admin ...
+    
+    // Vista de promociones admin
+    Route::get('/promocionesAdm', [PromocionController::class, 'indexAdmin'])->name('promocionesAdm');
+    
+    // CRUD Promociones
+    Route::post('/promociones', [PromocionController::class, 'store'])->name('promocion.store');
+    Route::get('/promociones/{id}', [PromocionController::class, 'show'])->name('promocion.show');
+    Route::put('/promociones/{id}', [PromocionController::class, 'update'])->name('promocion.update');
+    Route::post('/promociones/{id}/estado', [PromocionController::class, 'toggleEstado'])->name('promocion.toggleEstado');
+    
+    // CRUD Combos
+    Route::post('/combos', [PromocionController::class, 'storeCombo'])->name('combo.store');
+    Route::get('/combos/{id}', [PromocionController::class, 'showCombo'])->name('combo.show');
+    Route::put('/combos/{id}', [PromocionController::class, 'updateCombo'])->name('combo.update');
+    Route::post('/combos/{id}/estado', [PromocionController::class, 'toggleEstadoCombo'])->name('combo.toggleEstado');
+});
+
+// Rutas de Recepcionista
+Route::prefix('recepcionista')->name('recepcionista.')->group(function () {
+    // ... otras rutas de recepcionista ...
+    
+    // Vista de promociones recepcionista
+    Route::get('/promocionesRecep', [PromocionController::class, 'indexRecepcionista'])->name('promocionesRecep');
+});
+
 Route::post('/recepcionista/servicios', [ServicioController::class, 'store'])->name('servicios.store');
 Route::get('/recepcionista/serviciosRecep', [ServicioController::class, 'index'])->name('recepcionista.serviciosRecep');
 Route::put('/servicios/{id}/actualizar', [ServicioController::class, 'update'])->name('servicios.update');
 Route::get('/servicios/{id}', [ServicioController::class, 'show'])->name('servicios.show');
 Route::put('/servicios/{id}/toggle-estado', [ServicioController::class, 'toggleEstado'])->name('servicios.toggleEstado');
+
+Route::prefix('recepcionista')->name('recepcionista.')->group(function () {
+    // Gestión de Promociones para Recepcionista
+    Route::get('/promocionesRecep', [PromocionController::class, 'indexRecepcionista'])->name('promocionesRecep');
+});
 
 //clientes 
 Route::get('/cliente/clientes/dashboard', [ClienteController::class, 'index'])->name('clientes.dashboard');

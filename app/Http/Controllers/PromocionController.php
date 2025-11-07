@@ -44,6 +44,45 @@ class PromocionController extends Controller
         ));
     }
 
+    // Mostrar vista de promociones (Recepcionista)
+public function indexRecepcionista()
+{
+    $promociones = Promocion::orderBy('activo', 'desc')
+        ->orderBy('fechaInicio', 'desc')
+        ->get();
+
+    $combos = Combo::with('servicios')->orderBy('activo', 'desc')->get();
+    $servicios = Servicio::where('activo', true)->orderBy('nombre')->get();
+
+    // KPIs
+    $promocionesActivas = Promocion::where('activo', true)
+        ->where('fechaFin', '>=', Carbon::now())
+        ->count();
+
+    $combosDisponibles = Combo::where('activo', true)->count();
+
+    $usosEsteMes = Promocion::where('usosActuales', '>', 0)
+        ->whereMonth('updated_at', Carbon::now()->month)
+        ->sum('usosActuales');
+
+    $descuentosOtorgados = Promocion::where('tipoDescuento', 'fijo')
+        ->where('activo', true)
+        ->whereMonth('updated_at', Carbon::now()->month)
+        ->sum(\DB::raw('valorDescuento * usosActuales'));
+    
+    $descuentosOtorgados = round($descuentosOtorgados, 2);
+
+    return view('recepcionista.promocionesRecepcionista', compact(
+        'promociones',
+        'combos',
+        'servicios',
+        'promocionesActivas',
+        'combosDisponibles',
+        'usosEsteMes',
+        'descuentosOtorgados'
+    ));
+}
+
     // Crear promoción
     public function store(Request $request)
     {
