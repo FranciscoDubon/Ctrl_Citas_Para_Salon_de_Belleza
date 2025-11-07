@@ -87,111 +87,74 @@
             </div>
         </div>
 
-        <!-- KPI Cards - Resumen de Promociones -->
-        <div class="row g-4 mb-4">
-            
-            <!-- 
-            ================================================
-            TODO BACKEND: Conectar con BD
-            ================================================
-            CONSULTA SQL:
-            SELECT COUNT(*) as total 
-            FROM promociones 
-            WHERE activo = 1 AND fecha_fin >= CURDATE()
-            ================================================
-            -->
-            <div class="col-xl-3 col-md-6">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon primary">
-                            <i class="bi bi-gift-fill"></i>
-                        </div>
-                    </div>
-                    <h3 class="kpi-value">6</h3>
-                    <p class="kpi-label">Promociones Activas</p>
-                    <span class="kpi-badge badge-success">
-                        <i class="bi bi-check-circle"></i> Vigentes
-                    </span>
-                </div>
-            </div>
+<!-- KPI Cards - Resumen de Promociones -->
+<div class="row g-4 mb-4">
 
-            <!-- 
-            ================================================
-            TODO BACKEND: Conectar con BD
-            ================================================
-            CONSULTA SQL:
-            SELECT COUNT(*) as total 
-            FROM combos 
-            WHERE activo = 1
-            ================================================
-            -->
-            <div class="col-xl-3 col-md-6">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon success">
-                            <i class="bi bi-box-seam-fill"></i>
-                        </div>
-                    </div>
-                    <h3 class="kpi-value">4</h3>
-                    <p class="kpi-label">Combos Disponibles</p>
-                    <span class="kpi-badge badge-success">
-                        <i class="bi bi-check-circle"></i> Activos
-                    </span>
+    <!-- Promociones activas -->
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div class="kpi-icon primary">
+                    <i class="bi bi-gift-fill"></i>
                 </div>
             </div>
-
-            <!-- 
-            ================================================
-            TODO BACKEND: Conectar con BD
-            ================================================
-            CONSULTA SQL:
-            SELECT COUNT(*) as total 
-            FROM citas 
-            WHERE promocion_id IS NOT NULL 
-            AND MONTH(fecha_hora) = MONTH(CURDATE())
-            ================================================
-            -->
-            <div class="col-xl-3 col-md-6">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon info">
-                            <i class="bi bi-ticket-perforated"></i>
-                        </div>
-                    </div>
-                    <h3 class="kpi-value">87</h3>
-                    <p class="kpi-label">Usos Este Mes</p>
-                    <span class="kpi-badge badge-success">
-                        <i class="bi bi-arrow-up"></i> +15%
-                    </span>
-                </div>
-            </div>
-
-            <!-- 
-            ================================================
-            TODO BACKEND: Conectar con BD
-            ================================================
-            CONSULTA SQL:
-            SELECT SUM(descuento_aplicado) as total 
-            FROM citas 
-            WHERE promocion_id IS NOT NULL 
-            AND MONTH(fecha_hora) = MONTH(CURDATE())
-            ================================================
-            -->
-            <div class="col-xl-3 col-md-6">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon warning">
-                            <i class="bi bi-piggy-bank"></i>
-                        </div>
-                    </div>
-                    <h3 class="kpi-value">$342</h3>
-                    <p class="kpi-label">Descuentos Otorgados</p>
-                    <span class="kpi-badge badge-neutral">
-                        <i class="bi bi-graph-down"></i> Este mes
-                    </span>
-                </div>
-            </div>
+            <h3 class="kpi-value">{{ $promocionesActivas }}</h3>
+            <p class="kpi-label">Promociones Activas</p>
+            <span class="kpi-badge badge-success">
+                <i class="bi bi-check-circle"></i> Vigentes
+            </span>
         </div>
+    </div>
+
+    <!-- Combos disponibles -->
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div class="kpi-icon success">
+                    <i class="bi bi-box-seam-fill"></i>
+                </div>
+            </div>
+            <h3 class="kpi-value">{{ $combosDisponibles }}</h3>
+            <p class="kpi-label">Combos Disponibles</p>
+            <span class="kpi-badge badge-success">
+                <i class="bi bi-check-circle"></i> Activos
+            </span>
+        </div>
+    </div>
+
+    <!-- Usos de promociones este mes -->
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div class="kpi-icon info">
+                    <i class="bi bi-ticket-perforated"></i>
+                </div>
+            </div>
+            <h3 class="kpi-value">{{ $usosEsteMes }}</h3>
+            <p class="kpi-label">Usos Este Mes</p>
+            <span class="kpi-badge badge-success">
+                <i class="bi bi-arrow-up"></i> +15%
+            </span>
+        </div>
+    </div>
+
+    <!-- Descuentos otorgados -->
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div class="kpi-icon warning">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
+            </div>
+            <h3 class="kpi-value">${{ number_format($descuentosOtorgados, 2) }}</h3>
+            <p class="kpi-label">Descuentos Otorgados</p>
+            <span class="kpi-badge badge-success">
+                <i class="bi bi-graph-up-arrow"></i> Este Mes
+            </span>
+        </div>
+    </div>
+
+</div>
 
         <!-- Promociones Activas -->
         <div class="row g-4 mb-4">

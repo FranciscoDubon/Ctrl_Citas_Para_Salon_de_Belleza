@@ -7,6 +7,8 @@ use App\Models\Promocion;
 use App\Models\Combo;
 use App\Models\Servicio;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+
 
 class PromocionController extends Controller
 {
