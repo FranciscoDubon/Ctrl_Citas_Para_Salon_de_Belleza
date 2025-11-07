@@ -49,9 +49,6 @@
             <a href="{{ route('recepcionista.promocionesRecep') }}" class="menu-item active">
                 <i class="bi bi-gift"></i> Promociones
             </a>
-            <a href="{{ route('recepcionista.configRecep') }}" class="menu-item">
-                <i class="bi bi-gear"></i> Configuración
-            </a>
         </nav>
     </div>
 
@@ -86,9 +83,6 @@
                 </button>
                 <button class="btn btn-premium me-2" data-bs-toggle="modal" data-bs-target="#modalNuevoCombo">
                     <i class="bi bi-box-seam"></i> Nuevo Combo
-                </button>
-                <button class="btn btn-soft">
-                    <i class="bi bi-file-earmark-pdf"></i> Exportar
                 </button>
             </div>
         </div>

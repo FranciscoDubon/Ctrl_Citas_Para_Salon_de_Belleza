@@ -34,9 +34,6 @@
             <a href="{{ route('estilista.citasEsti') }}" class="menu-item active">
                 <i class="bi bi-calendar-check"></i> Citas
             </a>
-            <a href="{{ route('estilista.configEsti') }}" class="menu-item">
-                <i class="bi bi-gear"></i> Configuración
-            </a>
         </nav>
     </div>
 
