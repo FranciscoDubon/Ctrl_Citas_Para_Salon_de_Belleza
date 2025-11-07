@@ -104,39 +104,7 @@
             </div>
         </div>
 
-        <!-- Filtros Rápidos -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card-custom" style="padding: 1rem;">
-                    <div class="d-flex gap-2 flex-wrap align-items-center">
-                        <strong style="color: var(--borgona); margin-right: 0.5rem;">
-                            <i class="bi bi-funnel"></i> Filtrar por:
-                        </strong>
-                        <button class="btn btn-sm btn-gold" onclick="filtrarClientes('todos')">
-                            <i class="bi bi-people"></i> Todos (247)
-                        </button>
-                        <button class="btn btn-sm btn-outline-gold" onclick="filtrarClientes('vip')">
-                            <i class="bi bi-star-fill"></i> VIP (23)
-                        </button>
-                        <button class="btn btn-sm btn-outline-gold" onclick="filtrarClientes('frecuentes')">
-                            <i class="bi bi-heart-fill"></i> Frecuentes (45)
-                        </button>
-                        <button class="btn btn-sm btn-outline-gold" onclick="filtrarClientes('nuevos')">
-                            <i class="bi bi-person-plus-fill"></i> Nuevos (18)
-                        </button>
-                        <button class="btn btn-sm btn-outline-gold" onclick="filtrarClientes('inactivos')">
-                            <i class="bi bi-person-dash"></i> Inactivos (12)
-                        </button>
-                        
-                        <div style="border-left: 2px solid var(--rosa-empolvado); height: 30px; margin: 0 0.5rem;"></div>
-                        
-                        <button class="btn btn-sm btn-soft" onclick="exportarClientes()">
-                            <i class="bi bi-file-excel"></i> Exportar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+       
 
         <!-- KPI Cards - Resumen de Clientes -->
         <div class="row g-4 mb-4">
@@ -284,310 +252,67 @@
                                     <th>Contacto</th>
                                     <th>Visitas</th>
                                     <th>Total Gastado</th>
-                                    <th>Última Visita</th>
-                                    <th>Categoría</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Cliente VIP 1 -->
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 40px; height: 40px;">M</div>
-                                            <div>
-                                                <strong>María García López</strong><br>
-                                                <small style="color: var(--borgona); opacity: 0.7;">
-                                                    <i class="bi bi-cake2"></i> 15 Ene 1990 (34 años)
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <i class="bi bi-envelope"></i> maria.garcia@email.com<br>
-                                            <i class="bi bi-phone"></i> (503) 7890-1234<br>
-                                            <i class="bi bi-geo-alt"></i> Col. Escalón, San Salvador
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-luxury" style="font-size: 0.95rem;">18 citas</span>
-                                    </td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">$642.00</strong>
-                                    </td>
-                                    <td>28 Oct 2024</td>
-                                    <td>
-                                        <span class="badge bg-success">
-                                            <i class="bi bi-star-fill"></i> VIP
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" data-bs-toggle="modal" data-bs-target="#modalVerCliente" onclick="cargarCliente(1)" title="Ver perfil">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" data-bs-toggle="modal" data-bs-target="#modalEditarCliente" onclick="cargarEditarCliente(1)" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" onclick="nuevaCitaCliente(1)" title="Nueva cita">
-                                            <i class="bi bi-calendar-plus"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+            @foreach($clientes as $cliente)
+            <tr>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="list-avatar me-2" style="width: 40px; height: 40px;">
+                            {{ strtoupper(substr($cliente->nombre, 0, 1)) }}
+                        </div>
+                        <div>
+                            <strong>{{ $cliente->nombre }} {{ $cliente->apellido }}</strong><br>
+                            <small style="color: var(--borgona); opacity: 0.7;">
+                                <i class="bi bi-cake2"></i> {{ \Carbon\Carbon::parse($cliente->fechaNacimiento)->format('d M Y') }}
+                                ({{ \Carbon\Carbon::parse($cliente->fechaNacimiento)->age }} años)
+                            </small>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div style="font-size: 0.875rem;">
+                        <i class="bi bi-envelope"></i> {{ $cliente->correoElectronico }}<br>
+                        <i class="bi bi-phone"></i> {{ $cliente->telefono }}
+                    </div>
+                </td>
+                <td>
+                    <span class="badge badge-luxury" style="font-size: 0.95rem;">
+                        {{ $cliente->citas_count }} citas
+                    </span>
+                </td>
+               @php
+$totalGastado = $cliente->citas && $cliente->citas->isNotEmpty()
+    ? $cliente->citas->flatMap->servicios->sum('precioBase')
+    : 0;
+@endphp
+<td>
+    <strong style="color: var(--borgona); font-size: 1.1rem;">
+        ${{ number_format($totalGastado, 2) }}
+    </strong>
+</td>
 
-                                <!-- Cliente VIP 2 -->
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 40px; height: 40px;">A</div>
-                                            <div>
-                                                <strong>Ana Rodríguez Pérez</strong><br>
-                                                <small style="color: var(--borgona); opacity: 0.7;">
-                                                    <i class="bi bi-cake2"></i> 22 Mar 1988 (36 años)
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <i class="bi bi-envelope"></i> ana.rodriguez@email.com<br>
-                                            <i class="bi bi-phone"></i> (503) 7890-5678<br>
-                                            <i class="bi bi-geo-alt"></i> Santa Tecla, La Libertad
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-luxury" style="font-size: 0.95rem;">15 citas</span>
-                                    </td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">$520.00</strong>
-                                    </td>
-                                    <td>30 Oct 2024</td>
-                                    <td>
-                                        <span class="badge bg-success">
-                                            <i class="bi bi-star-fill"></i> VIP
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Ver perfil">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Nueva cita">
-                                            <i class="bi bi-calendar-plus"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Cliente Frecuente -->
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 40px; height: 40px;">L</div>
-                                            <div>
-                                                <strong>Laura Martínez Díaz</strong><br>
-                                                <small style="color: var(--borgona); opacity: 0.7;">
-                                                    <i class="bi bi-cake2"></i> 10 Jul 1992 (32 años)
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <i class="bi bi-envelope"></i> laura.martinez@email.com<br>
-                                            <i class="bi bi-phone"></i> (503) 7890-9012<br>
-                                            <i class="bi bi-geo-alt"></i> Col. San Benito, San Salvador
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-luxury" style="font-size: 0.95rem;">8 citas</span>
-                                    </td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">$285.00</strong>
-                                    </td>
-                                    <td>25 Oct 2024</td>
-                                    <td>
-                                        <span class="badge badge-gold">
-                                            <i class="bi bi-heart-fill"></i> Frecuente
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Ver perfil">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Nueva cita">
-                                            <i class="bi bi-calendar-plus"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Cliente Frecuente 2 -->
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 40px; height: 40px;">C</div>
-                                            <div>
-                                                <strong>Carla Hernández Silva</strong><br>
-                                                <small style="color: var(--borgona); opacity: 0.7;">
-                                                    <i class="bi bi-cake2"></i> 05 Dic 1995 (28 años)
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <i class="bi bi-envelope"></i> carla.hernandez@email.com<br>
-                                            <i class="bi bi-phone"></i> (503) 7890-3456<br>
-                                            <i class="bi bi-geo-alt"></i> Antiguo Cuscatlán
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-luxury" style="font-size: 0.95rem;">6 citas</span>
-                                    </td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">$195.00</strong>
-                                    </td>
-                                    <td>20 Oct 2024</td>
-                                    <td>
-                                        <span class="badge badge-gold">
-                                            <i class="bi bi-heart-fill"></i> Frecuente
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Ver perfil">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Nueva cita">
-                                            <i class="bi bi-calendar-plus"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Cliente Nuevo -->
-                                <tr style="background: rgba(212, 175, 55, 0.05);">
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 40px; height: 40px;">S</div>
-                                            <div>
-                                                <strong>Sofía Ramírez Castro</strong><br>
-                                                <small style="color: var(--borgona); opacity: 0.7;">
-                                                    <i class="bi bi-cake2"></i> 18 Ago 1998 (26 años)
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <i class="bi bi-envelope"></i> sofia.ramirez@email.com<br>
-                                            <i class="bi bi-phone"></i> (503) 7890-7890<br>
-                                            <i class="bi bi-geo-alt"></i> Col. Maquilishuat, San Salvador
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-luxury" style="font-size: 0.95rem;">2 citas</span>
-                                    </td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">$65.00</strong>
-                                    </td>
-                                    <td>28 Oct 2024</td>
-                                    <td>
-                                        <span class="badge badge-soft">
-                                            <i class="bi bi-star"></i> Nuevo
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Ver perfil">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Nueva cita">
-                                            <i class="bi bi-calendar-plus"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Cliente Inactivo -->
-                                <tr style="opacity: 0.5;">
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 40px; height: 40px;">P</div>
-                                            <div>
-                                                <strong>Patricia Gómez Ortiz</strong><br>
-                                                <small style="color: var(--borgona); opacity: 0.7;">
-                                                    <i class="bi bi-cake2"></i> 30 May 1987 (37 años)
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <i class="bi bi-envelope"></i> patricia.gomez@email.com<br>
-                                            <i class="bi bi-phone"></i> (503) 7890-1111<br>
-                                            <i class="bi bi-geo-alt"></i> Mejicanos, San Salvador
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-luxury" style="font-size: 0.95rem;">5 citas</span>
-                                    </td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">$175.00</strong>
-                                    </td>
-                                    <td>15 Ago 2024</td>
-                                    <td>
-                                        <span class="badge bg-secondary">
-                                            <i class="bi bi-person-dash"></i> Inactivo
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Ver perfil">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-gold" onclick="reactivarCliente(6)" title="Contactar">
-                                            <i class="bi bi-telephone"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
+                <td>
+                    <button class="btn btn-sm btn-soft me-1" onclick="cargarCliente({{ $cliente->idCliente }})" title="Ver perfil">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-gold me-1" onclick="cargarEditarCliente({{ $cliente->idCliente }})" title="Editar">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-premium" onclick="nuevaCitaCliente({{ $cliente->idCliente }})" title="Nueva cita">
+                        <i class="bi bi-calendar-plus"></i>
+                    </button>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
                         </table>
                     </div>
 
                     <!-- Paginación -->
-                    <div class="d-flex justify-content-between align-items-center mt-3">
-                        <div style="color: var(--borgona);">
-                            <small>Mostrando 6 de 247 clientes</small>
-                        </div>
-                        <nav>
-                            <ul class="pagination mb-0">
-                                <li class="page-item disabled">
-                                    <a class="page-link" href="#" style="color: var(--borgona);">Anterior</a>
-                                </li>
-                                <li class="page-item active">
-                                    <a class="page-link" href="#" style="background: var(--borgona); border-color: var(--borgona);">1</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#" style="color: var(--borgona);">2</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#" style="color: var(--borgona);">3</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#" style="color: var(--borgona);">Siguiente</a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
+                    
                 </div>
             </div>
         </div>

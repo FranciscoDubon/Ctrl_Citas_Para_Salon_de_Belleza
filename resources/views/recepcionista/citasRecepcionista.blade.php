@@ -424,7 +424,7 @@
 
                             <div class="col-md-4">
                                 <label class="form-label">Fecha *</label>
-                                <input type="date" class="form-control" name="fecha" id="fechaCita" required>
+                                <input type="date" class="form-control" name="fecha" id="fechaFiltro" required>
                             </div>
 
                             <div class="col-md-4">

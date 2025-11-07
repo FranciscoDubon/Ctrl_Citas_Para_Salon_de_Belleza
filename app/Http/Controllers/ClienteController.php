@@ -111,5 +111,11 @@ public function dashboardRecepcionista()
     ));
 }
 
+public function clientesRecepcionista()
+{
+   $clientes = Cliente::with(['citas.servicios'])->withCount('citas')->get();
+    return view('recepcionista.clientesRecepcionista', compact('clientes'));
+}
+
 
 }
