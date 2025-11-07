@@ -11,6 +11,7 @@ class Cliente extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $table = 'cliente';
+    protected $primaryKey = 'idCliente';
     public $timestamps = false; 
 
     protected $fillable = [
