@@ -7,6 +7,7 @@ use App\Models\Cita;
 use App\Models\Servicio;
 use App\Models\Cliente;
 use App\Models\Empleado;
+
 use Illuminate\Support\Facades\DB;
 
 class CitaController extends Controller
@@ -18,7 +19,8 @@ class CitaController extends Controller
             'estilista_id' => 'required|exists:empleado,idEmpleado',
             'fecha' => 'required|date|after_or_equal:today',
             'hora' => 'required',
-            'servicio_id' => 'required|exists:servicio,idServicio'
+            'servicio_id' => 'required|exists:servicio,idServicio',
+            'codigo_promocional' => 'nullable|string'
         ]);
 
         DB::beginTransaction();
@@ -33,8 +35,24 @@ class CitaController extends Controller
                 'hora' => $request->hora,
                 'estado' => 'PENDIENTE',
                 'duracion' => $servicio->duracionBase
+                
             ]);
+            // Asignar promoción si se envió un código válido
+        if ($request->filled('codigo_promocional')) {
+            $promocion = Promocion::where('codigoPromocional', $request->codigo_promocional)
+                ->where('activo', true)
+                ->whereDate('fechaInicio', '<=', now())
+                ->whereDate('fechaFin', '>=', now())
+                ->first();
 
+            if ($promocion && $promocion->puedeUsarse()) {
+                $cita->idPromocion = $promocion->idPromocion;
+                $cita->save();
+
+                // Opcional: incrementar contador de usos
+                $promocion->increment('usosActuales');
+            }
+        }
             $cita->servicios()->attach($servicio->idServicio);
 
             DB::commit();
@@ -55,8 +73,44 @@ public function crear()
     })->where('activo', 1)->get();
 
     $servicios = Servicio::where('activo', 1)->get();
+    
 
     return view('recepcionista.citasRecepcionista', compact('clientes', 'estilistas', 'servicios'));
+}
+
+public function agendaSemana()
+{
+    $clientes = Cliente::all();
+
+    $estilistas = Empleado::whereHas('rol', function ($query) {
+        $query->where('nombre', 'estilista');
+    })->where('activo', 1)->get();
+
+    $servicios = Servicio::where('activo', 1)->get();
+
+    $citas = Cita::with(['cliente', 'estilista', 'servicios', 'promocion'])
+        ->orderBy('fecha')
+        ->orderBy('hora')
+        ->get();
+
+    return view('recepcionista.citasRecepcionista', compact(
+        'clientes', 'estilistas', 'servicios', 'citas'
+    ));
+}
+public function filtrarTabla(Request $request)
+{
+    $fecha = $request->input('fecha') ?? now()->toDateString();
+    $idEstilista = $request->input('estilista');
+    $estado = $request->input('estado');
+
+    $citas = Cita::with(['cliente', 'servicios', 'promocion', 'estilista'])
+        ->whereDate('fecha', $fecha)
+        ->when($idEstilista, fn($q) => $q->where('idEstilista', $idEstilista))
+        ->when($estado, fn($q) => $q->where('estado', $estado))
+        ->orderBy('hora')
+        ->get();
+
+    return view('recepcionista.partials.filas-citas', compact('citas'))->render();
 }
 
 

@@ -47,4 +47,15 @@ class Promocion extends Model
     {
         return $this->usosMaximos === null || $this->usosActuales < $this->usosMaximos;
     }
+
+    public function servicios()
+{
+    return $this->belongsToMany(Servicio::class, 'promocionservicio', 'idPromocion', 'idServicio');
+}
+
+public function combos()
+{
+    return $this->belongsToMany(Combo::class, 'promocioncombo', 'idPromocion', 'idCombo');
+}
+
 }
