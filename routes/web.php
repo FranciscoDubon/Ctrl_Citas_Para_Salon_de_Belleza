@@ -183,11 +183,12 @@ Route::get('/recepcionista/clientes/{id}/editar', [ClienteController::class, 'ed
 
 Route::post('/citas/crear', [CitaController::class, 'store'])->name('citas.store');
 use App\Http\Controllers\CitaController;
-
+Route::put('/recepcionista/citas/{id}/estado', [CitaController::class, 'actualizarEstado']);
 Route::get('/recepcionista/citasRecep', [CitaController::class, 'crear'])->name('recepcionista.citasRecep');
 Route::post('/citas/crear', [CitaController::class, 'store'])->name('citas.store');
 Route::get('/recepcionista/citasRecep', [CitaController::class, 'agendaSemana'])->name('recepcionista.citasRecep');
 Route::get('/filtrar-citas', [CitaController::class, 'filtrarTabla'])->name('recepcionista.citasRecep');
+Route::get('/recepcionista/citas/{id}/editar', [CitaController::class, 'editarCita']);
 
 
 // Ruta Gestión de Servicios Admin

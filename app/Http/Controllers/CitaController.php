@@ -114,4 +114,40 @@ public function filtrarTabla(Request $request)
 }
 
 
+public function actualizarEstado(Request $request, $id)
+{
+    $cita = Cita::findOrFail($id);
+    $nuevoEstado = $request->estado;
+
+    // Validar estado permitido
+    $estadosValidos = ['pendiente', 'confirmada', 'en proceso', 'completada', 'cancelada'];
+    if (!in_array($nuevoEstado, $estadosValidos)) {
+        return response()->json(['error' => 'Estado inválido'], 400);
+    }
+
+    $cita->estado = $nuevoEstado;
+    $cita->save();
+
+    return response()->json(['mensaje' => 'Estado actualizado', 'estado' => $nuevoEstado]);
+}
+
+public function editarCita($id)
+{
+    $cita = Cita::with(['cliente', 'servicios', 'estilista'])->findOrFail($id);
+
+    return response()->json([
+        'idCita' => $cita->idCita,
+        'fecha' => $cita->fecha,
+        'hora' => $cita->hora,
+        'cliente_id' => $cita->cliente->idCliente,
+        'cliente_nombre' => $cita->cliente->nombre,
+        'cliente_apellido' => $cita->cliente->apellido,
+        'estilista_id' => $cita->estilista->idEstilista,
+        'servicio_id' => $cita->servicio->idServicio,
+        'notas' => $cita->notas,
+        'estado' => $cita->estado
+    ]);
+}
+
+
 }

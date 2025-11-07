@@ -285,7 +285,8 @@
         <span class="badge {{ $clase }}">{{ ucfirst($estado) }}</span>
     </td>
     <td>
-        <button class="btn btn-sm btn-outline-gold me-1" onclick="verCita({{ $cita->idCita }})"><i class="bi bi-eye"></i></button>
+        <button class="btn btn-sm btn-outline-gold me-1" onclick="editarCita({{ $cita->idCita }})" title="Editar Cita"><i class="bi bi-pencil-square"></i></button>
+
         @if($estado === 'pendiente')
             <button class="btn btn-sm btn-premium me-1" onclick="confirmarCita({{ $cita->idCita }})"><i class="bi bi-telephone"></i></button>
         @elseif($estado === 'confirmada')
@@ -505,105 +506,174 @@
          MODAL: EDITAR CITA
          ============================================ -->
     <div class="modal fade" id="modalEditarCita" tabindex="-1">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content" style="background: linear-gradient(135deg, white 0%, var(--blanco-humo) 100%); border: 2px solid var(--rosa-empolvado);">
-                <div class="modal-header" style="border-bottom: 2px solid var(--dorado-palido);">
-                    <h5 class="modal-title" style="color: var(--borgona); font-weight: 700;">
-                        <i class="bi bi-pencil" style="color: var(--dorado-palido);"></i> 
-                        Editar Cita #003
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- 
-                    ================================================
-                    TODO BACKEND: Formulario de Edición
-                    ================================================
-                    ACCIÓN: Enviar a ruta PUT /citas/{id}/actualizar
-                    NOTA: Campos pre-llenados con datos actuales
-                    ================================================
-                    -->
-                    <form id="formEditarCita">
-                        <input type="hidden" name="cita_id" value="3">
-                        <!-- Mismo contenido que formNuevaCita pero con valores -->
-                        <p class="text-center">Formulario similar a Nueva Cita con datos pre-cargados</p>
-                    </form>
-                </div>
-                <div class="modal-footer" style="border-top: 1px solid var(--rosa-empolvado);">
-                    <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" form="formEditarCita" class="btn btn-gold">
-                        <i class="bi bi-save"></i> Actualizar Cita
-                    </button>
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloEditarCita">Editar Cita</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditarCita">
+    <input type="hidden" name="cita_id" id="cita_id">
+
+    <div class="row g-3">
+        <!-- Cliente -->
+        <div class="col-12">
+            <h6 style="color: var(--borgona); font-weight: 600; border-bottom: 2px solid var(--rosa-empolvado); padding-bottom: 0.5rem;">
+                <i class="bi bi-person-circle"></i> Información del Cliente
+            </h6>
+        </div>
+
+        <div class="col-md-9">
+            <label class="form-label">Cliente *</label>
+            <select class="form-select" name="cliente_id" id="cliente_id" required>
+                <option value="">Buscar cliente...</option>
+                @foreach($clientes as $cliente)
+                <option value="{{ $cliente->idCliente }}">
+                    {{ $cliente->nombre }} {{ $cliente->apellido }} - {{ $cliente->telefono }}
+                </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">&nbsp;</label>
+        </div>
+
+        <!-- Servicio -->
+        <div class="col-12 mt-4">
+            <h6 style="color: var(--borgona); font-weight: 600; border-bottom: 2px solid var(--rosa-empolvado); padding-bottom: 0.5rem;">
+                <i class="bi bi-scissors"></i> Servicio y Estilista
+            </h6>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Servicio *</label>
+            <select class="form-select" name="servicio_id" id="servicioSelectEditar" onchange="actualizarDuracionEditar()" required>
+                <option value="">Seleccionar servicio...</option>
+                @foreach($servicios as $servicio)
+                <option value="{{ $servicio->idServicio }}"
+                    data-duracion="{{ $servicio->duracionBase }}"
+                    data-precio="{{ $servicio->precioBase }}">
+                    {{ $servicio->nombre }} - ${{ number_format($servicio->precioBase, 2) }} ({{ $servicio->duracionBase }} min)
+                </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Estilista *</label>
+            <select class="form-select" name="estilista_id" id="estilista_id" required>
+                <option value="">Seleccionar estilista...</option>
+                @foreach($estilistas as $estilista)
+                <option value="{{ $estilista->idEmpleado }}">
+                    {{ $estilista->nombre }} {{ $estilista->apellido }}
+                </option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- Fecha y Hora -->
+        <div class="col-12 mt-4">
+            <h6 style="color: var(--borgona); font-weight: 600; border-bottom: 2px solid var(--rosa-empolvado); padding-bottom: 0.5rem;">
+                <i class="bi bi-calendar3"></i> Fecha y Hora
+            </h6>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Fecha *</label>
+            <input type="date" class="form-control" name="fecha" id="fechaEditar" required>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Hora *</label>
+            <input type="time" class="form-control" name="hora" id="horaEditar" required>
+        </div>
+
+        <div class="col-md-6">
+    <label class="form-label">Estado de la Cita</label>
+    <select class="form-select" name="estado" id="estado">
+        <option value="pendiente">Pendiente</option>
+        <option value="confirmada">Confirmada</option>
+        <option value="en proceso">En proceso</option>
+        <option value="completada">Completada</option>
+        <option value="cancelada">Cancelada</option>
+    </select>
+</div>
+
+
+        <div class="col-md-4">
+            <label class="form-label">Duración Estimada</label>
+            <input type="text" class="form-control" id="duracionEstimadaEditar" value="-- min" readonly style="background: var(--champagne-light);">
+        </div>
+
+        <!-- Promoción -->
+        <div class="col-12 mt-4">
+            <h6 style="color: var(--borgona); font-weight: 600; border-bottom: 2px solid var(--rosa-empolvado); padding-bottom: 0.5rem;">
+                <i class="bi bi-gift"></i> Promoción (Opcional)
+            </h6>
+        </div>
+
+        <div class="col-md-8">
+            <label class="form-label">Código Promocional</label>
+            <input type="text" class="form-control" name="codigo_promocional" id="codigoPromoEditar" placeholder="Ej: BLACK30, NUEVO10">
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">&nbsp;</label>
+            <button type="button" class="btn btn-outline-gold w-100" onclick="validarPromocionEditar()">
+                <i class="bi bi-check-circle"></i> Validar Código
+            </button>
+        </div>
+
+        <div class="col-12" id="promoValidadaEditar" style="display: none;">
+            <div class="alert-custom" style="border-left: 5px solid var(--dorado-palido);">
+                <i class="bi bi-check-circle-fill"></i>
+                <strong style="color: var(--dorado-palido);">¡Promoción válida!</strong><br>
+                <span id="promoDetalleEditar"></span>
+            </div>
+        </div>
+
+        <!-- Notas -->
+        <div class="col-12">
+            <label class="form-label">Notas Adicionales</label>
+            <textarea class="form-control" name="notas" id="notasEditar" rows="2" placeholder="Observaciones, preferencias especiales, etc."></textarea>
+        </div>
+
+        <!-- Resumen -->
+        <div class="col-12 mt-4">
+            <div class="premium-card">
+                <h6 style="margin-bottom: 1rem;">💰 Resumen de la Cita</h6>
+                <div class="row">
+                    <div class="col-md-4">
+                        <p style="color: var(--blanco-humo); opacity: 0.8; margin: 0;">Precio Base:</p>
+                        <h5 style="color: var(--rosa-empolvado); margin: 0.5rem 0;" id="precioBaseEditar">$0.00</h5>
+                    </div>
+                    <div class="col-md-4">
+                        <p style="color: var(--blanco-humo); opacity: 0.8; margin: 0;">Descuento:</p>
+                        <h5 style="color: var(--dorado-palido); margin: 0.5rem 0;" id="descuentoEditar">$0.00</h5>
+                    </div>
+                    <div class="col-md-4">
+                        <p style="color: var(--blanco-humo); opacity: 0.8; margin: 0;">Total a Pagar:</p>
+                        <h5 style="color: var(--dorado-palido); margin: 0.5rem 0; font-size: 1.5rem;" id="totalPagarEditar">$0.00</h5>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</form>
 
-    <!-- ============================================
-         MODAL: VER DETALLES DE CITA
-         ============================================ -->
-    <div class="modal fade" id="modalVerCita" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content" style="background: linear-gradient(135deg, white 0%, var(--blanco-humo) 100%); border: 2px solid var(--rosa-empolvado);">
-                <div class="modal-header" style="border-bottom: 2px solid var(--dorado-palido);">
-                    <h5 class="modal-title" style="color: var(--borgona); font-weight: 700;">
-                        <i class="bi bi-info-circle" style="color: var(--dorado-palido);"></i> 
-                        Detalles de la Cita #001
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="premium-card mb-3">
-                        <h5>Cita Completada <span class="badge bg-success float-end">Completada</span></h5>
-                        <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">
-                            <i class="bi bi-calendar3"></i> Viernes, 31 de Octubre 2024 - 09:00 AM
-                        </p>
-                    </div>
-
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="card-custom">
-                                <h6 style="color: var(--borgona); font-weight: 600; margin-bottom: 1rem;">
-                                    <i class="bi bi-person"></i> Cliente
-                                </h6>
-                                <p><strong>Nombre:</strong> María García López</p>
-                                <p><strong>Teléfono:</strong> (503) 7890-1234</p>
-                                <p><strong>Email:</strong> maria.garcia@email.com</p>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="card-custom">
-                                <h6 style="color: var(--borgona); font-weight: 600; margin-bottom: 1rem;">
-                                    <i class="bi bi-scissors"></i> Servicio
-                                </h6>
-                                <p><strong>Servicio:</strong> Corte de Cabello</p>
-                                <p><strong>Estilista:</strong> Ana López García</p>
-                                <p><strong>Duración:</strong> 30 minutos</p>
-                            </div>
-                        </div>
-
-                        <div class="col-12">
-                            <div class="card-custom">
-                                <h6 style="color: var(--borgona); font-weight: 600; margin-bottom: 1rem;">
-                                    <i class="bi bi-cash-stack"></i> Información de Pago
-                                </h6>
-                                <p><strong>Precio Base:</strong> $15.00</p>
-                                <p><strong>Descuento:</strong> $0.00</p>
-                                <p><strong style="color: var(--borgona); font-size: 1.2rem;">Total Pagado:</strong> <strong style="color: var(--borgona); font-size: 1.2rem;">$15.00</strong></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer" style="border-top: 1px solid var(--rosa-empolvado);">
-                    <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-outline-gold">
-                        <i class="bi bi-printer"></i> Imprimir
-                    </button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" form="formEditarCita" class="btn btn-gold">
+                    <i class="bi bi-save"></i> Actualizar Cita
+                </button>
             </div>
         </div>
     </div>
+</div>
+
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -797,6 +867,109 @@ function actualizarDuracion() {
     document.getElementById('duracionEstimada').value = duracion + ' min';
     document.getElementById('precioBase').textContent = '$' + precio;
     document.getElementById('totalPagar').textContent = '$' + precio;
+}
+
+
+function actualizarEstadoCita(idCita, nuevoEstado) {
+    fetch(`/recepcionista/citas/${idCita}/estado`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ estado: nuevoEstado })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Error al actualizar estado');
+        return response.json();
+    })
+    .then(data => {
+        console.log('Estado actualizado:', data.estado);
+        // Opcional: actualizar la vista sin recargar
+        location.reload(); // o actualizar solo la fila
+    })
+    .catch(error => {
+        console.error(error);
+        alert('No se pudo actualizar el estado de la cita');
+    });
+}
+
+// Funciones específicas para cada botón
+function confirmarCita(idCita) {
+    actualizarEstadoCita(idCita, 'confirmada');
+}
+
+function iniciarCita(idCita) {
+    actualizarEstadoCita(idCita, 'en proceso');
+}
+
+function completarCita(idCita) {
+    actualizarEstadoCita(idCita, 'completada');
+}
+
+function mostrarCancelar(idCita) {
+    actualizarEstadoCita(idCita, 'cancelada');
+}
+
+function editarCita(idCita) {
+    fetch(`/recepcionista/citas/${idCita}/editar`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const form = document.getElementById('formEditarCita');
+
+            // Asignar valores básicos
+            form.cita_id.value = data.idCita;
+            form.fecha.value = data.fecha;
+            form.hora.value = data.hora;
+            form.cliente_id.value = data.cliente_id;
+            form.estilista_id.value = data.estilista_id ?? '';
+            form.notas.value = data.notas ?? '';
+
+            // Asignar servicio (asegúrate que el select tenga name="servicio_id" o id="servicioSelectEditar")
+            const servicioSelect = document.getElementById('servicioSelectEditar');
+            if (servicioSelect) {
+                servicioSelect.value = String(data.servicio_id);
+                actualizarDuracionEditar(); // actualiza duración y resumen si aplica
+            }
+
+            // Asignar estado si el campo existe
+            const estadoField = form.estado;
+            if (estadoField) {
+                estadoField.value = data.estado;
+            }
+
+            // Actualizar título del modal
+            document.getElementById('tituloEditarCita').textContent =
+                `Editar Cita de ${data.cliente_nombre} ${data.cliente_apellido}`;
+
+            // Mostrar modal
+            const modal = new bootstrap.Modal(document.getElementById('modalEditarCita'));
+            modal.show();
+        })
+        .catch(error => {
+            console.error('Error al cargar cita:', error);
+            alert('No se pudo cargar la información de la cita. Revisa la consola para más detalles.');
+        });
+}
+
+
+function actualizarDuracionEditar() {
+    const select = document.getElementById('servicioSelectEditar');
+    const duracion = select.selectedOptions[0].getAttribute('data-duracion');
+    const precio = select.selectedOptions[0].getAttribute('data-precio');
+
+    // Actualizar duración estimada
+    document.getElementById('duracionEstimadaEditar').value = duracion + ' min';
+
+    // Actualizar resumen de precios
+    document.getElementById('precioBaseEditar').textContent = `$${parseFloat(precio).toFixed(2)}`;
+    document.getElementById('descuentoEditar').textContent = '$0.00'; // puedes ajustar si hay promoción
+    document.getElementById('totalPagarEditar').textContent = `$${parseFloat(precio).toFixed(2)}`;
 }
 
 </script>
