@@ -30,7 +30,7 @@ class ServicioController extends Controller
 
     }
      public function index()
-{
+    {
     $servicios = Servicio::orderBy('nombre')->get();
 
     $totalActivos = Servicio::where('activo', true)->count();
@@ -43,7 +43,24 @@ class ServicioController extends Controller
         'precioPromedio',
         'totalCategorias'
     ));
-}
+    }
+
+    // Nuevo método para administrador
+    public function indexAdmin()
+    {
+        $servicios = Servicio::orderBy('nombre')->get();
+
+        $totalActivos = Servicio::where('activo', true)->count();
+        $precioPromedio = Servicio::where('activo', true)->avg('precioBase') ?? 0;
+        $totalCategorias = Servicio::distinct('categoria')->count('categoria');
+
+        return view('admin.serviciosAdmin', compact(
+            'servicios',
+            'totalActivos',
+            'precioPromedio',
+            'totalCategorias'
+        ));
+    }
 
 public function show($id)
 {

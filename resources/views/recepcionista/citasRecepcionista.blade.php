@@ -81,45 +81,16 @@
                 <button class="btn btn-premium me-2" onclick="actualizarAgenda()">
                     <i class="bi bi-arrow-clockwise"></i> Actualizar
                 </button>
+
+
                 <button class="btn btn-outline-gold" onclick="imprimirAgenda()">
                     <i class="bi bi-printer"></i> Imprimir
                 </button>
             </div>
             
-            <div class="col-lg-6">
-                <div class="card-custom" style="padding: 0.75rem;">
-                    <div class="row g-2 align-items-center">
-                        <div class="col-md-4">
-                            <label class="form-label mb-1" style="font-size: 0.875rem;">
-                                <i class="bi bi-calendar3"></i> Fecha
-                            </label>
-                            <input type="date" class="form-control form-control-sm" id="fechaFiltro" onchange="filtrarPorFecha()">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label mb-1" style="font-size: 0.875rem;">
-                                <i class="bi bi-person"></i> Estilista
-                            </label>
-                            <select class="form-select form-select-sm" id="estilistaFiltro" onchange="filtrarPorEstilista()">
-                                <option value="">Todos</option>
-                                <option value="1">Ana López</option>
-                                <option value="2">María Torres</option>
-                                <option value="3">Sofía Ramírez</option>
-                                <option value="4">Laura Gómez</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label mb-1" style="font-size: 0.875rem;">
-                                <i class="bi bi-funnel"></i> Estado
-                            </label>
-                            <select class="form-select form-select-sm" id="estadoFiltro" onchange="filtrarPorEstado()">
-                                <option value="">Todos</option>
-                                <option value="pendiente">Pendiente</option>
-                                <option value="confirmada">Confirmada</option>
-                                <option value="en_proceso">En Proceso</option>
-                                <option value="completada">Completada</option>
-                                <option value="cancelada">Cancelada</option>
-                            </select>
-                        </div>
+           
+                        
+                        
                     </div>
                 </div>
             </div>
@@ -237,7 +208,7 @@
                 <div class="card-custom">
                     <h5 class="card-title-custom">
                         <i class="bi bi-calendar3"></i>
-                        Agenda Completa - Viernes, 31 de Octubre 2024
+                        Listado de citas
                     </h5>
                     
                     <!-- 
@@ -275,361 +246,71 @@
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <!-- Cita Completada -->
-                                <tr style="background: rgba(212, 175, 55, 0.05);">
-                                    <td><strong>#001</strong></td>
-                                    <td><strong style="color: var(--borgona);">09:00 AM</strong></td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">M</div>
-                                            <strong>María García</strong>
-                                        </div>
-                                    </td>
-                                    <td><small>(503) 7890-1234</small></td>
-                                    <td>Corte de Cabello</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-1" style="width: 25px; height: 25px; font-size: 0.7rem;">A</div>
-                                            <small>Ana López</small>
-                                        </div>
-                                    </td>
-                                    <td>30 min</td>
-                                    <td><span class="badge bg-success">Completada</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-gold me-1" data-bs-toggle="modal" data-bs-target="#modalVerCita" onclick="cargarCita(1)" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+                            <tbody id="tablaCitas">
+@foreach($citas as $cita)
+<tr>
+    <td><strong>#{{ str_pad($cita->idCita, 3, '0', STR_PAD_LEFT) }}</strong></td>
+    <td><strong style="color: var(--borgona);">{{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}</strong></td>
+    <td>
+        <div class="d-flex align-items-center">
+            <div class="list-avatar me-2">{{ strtoupper(substr($cita->cliente->nombre, 0, 1)) }}</div>
+            <strong>{{ $cita->cliente->nombre }} {{ $cita->cliente->apellido }}</strong>
+        </div>
+    </td>
+    <td><small>{{ $cita->cliente->telefono }}</small></td>
+    <td>
+        @foreach($cita->servicios as $servicio)
+            {{ $servicio->nombre }}<br>
+        @endforeach
+        @if($cita->promocion)
+            <small style="color: var(--dorado-palido);">
+                <i class="bi bi-gift"></i> {{ $cita->promocion->nombre }} - {{ $cita->promocion->codigoPromocional }}
+            </small>
+        @endif
+    </td>
+    <td>
+        <div class="d-flex align-items-center">
+            <div class="list-avatar me-1">{{ strtoupper(substr($cita->estilista->nombre, 0, 1)) }}</div>
+            <small>{{ $cita->estilista->nombre }} {{ $cita->estilista->apellido }}</small>
+        </div>
+    </td>
+    <td>{{ $cita->duracion }} min</td>
+    <td>
+        @php
+            $estado = strtolower($cita->estado);
+            $clase = match($estado) {
+                'pendiente' => 'bg-warning text-dark',
+                'confirmada' => 'bg-info',
+                'en proceso' => 'bg-primary',
+                'completada' => 'bg-success',
+                'cancelada' => 'bg-danger',
+                default => 'bg-secondary'
+            };
+        @endphp
+        <span class="badge {{ $clase }}">{{ ucfirst($estado) }}</span>
+    </td>
+    <td>
+        <button class="btn btn-sm btn-outline-gold me-1" onclick="verCita({{ $cita->idCita }})"><i class="bi bi-eye"></i></button>
+        @if($estado === 'pendiente')
+            <button class="btn btn-sm btn-premium me-1" onclick="confirmarCita({{ $cita->idCita }})"><i class="bi bi-telephone"></i></button>
+        @elseif($estado === 'confirmada')
+            <button class="btn btn-sm btn-premium me-1" onclick="iniciarCita({{ $cita->idCita }})"><i class="bi bi-play-circle"></i></button>
+        @elseif($estado === 'en proceso')
+            <button class="btn btn-sm btn-premium me-1" onclick="completarCita({{ $cita->idCita }})"><i class="bi bi-check-circle"></i></button>
+        @endif
+        <button class="btn btn-sm btn-gold" onclick="mostrarCancelar({{ $cita->idCita }})"><i class="bi bi-x-circle"></i></button>
+    </td>
+</tr>
+@endforeach
+</tbody>
 
-                                <!-- Cita En Proceso -->
-                                <tr style="background: rgba(128, 0, 32, 0.08); border-left: 4px solid var(--borgona);">
-                                    <td><strong>#002</strong></td>
-                                    <td><strong style="color: var(--borgona);">10:30 AM</strong></td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">A</div>
-                                            <strong>Ana Rodríguez</strong>
-                                        </div>
-                                    </td>
-                                    <td><small>(503) 7890-5678</small></td>
-                                    <td>
-                                        Manicure + Pedicure
-                                        <br><small style="color: var(--dorado-palido);"><i class="bi bi-gift"></i> Promo 20% OFF</small>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-1" style="width: 25px; height: 25px; font-size: 0.7rem;">S</div>
-                                            <small>Sofía Ramírez</small>
-                                        </div>
-                                    </td>
-                                    <td>75 min</td>
-                                    <td><span class="badge bg-primary">En Proceso</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" onclick="completarCita(2)" title="Marcar completada">
-                                            <i class="bi bi-check-circle"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Cita Confirmada - Próxima -->
-                                <tr style="border-left: 4px solid var(--dorado-palido);">
-                                    <td><strong>#003</strong></td>
-                                    <td><strong style="color: var(--borgona);">12:00 PM</strong></td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">L</div>
-                                            <strong>Laura Martínez</strong>
-                                        </div>
-                                    </td>
-                                    <td><small>(503) 7890-9012</small></td>
-                                    <td>Tinte Completo</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-1" style="width: 25px; height: 25px; font-size: 0.7rem;">M</div>
-                                            <small>María Torres</small>
-                                        </div>
-                                    </td>
-                                    <td>90 min</td>
-                                    <td><span class="badge bg-info">Confirmada</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" data-bs-toggle="modal" data-bs-target="#modalEditarCita" onclick="cargarEditarCita(3)" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" onclick="iniciarCita(3)" title="Iniciar servicio">
-                                            <i class="bi bi-play-circle"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Cita Pendiente -->
-                                <tr style="background: rgba(232, 180, 184, 0.1);">
-                                    <td><strong>#004</strong></td>
-                                    <td><strong style="color: var(--borgona);">02:00 PM</strong></td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">C</div>
-                                            <strong>Carla Hernández</strong>
-                                        </div>
-                                    </td>
-                                    <td><small>(503) 7890-3456</small></td>
-                                    <td>
-                                        Peinado Especial
-                                        <br><small style="color: var(--dorado-palido);"><i class="bi bi-box-seam"></i> Combo Novia</small>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-1" style="width: 25px; height: 25px; font-size: 0.7rem;">A</div>
-                                            <small>Ana López</small>
-                                        </div>
-                                    </td>
-                                    <td>60 min</td>
-                                    <td><span class="badge bg-warning text-dark">Pendiente</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium me-1" onclick="confirmarCita(4)" title="Confirmar">
-                                            <i class="bi bi-telephone"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-gold" onclick="mostrarCancelar(4)" title="Cancelar">
-                                            <i class="bi bi-x-circle"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Cita Confirmada -->
-                                <tr>
-                                    <td><strong>#005</strong></td>
-                                    <td><strong style="color: var(--borgona);">03:30 PM</strong></td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">S</div>
-                                            <strong>Sofía Ramírez</strong>
-                                        </div>
-                                    </td>
-                                    <td><small>(503) 7890-7890</small></td>
-                                    <td>Limpieza Facial</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-1" style="width: 25px; height: 25px; font-size: 0.7rem;">M</div>
-                                            <small>María Torres</small>
-                                        </div>
-                                    </td>
-                                    <td>60 min</td>
-                                    <td><span class="badge bg-info">Confirmada</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-gold" onclick="mostrarCancelar(5)" title="Cancelar">
-                                            <i class="bi bi-x-circle"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Cita Confirmada -->
-                                <tr>
-                                    <td><strong>#006</strong></td>
-                                    <td><strong style="color: var(--borgona);">05:00 PM</strong></td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">R</div>
-                                            <strong>Rosa Méndez</strong>
-                                        </div>
-                                    </td>
-                                    <td><small>(503) 7890-2222</small></td>
-                                    <td>
-                                        Uñas Acrílicas
-                                        <br><small style="color: var(--dorado-palido);"><i class="bi bi-star"></i> Cliente Nuevo - NUEVO10</small>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-1" style="width: 25px; height: 25px; font-size: 0.7rem;">S</div>
-                                            <small>Sofía Ramírez</small>
-                                        </div>
-                                    </td>
-                                    <td>90 min</td>
-                                    <td><span class="badge bg-info">Confirmada</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-gold" onclick="mostrarCancelar(6)" title="Cancelar">
-                                            <i class="bi bi-x-circle"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Cita Cancelada -->
-                                <tr style="opacity: 0.5; text-decoration: line-through;">
-                                    <td><strong>#007</strong></td>
-                                    <td><strong style="color: var(--borgona);">04:30 PM</strong></td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">P</div>
-                                            <strong>Patricia Gómez</strong>
-                                        </div>
-                                    </td>
-                                    <td><small>(503) 7890-1111</small></td>
-                                    <td>Manicure Básico</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-1" style="width: 25px; height: 25px; font-size: 0.7rem;">L</div>
-                                            <small>Laura Gómez</small>
-                                        </div>
-                                    </td>
-                                    <td>30 min</td>
-                                    <td><span class="badge bg-danger">Cancelada</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-gold" title="Ver motivo">
-                                            <i class="bi bi-info-circle"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Vista por Estilista -->
-        <div class="row g-4 mb-4">
-            <div class="col-12">
-                <div class="card-custom">
-                    <h5 class="card-title-custom">
-                        <i class="bi bi-people-fill"></i>
-                        Vista por Estilista - Viernes, 31 de Octubre 2024
-                    </h5>
-                    
-                    <div class="row g-4">
-                        <!-- Ana López -->
-                        <div class="col-lg-6">
-                            <div class="list-item-custom" style="flex-direction: column; align-items: flex-start;">
-                                <div class="d-flex align-items-center justify-content-between w-100 mb-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="list-avatar me-2" style="width: 50px; height: 50px; font-size: 1.2rem;">A</div>
-                                        <div>
-                                            <h6 style="color: var(--borgona); margin: 0; font-weight: 700;">Ana López García</h6>
-                                            <small style="color: var(--borgona); opacity: 0.7;">5 citas hoy</small>
-                                        </div>
-                                    </div>
-                                    <span class="badge bg-success">Disponible</span>
-                                </div>
-
-                                <div class="w-100">
-                                    <div class="alert-custom" style="padding: 0.5rem; margin-bottom: 0.5rem; border-left: 3px solid var(--dorado-palido);">
-                                        <strong style="color: var(--borgona);">09:00 AM</strong> - María García - Corte de Cabello (30 min)
-                                        <span class="badge bg-success float-end">Completada</span>
-                                    </div>
-                                    <div class="alert-custom" style="padding: 0.5rem; margin-bottom: 0.5rem; border-left: 3px solid var(--rosa-empolvado);">
-                                        <strong style="color: var(--borgona);">02:00 PM</strong> - Carla Hernández - Peinado Especial (60 min)
-                                        <span class="badge bg-warning text-dark float-end">Pendiente</span>
-                                    </div>
-                                    <div class="alert-custom" style="padding: 0.5rem; margin-bottom: 0; border-left: 3px solid var(--dorado-palido);">
-                                        <strong style="color: var(--dorado-palido);">Disponible desde: 3:30 PM</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- María Torres -->
-                        <div class="col-lg-6">
-                            <div class="list-item-custom" style="flex-direction: column; align-items: flex-start;">
-                                <div class="d-flex align-items-center justify-content-between w-100 mb-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="list-avatar me-2" style="width: 50px; height: 50px; font-size: 1.2rem;">M</div>
-                                        <div>
-                                            <h6 style="color: var(--borgona); margin: 0; font-weight: 700;">María Torres Sánchez</h6>
-                                            <small style="color: var(--borgona); opacity: 0.7;">4 citas hoy</small>
-                                        </div>
-                                    </div>
-                                    <span class="badge bg-success">Disponible</span>
-                                </div>
-
-                                <div class="w-100">
-                                    <div class="alert-custom" style="padding: 0.5rem; margin-bottom: 0.5rem; border-left: 3px solid var(--dorado-palido);">
-                                        <strong style="color: var(--borgona);">12:00 PM</strong> - Laura Martínez - Tinte Completo (90 min)
-                                        <span class="badge bg-info float-end">Confirmada</span>
-                                    </div>
-                                    <div class="alert-custom" style="padding: 0.5rem; margin-bottom: 0.5rem; border-left: 3px solid var(--dorado-palido);">
-                                        <strong style="color: var(--borgona);">03:30 PM</strong> - Sofía Ramírez - Limpieza Facial (60 min)
-                                        <span class="badge bg-info float-end">Confirmada</span>
-                                    </div>
-                                    <div class="alert-custom" style="padding: 0.5rem; margin-bottom: 0; border-left: 3px solid var(--dorado-palido);">
-                                        <strong style="color: var(--dorado-palido);">Disponible desde: 5:00 PM</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Sofía Ramírez -->
-                        <div class="col-lg-6">
-                            <div class="list-item-custom" style="flex-direction: column; align-items: flex-start; background: rgba(232, 180, 184, 0.1);">
-                                <div class="d-flex align-items-center justify-content-between w-100 mb-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="list-avatar me-2" style="width: 50px; height: 50px; font-size: 1.2rem;">S</div>
-                                        <div>
-                                            <h6 style="color: var(--borgona); margin: 0; font-weight: 700;">Sofía Ramírez Cruz</h6>
-                                            <small style="color: var(--borgona); opacity: 0.7;">6 citas hoy</small>
-                                        </div>
-                                    </div>
-                                    <span class="badge bg-primary">Ocupada</span>
-                                </div>
-
-                                <div class="w-100">
-                                    <div class="alert-custom" style="padding: 0.5rem; margin-bottom: 0.5rem; border-left: 3px solid var(--borgona); background: rgba(128, 0, 32, 0.1);">
-                                        <strong style="color: var(--borgona);">10:30 AM</strong> - Ana Rodríguez - Manicure + Pedicure (75 min)
-                                        <span class="badge bg-primary float-end">En Proceso</span>
-                                    </div>
-                                    <div class="alert-custom" style="padding: 0.5rem; margin-bottom: 0.5rem; border-left: 3px solid var(--dorado-palido);">
-                                        <strong style="color: var(--borgona);">05:00 PM</strong> - Rosa Méndez - Uñas Acrílicas (90 min)
-                                        <span class="badge bg-info float-end">Confirmada</span>
-                                    </div>
-                                    <div class="alert-custom" style="padding: 0.5rem; margin-bottom: 0; border-left: 3px solid var(--borgona);">
-                                        <strong style="color: var(--borgona);">Atendiendo cliente hasta: 11:45 AM</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Laura Gómez -->
-                        <div class="col-lg-6">
-                            <div class="list-item-custom" style="flex-direction: column; align-items: flex-start;">
-                                <div class="d-flex align-items-center justify-content-between w-100 mb-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="list-avatar me-2" style="width: 50px; height: 50px; font-size: 1.2rem;">L</div>
-                                        <div>
-                                            <h6 style="color: var(--borgona); margin: 0; font-weight: 700;">Laura Gómez Ortiz</h6>
-                                            <small style="color: var(--borgona); opacity: 0.7;">3 citas hoy</small>
-                                        </div>
-                                    </div>
-                                    <span class="badge badge-gold"><i class="bi bi-lightning-fill"></i> Libre</span>
-                                </div>
-
-                                <div class="w-100">
-                                    <div class="alert-custom" style="padding: 0.5rem; margin-bottom: 0; border-left: 3px solid var(--dorado-palido); background: rgba(212, 175, 55, 0.1);">
-                                        <strong style="color: var(--dorado-palido);"><i class="bi bi-star-fill"></i> Disponible inmediatamente</strong>
-                                        <br>
-                                        <small>Sin citas programadas en este momento</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+       
                     </div>
                 </div>
             </div>
@@ -1122,8 +803,8 @@ function actualizarDuracion() {
     document.getElementById('precioBase').textContent = '$' + precio;
     document.getElementById('totalPagar').textContent = '$' + precio;
 }
+
 </script>
 
-    
 </body>
 </html>

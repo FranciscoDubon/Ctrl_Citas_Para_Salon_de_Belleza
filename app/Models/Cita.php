@@ -33,6 +33,10 @@ class Cita extends Model
     {
         return $this->belongsToMany(Servicio::class, 'citaservicio', 'idCita', 'idServicio');
     }
-    
+    public function promocion()
+{
+    return $this->belongsTo(Promocion::class, 'idPromocion');
+}
+
     
 }

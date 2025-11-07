@@ -133,6 +133,7 @@ Route::get('/recepcionista/dashboard', function () {
 });
 
 use App\Http\Controllers\ServicioController;
+use App\Http\Controllers\PromocionController;
 Route::post('/recepcionista/servicios', [ServicioController::class, 'store'])->name('servicios.store');
 Route::get('/recepcionista/serviciosRecep', [ServicioController::class, 'index'])->name('recepcionista.serviciosRecep');
 Route::put('/servicios/{id}/actualizar', [ServicioController::class, 'update'])->name('servicios.update');
@@ -150,4 +151,28 @@ use App\Http\Controllers\CitaController;
 
 Route::get('/recepcionista/citasRecep', [CitaController::class, 'crear'])->name('recepcionista.citasRecep');
 Route::post('/citas/crear', [CitaController::class, 'store'])->name('citas.store');
+Route::get('/recepcionista/citasRecep', [CitaController::class, 'agendaSemana'])->name('recepcionista.citasRecep');
+Route::get('/filtrar-citas', [CitaController::class, 'filtrarTabla'])->name('recepcionista.citasRecep');
 
+
+// Ruta Gestión de Servicios Admin
+Route::get('/admin/serviciosAdm', [ServicioController::class, 'indexAdmin'])->name('admin.serviciosAdm');
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    // ... tus otras rutas existentes ...
+
+    // Gestión de Promociones
+    Route::get('/promocionesAdm', [PromocionController::class, 'indexAdmin'])->name('promocionesAdm');
+
+    // CRUD Promociones
+    Route::post('/promociones', [PromocionController::class, 'store'])->name('promocion.store');
+    Route::get('/promociones/{id}', [PromocionController::class, 'show'])->name('promocion.show');
+    Route::put('/promociones/{id}', [PromocionController::class, 'update'])->name('promocion.update');
+    Route::post('/promociones/{id}/estado', [PromocionController::class, 'toggleEstado'])->name('promocion.toggleEstado');
+
+    // CRUD Combos
+    Route::post('/combos', [PromocionController::class, 'storeCombo'])->name('combo.store');
+    Route::get('/combos/{id}', [PromocionController::class, 'showCombo'])->name('combo.show');
+    Route::put('/combos/{id}', [PromocionController::class, 'updateCombo'])->name('combo.update');
+    Route::post('/combos/{id}/estado', [PromocionController::class, 'toggleEstadoCombo'])->name('combo.toggleEstado');
+});  

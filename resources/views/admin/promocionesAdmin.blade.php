@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Promociones Administrador | Salón de Belleza</title>
 
@@ -234,120 +235,74 @@
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>#P001</td>
-                                    <td><strong>Black Friday Beauty</strong></td>
-                                    <td><span class="badge badge-luxury">PORCENTAJE</span></td>
-                                    <td><span class="badge badge-gold">30% OFF</span></td>
-                                    <td><code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">BLACK30</code></td>
-                                    <td>01 Nov - 30 Nov 2024</td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <strong style="color: var(--borgona);">45</strong> / 100
-                                            <div style="width: 100%; background: var(--rosa-empolvado); height: 5px; border-radius: 3px; margin-top: 3px;">
-                                                <div style="width: 45%; background: var(--dorado-palido); height: 5px; border-radius: 3px;"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge bg-success">Activa</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" data-bs-toggle="modal" data-bs-target="#modalEditarPromocion" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" data-bs-toggle="modal" data-bs-target="#modalVerPromocion" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" onclick="togglePromocion(1)" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>#P002</td>
-                                    <td><strong>Nuevo Cliente VIP</strong></td>
-                                    <td><span class="badge badge-luxury">FIJO</span></td>
-                                    <td><span class="badge badge-gold">$10 OFF</span></td>
-                                    <td><code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">NUEVO10</code></td>
-                                    <td>01 Oct - 31 Dic 2024</td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <strong style="color: var(--borgona);">23</strong> / 50
-                                            <div style="width: 100%; background: var(--rosa-empolvado); height: 5px; border-radius: 3px; margin-top: 3px;">
-                                                <div style="width: 46%; background: var(--dorado-palido); height: 5px; border-radius: 3px;"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge bg-success">Activa</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>#P003</td>
-                                    <td><strong>Martes de Spa</strong></td>
-                                    <td><span class="badge badge-luxury">PORCENTAJE</span></td>
-                                    <td><span class="badge badge-gold">20% OFF</span></td>
-                                    <td><code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">MARSPA20</code></td>
-                                    <td>01 Nov - 31 Dic 2024</td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <strong style="color: var(--borgona);">∞</strong> Ilimitado
-                                        </div>
-                                    </td>
-                                    <td><span class="badge bg-success">Activa</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <tr style="opacity: 0.6;">
-                                    <td>#P004</td>
-                                    <td><strong>Halloween Especial</strong></td>
-                                    <td><span class="badge badge-luxury">PORCENTAJE</span></td>
-                                    <td><span class="badge badge-gold">25% OFF</span></td>
-                                    <td><code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">HALLOW25</code></td>
-                                    <td>25 Oct - 31 Oct 2024</td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <strong style="color: var(--borgona);">100</strong> / 100
-                                            <div style="width: 100%; background: var(--rosa-empolvado); height: 5px; border-radius: 3px; margin-top: 3px;">
-                                                <div style="width: 100%; background: var(--borgona); height: 5px; border-radius: 3px;"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge bg-danger">Expirada</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-gold" title="Reactivar">
-                                            <i class="bi bi-arrow-clockwise"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
+<tbody>
+    @forelse($promociones as $promocion)
+    <tr @if(!$promocion->activo || $promocion->fechaFin < now()) style="opacity: 0.6;" @endif>
+        <td>#P{{ str_pad($promocion->idPromocion, 3, '0', STR_PAD_LEFT) }}</td>
+        <td><strong>{{ $promocion->nombre }}</strong></td>
+        <td>
+            <span class="badge badge-luxury">
+                {{ strtoupper($promocion->tipoDescuento) }}
+            </span>
+        </td>
+        <td>
+            <span class="badge badge-gold">
+                @if($promocion->tipoDescuento == 'porcentaje')
+                    {{ $promocion->valorDescuento }}% OFF
+                @else
+                    ${{ number_format($promocion->valorDescuento, 2) }} OFF
+                @endif
+            </span>
+        </td>
+        <td>
+            <code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">
+                {{ $promocion->codigoPromocional }}
+            </code>
+        </td>
+        <td>{{ $promocion->fechaInicio->format('d M') }} - {{ $promocion->fechaFin->format('d M Y') }}</td>
+        <td>
+            <div style="font-size: 0.875rem;">
+                @if($promocion->usosMaximos)
+                    <strong style="color: var(--borgona);">{{ $promocion->usosActuales }}</strong> / {{ $promocion->usosMaximos }}
+                    <div style="width: 100%; background: var(--rosa-empolvado); height: 5px; border-radius: 3px; margin-top: 3px;">
+                        <div style="width: {{ ($promocion->usosActuales / $promocion->usosMaximos) * 100 }}%; background: var(--dorado-palido); height: 5px; border-radius: 3px;"></div>
+                    </div>
+                @else
+                    <strong style="color: var(--borgona);">∞</strong> Ilimitado
+                @endif
+            </div>
+        </td>
+        <td>
+            @if($promocion->activo && $promocion->fechaFin >= now())
+                <span class="badge bg-success">Activa</span>
+            @elseif($promocion->fechaFin < now())
+                <span class="badge bg-danger">Expirada</span>
+            @else
+                <span class="badge bg-secondary">Inactiva</span>
+            @endif
+        </td>
+        <td>
+            <button class="btn btn-sm btn-soft me-1" data-bs-toggle="modal" data-bs-target="#modalEditarPromocion" title="Editar">
+                <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-gold me-1" title="Ver detalles">
+                <i class="bi bi-eye"></i>
+            </button>
+            <button class="btn btn-sm {{ $promocion->activo ? 'btn-premium' : 'btn-gold' }}" 
+                    onclick="togglePromocion({{ $promocion->idPromocion }})" 
+                    title="{{ $promocion->activo ? 'Desactivar' : 'Activar' }}">
+                <i class="bi bi-toggle-{{ $promocion->activo ? 'on' : 'off' }}"></i>
+            </button>
+        </td>
+    </tr>
+    @empty
+    <tr>
+        <td colspan="9" class="text-center">
+            <p class="text-muted my-3">No hay promociones registradas</p>
+        </td>
+    </tr>
+    @endforelse
+</tbody>
                         </table>
                     </div>
                 </div>
@@ -355,211 +310,65 @@
         </div>
 
         <!-- Combos de Servicios -->
-        <div class="row g-4 mb-4">
-            <div class="col-12">
-                <div class="card-custom">
-                    <h5 class="card-title-custom">
-                        <i class="bi bi-box-seam-fill"></i>
-                        Combos de Servicios
+<div class="row g-4">
+    @forelse($combos as $combo)
+    <div class="col-lg-6">
+        <div class="list-item-custom" style="flex-direction: column; align-items: flex-start; @if(!$combo->activo) opacity: 0.6; @endif">
+            <div class="d-flex align-items-center justify-content-between w-100 mb-3">
+                <div>
+                    <h5 style="color: var(--borgona); margin: 0; font-weight: 700;">
+                        <i class="bi bi-box-seam" style="color: var(--dorado-palido);"></i>
+                        {{ $combo->nombre }}
                     </h5>
-                    
-                    <!-- 
-                    ================================================
-                    TODO BACKEND: Conectar con BD
-                    ================================================
-                    CONSULTA SQL:
-                    SELECT c.id, c.nombre, c.descripcion, c.precio_combo, 
-                           c.precio_regular, c.ahorro, c.activo,
-                           GROUP_CONCAT(s.nombre) as servicios
-                    FROM combos c
-                    LEFT JOIN combo_servicios cs ON c.id = cs.combo_id
-                    LEFT JOIN servicios s ON cs.servicio_id = s.id
-                    GROUP BY c.id
-                    ORDER BY c.activo DESC, c.nombre
-                    ================================================
-                    -->
-                    <div class="row g-4">
-                        
-                        <!-- Combo 1 -->
-                        <div class="col-lg-6">
-                            <div class="list-item-custom" style="flex-direction: column; align-items: flex-start;">
-                                <div class="d-flex align-items-center justify-content-between w-100 mb-3">
-                                    <div>
-                                        <h5 style="color: var(--borgona); margin: 0; font-weight: 700;">
-                                            <i class="bi bi-box-seam" style="color: var(--dorado-palido);"></i>
-                                            Combo Novia Perfecta
-                                        </h5>
-                                        <span class="badge bg-success mt-2">Activo</span>
-                                        <span class="badge badge-soft mt-2">Popular</span>
-                                    </div>
-                                    <div class="text-end">
-                                        <div style="text-decoration: line-through; color: var(--borgona); opacity: 0.6; font-size: 0.9rem;">$120.00</div>
-                                        <div style="font-size: 2rem; font-weight: 700; color: var(--dorado-palido);">$85.00</div>
-                                        <span class="badge badge-gold" style="font-size: 0.75rem;">Ahorra $35</span>
-                                    </div>
-                                </div>
-                                
-                                <p style="color: var(--negro-carbon); opacity: 0.8; margin-bottom: 1rem;">
-                                    Paquete completo para el día especial: peinado, maquillaje y manicure
-                                </p>
-
-                                <div class="alert-custom w-100" style="margin-bottom: 1rem;">
-                                    <i class="bi bi-list-check"></i>
-                                    <strong>Servicios incluidos:</strong><br>
-                                    • Peinado Especial (60 min)<br>
-                                    • Maquillaje Profesional (45 min)<br>
-                                    • Manicure Premium (30 min)
-                                </div>
-
-                                <div class="d-flex gap-2 w-100">
-                                    <button class="btn btn-soft btn-sm flex-fill" data-bs-toggle="modal" data-bs-target="#modalEditarCombo">
-                                        <i class="bi bi-pencil"></i> Editar
-                                    </button>
-                                    <button class="btn btn-outline-gold btn-sm flex-fill" data-bs-toggle="modal" data-bs-target="#modalVerCombo">
-                                        <i class="bi bi-eye"></i> Ver Detalles
-                                    </button>
-                                    <button class="btn btn-premium btn-sm" onclick="toggleCombo(1)">
-                                        <i class="bi bi-toggle-on"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Combo 2 -->
-                        <div class="col-lg-6">
-                            <div class="list-item-custom" style="flex-direction: column; align-items: flex-start;">
-                                <div class="d-flex align-items-center justify-content-between w-100 mb-3">
-                                    <div>
-                                        <h5 style="color: var(--borgona); margin: 0; font-weight: 700;">
-                                            <i class="bi bi-box-seam" style="color: var(--dorado-palido);"></i>
-                                            Renovación Completa
-                                        </h5>
-                                        <span class="badge bg-success mt-2">Activo</span>
-                                    </div>
-                                    <div class="text-end">
-                                        <div style="text-decoration: line-through; color: var(--borgona); opacity: 0.6; font-size: 0.9rem;">$75.00</div>
-                                        <div style="font-size: 2rem; font-weight: 700; color: var(--dorado-palido);">$55.00</div>
-                                        <span class="badge badge-gold" style="font-size: 0.75rem;">Ahorra $20</span>
-                                    </div>
-                                </div>
-                                
-                                <p style="color: var(--negro-carbon); opacity: 0.8; margin-bottom: 1rem;">
-                                    Renueva tu look completo con corte, tinte y tratamiento
-                                </p>
-
-                                <div class="alert-custom w-100" style="margin-bottom: 1rem;">
-                                    <i class="bi bi-list-check"></i>
-                                    <strong>Servicios incluidos:</strong><br>
-                                    • Corte de Cabello (30 min)<br>
-                                    • Tinte Completo (90 min)<br>
-                                    • Tratamiento Capilar (45 min)
-                                </div>
-
-                                <div class="d-flex gap-2 w-100">
-                                    <button class="btn btn-soft btn-sm flex-fill">
-                                        <i class="bi bi-pencil"></i> Editar
-                                    </button>
-                                    <button class="btn btn-outline-gold btn-sm flex-fill">
-                                        <i class="bi bi-eye"></i> Ver Detalles
-                                    </button>
-                                    <button class="btn btn-premium btn-sm">
-                                        <i class="bi bi-toggle-on"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Combo 3 -->
-                        <div class="col-lg-6">
-                            <div class="list-item-custom" style="flex-direction: column; align-items: flex-start;">
-                                <div class="d-flex align-items-center justify-content-between w-100 mb-3">
-                                    <div>
-                                        <h5 style="color: var(--borgona); margin: 0; font-weight: 700;">
-                                            <i class="bi bi-box-seam" style="color: var(--dorado-palido);"></i>
-                                            Spa de Manos y Pies
-                                        </h5>
-                                        <span class="badge bg-success mt-2">Activo</span>
-                                    </div>
-                                    <div class="text-end">
-                                        <div style="text-decoration: line-through; color: var(--borgona); opacity: 0.6; font-size: 0.9rem;">$35.00</div>
-                                        <div style="font-size: 2rem; font-weight: 700; color: var(--dorado-palido);">$25.00</div>
-                                        <span class="badge badge-gold" style="font-size: 0.75rem;">Ahorra $10</span>
-                                    </div>
-                                </div>
-                                
-                                <p style="color: var(--negro-carbon); opacity: 0.8; margin-bottom: 1rem;">
-                                    Manicure y pedicure spa completo para máxima relajación
-                                </p>
-
-                                <div class="alert-custom w-100" style="margin-bottom: 1rem;">
-                                    <i class="bi bi-list-check"></i>
-                                    <strong>Servicios incluidos:</strong><br>
-                                    • Manicure Básico (30 min)<br>
-                                    • Pedicure Spa (45 min)
-                                </div>
-
-                                <div class="d-flex gap-2 w-100">
-                                    <button class="btn btn-soft btn-sm flex-fill">
-                                        <i class="bi bi-pencil"></i> Editar
-                                    </button>
-                                    <button class="btn btn-outline-gold btn-sm flex-fill">
-                                        <i class="bi bi-eye"></i> Ver Detalles
-                                    </button>
-                                    <button class="btn btn-premium btn-sm">
-                                        <i class="bi bi-toggle-on"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Combo 4 - Inactivo -->
-                        <div class="col-lg-6">
-                            <div class="list-item-custom" style="flex-direction: column; align-items: flex-start; opacity: 0.6;">
-                                <div class="d-flex align-items-center justify-content-between w-100 mb-3">
-                                    <div>
-                                        <h5 style="color: var(--borgona); margin: 0; font-weight: 700;">
-                                            <i class="bi bi-box-seam" style="color: var(--dorado-palido);"></i>
-                                            Pack Express
-                                        </h5>
-                                        <span class="badge bg-secondary mt-2">Inactivo</span>
-                                    </div>
-                                    <div class="text-end">
-                                        <div style="text-decoration: line-through; color: var(--borgona); opacity: 0.6; font-size: 0.9rem;">$45.00</div>
-                                        <div style="font-size: 2rem; font-weight: 700; color: var(--borgona); opacity: 0.6;">$35.00</div>
-                                        <span class="badge badge-neutral" style="font-size: 0.75rem;">Ahorra $10</span>
-                                    </div>
-                                </div>
-                                
-                                <p style="color: var(--negro-carbon); opacity: 0.8; margin-bottom: 1rem;">
-                                    Corte y peinado rápido para el día a día
-                                </p>
-
-                                <div class="alert-custom w-100" style="margin-bottom: 1rem;">
-                                    <i class="bi bi-list-check"></i>
-                                    <strong>Servicios incluidos:</strong><br>
-                                    • Corte de Cabello (30 min)<br>
-                                    • Peinado Básico (20 min)
-                                </div>
-
-                                <div class="d-flex gap-2 w-100">
-                                    <button class="btn btn-soft btn-sm flex-fill">
-                                        <i class="bi bi-pencil"></i> Editar
-                                    </button>
-                                    <button class="btn btn-outline-gold btn-sm flex-fill">
-                                        <i class="bi bi-eye"></i> Ver Detalles
-                                    </button>
-                                    <button class="btn btn-gold btn-sm">
-                                        <i class="bi bi-toggle-off"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
+                    <span class="badge {{ $combo->activo ? 'bg-success' : 'bg-secondary' }} mt-2">
+                        {{ $combo->activo ? 'Activo' : 'Inactivo' }}
+                    </span>
+                </div>
+                <div class="text-end">
+                    <div style="text-decoration: line-through; color: var(--borgona); opacity: 0.6; font-size: 0.9rem;">
+                        ${{ number_format($combo->precioRegular, 2) }}
                     </div>
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--dorado-palido);">
+                        ${{ number_format($combo->precioCombo, 2) }}
+                    </div>
+                    <span class="badge badge-gold" style="font-size: 0.75rem;">
+                        Ahorra ${{ number_format($combo->ahorro, 2) }}
+                    </span>
                 </div>
             </div>
-        </div>
+            
+            <p style="color: var(--negro-carbon); opacity: 0.8; margin-bottom: 1rem;">
+                {{ $combo->descripcion }}
+            </p>
 
+            <div class="alert-custom w-100" style="margin-bottom: 1rem;">
+                <i class="bi bi-list-check"></i>
+                <strong>Servicios incluidos:</strong><br>
+                @foreach($combo->servicios as $servicio)
+                    • {{ $servicio->nombre }} ({{ $servicio->duracionBase }} min)<br>
+                @endforeach
+            </div>
+
+            <div class="d-flex gap-2 w-100">
+                <button class="btn btn-soft btn-sm flex-fill" data-bs-toggle="modal" data-bs-target="#modalEditarCombo">
+                    <i class="bi bi-pencil"></i> Editar
+                </button>
+                <button class="btn btn-outline-gold btn-sm flex-fill">
+                    <i class="bi bi-eye"></i> Ver Detalles
+                </button>
+                <button class="btn btn-sm {{ $combo->activo ? 'btn-premium' : 'btn-gold' }}" 
+                        onclick="toggleCombo({{ $combo->idCombo }})">
+                    <i class="bi bi-toggle-{{ $combo->activo ? 'on' : 'off' }}"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    @empty
+    <div class="col-12">
+        <p class="text-center text-muted my-3">No hay combos registrados</p>
+    </div>
+    @endforelse
+</div>
     </main>
 
     <!-- ============================================
@@ -597,6 +406,7 @@
                     ================================================
                     -->
                     <form id="formNuevaPromocion">
+                        @csrf <!-- Token CSRF para seguridad -->
                         <div class="row g-3">
                             <!-- Nombre -->
                             <div class="col-md-8">
@@ -607,7 +417,7 @@
                             <!-- Código Promocional -->
                             <div class="col-md-4">
                                 <label class="form-label">Código Promocional *</label>
-                                <input type="text" class="form-control" name="codigo_promocional" placeholder="Ej: BLACK30" required style="text-transform: uppercase;">
+                                <input type="text" class="form-control" name="codigoPromocional" placeholder="Ej: BLACK30" required style="text-transform: uppercase;">
                             </div>
 
                             <!-- Descripción -->
@@ -619,7 +429,7 @@
                             <!-- Tipo de Descuento -->
                             <div class="col-md-6">
                                 <label class="form-label">Tipo de Descuento *</label>
-                                <select class="form-select" name="tipo_descuento" id="tipoDescuento" required>
+                                <select class="form-select" name="tipoDescuento" id="tipoDescuento" required>
                                     <option value="">Seleccionar...</option>
                                     <option value="porcentaje">Porcentaje (%)</option>
                                     <option value="fijo">Monto Fijo ($)</option>
@@ -631,33 +441,33 @@
                                 <label class="form-label">Valor del Descuento *</label>
                                 <div class="input-group">
                                     <span class="input-group-text" id="simboloDescuento" style="background: var(--dorado-palido); color: var(--borgona); border: 2px solid var(--dorado-palido); font-weight: 700;">%</span>
-                                    <input type="number" class="form-control" name="valor_descuento" placeholder="0" step="0.01" min="0" required>
+                                    <input type="number" class="form-control" name="valorDescuento" placeholder="0" step="0.01" min="0" required>
                                 </div>
                             </div>
 
                             <!-- Fecha Inicio -->
                             <div class="col-md-6">
                                 <label class="form-label">Fecha de Inicio *</label>
-                                <input type="date" class="form-control" name="fecha_inicio" required>
+                                <input type="date" class="form-control" name="fechaInicio" required>
                             </div>
 
                             <!-- Fecha Fin -->
                             <div class="col-md-6">
                                 <label class="form-label">Fecha de Fin *</label>
-                                <input type="date" class="form-control" name="fecha_fin" required>
+                                <input type="date" class="form-control" name="fechaFin" required>
                             </div>
 
                             <!-- Usos Máximos -->
                             <div class="col-md-6">
                                 <label class="form-label">Usos Máximos</label>
-                                <input type="number" class="form-control" name="usos_maximos" placeholder="Dejar vacío para ilimitado" min="1">
+                                <input type="number" class="form-control" name="usosMaximos" placeholder="Dejar vacío para ilimitado" min="1">
                                 <small class="text-muted">Si se deja vacío, la promoción será ilimitada</small>
                             </div>
 
                             <!-- Usos por Cliente -->
                             <div class="col-md-6">
                                 <label class="form-label">Usos por Cliente</label>
-                                <input type="number" class="form-control" name="usos_por_cliente" placeholder="1" value="1" min="1">
+                                <input type="number" class="form-control" name="usosPorCliente" placeholder="1" value="1" min="1">
                             </div>
 
                             <!-- Días Aplicables -->
@@ -821,56 +631,22 @@
                                                 <th>Duración</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>
-                                                    <input class="form-check-input servicio-check" type="checkbox" name="servicios[]" value="1" data-precio="15.00">
-                                                </td>
-                                                <td>Corte de Cabello</td>
-                                                <td><span class="badge badge-gold">$15.00</span></td>
-                                                <td>30 min</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <input class="form-check-input servicio-check" type="checkbox" name="servicios[]" value="2" data-precio="40.00">
-                                                </td>
-                                                <td>Tinte Completo</td>
-                                                <td><span class="badge badge-gold">$40.00</span></td>
-                                                <td>90 min</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <input class="form-check-input servicio-check" type="checkbox" name="servicios[]" value="3" data-precio="30.00">
-                                                </td>
-                                                <td>Peinado Especial</td>
-                                                <td><span class="badge badge-gold">$30.00</span></td>
-                                                <td>60 min</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <input class="form-check-input servicio-check" type="checkbox" name="servicios[]" value="4" data-precio="10.00">
-                                                </td>
-                                                <td>Manicure Básico</td>
-                                                <td><span class="badge badge-gold">$10.00</span></td>
-                                                <td>30 min</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <input class="form-check-input servicio-check" type="checkbox" name="servicios[]" value="5" data-precio="15.00">
-                                                </td>
-                                                <td>Pedicure Spa</td>
-                                                <td><span class="badge badge-gold">$15.00</span></td>
-                                                <td>45 min</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <input class="form-check-input servicio-check" type="checkbox" name="servicios[]" value="6" data-precio="25.00">
-                                                </td>
-                                                <td>Maquillaje Profesional</td>
-                                                <td><span class="badge badge-gold">$25.00</span></td>
-                                                <td>45 min</td>
-                                            </tr>
-                                        </tbody>
+<tbody>
+    @foreach($servicios as $servicio)
+    <tr>
+        <td>
+            <input class="form-check-input servicio-check" 
+                   type="checkbox" 
+                   name="servicios[]" 
+                   value="{{ $servicio->idServicio }}" 
+                   data-precio="{{ $servicio->precioBase }}">
+        </td>
+        <td>{{ $servicio->nombre }}</td>
+        <td><span class="badge badge-gold">${{ number_format($servicio->precioBase, 2) }}</span></td>
+        <td>{{ $servicio->duracionBase }} min</td>
+    </tr>
+    @endforeach
+</tbody>
                                     </table>
                                 </div>
                             </div>
@@ -892,7 +668,7 @@
                                             <label class="form-label" style="color: var(--blanco-humo);">Precio del Combo *</label>
                                             <div class="input-group">
                                                 <span class="input-group-text" style="background: var(--dorado-palido); color: var(--borgona); border: 2px solid var(--dorado-palido); font-weight: 700;">$</span>
-                                                <input type="number" class="form-control" name="precio_combo" id="precioCombo" placeholder="0.00" step="0.01" min="0" required>
+                                                <input type="number" class="form-control" name="precioCombo" id="precioCombo" placeholder="0.00" step="0.01" min="0" required>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -931,7 +707,7 @@
                 </div>
                 <div class="modal-body">
                     <form id="formEditarPromocion">
-                        <input type="hidden" name="promocion_id" value="1">
+                        <input type="hidden" name="promocionId" value="1">
                         <!-- Mismo contenido que formNuevaPromocion pero con valores pre-llenados -->
                         <p class="text-muted"><small>Campos similares a Nueva Promoción con datos pre-cargados</small></p>
                     </form>
@@ -948,97 +724,346 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <!-- Scripts -->
     <script>
-        // Toggle estado promoción
-        function togglePromocion(id) {
-            console.log('Toggle promoción:', id);
-            alert('Función toggle promoción - Conectar con backend');
+// ========================================
+// CREAR NUEVA PROMOCIÓN
+// ========================================
+document.getElementById('formNuevaPromocion')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const form = this;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    
+    if (!csrfToken) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de seguridad',
+            text: 'No se encontró el token CSRF. Recarga la página.'
+        });
+        return;
+    }
+
+    // Preparar datos del formulario
+    const formData = new FormData(form);
+    
+    // Manejar el checkbox de activo
+    const activoCheckbox = form.querySelector('[name="activo"]');
+    if (activoCheckbox) {
+        formData.set('activo', activoCheckbox.checked ? '1' : '0');
+    }
+
+    // Convertir FormData a objeto JSON
+    const data = {};
+    formData.forEach((value, key) => {
+        if (key === 'dias[]') {
+            if (!data.dias) {
+                data.dias = [];
+            }
+            data.dias.push(value);
+        } else {
+            data[key] = value;
+        }
+    });
+
+    console.log('Datos a enviar:', data); // Para debug
+
+    fetch('/admin/promociones', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(async response => {
+        const contentType = response.headers.get('content-type');
+
+        if (!response.ok) {
+            if (contentType && contentType.includes('application/json')) {
+                const errorData = await response.json();
+                const mensaje = Object.values(errorData.errors || {}).flat().join('\n') || 'Error al crear promoción.';
+                throw new Error(mensaje);
+            } else {
+                const text = await response.text();
+                throw new Error(text || 'Error desconocido');
+            }
         }
 
-        // Toggle estado combo
-        function toggleCombo(id) {
-            console.log('Toggle combo:', id);
-            alert('Función toggle combo - Conectar con backend');
-        }
-
-        // Seleccionar todos los días
-        function seleccionarTodosDias() {
-            const checkboxes = document.querySelectorAll('input[name="dias[]"]');
-            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-            checkboxes.forEach(cb => cb.checked = !allChecked);
-        }
-
-        // Cambiar símbolo según tipo de descuento
-        document.getElementById('tipoDescuento')?.addEventListener('change', function() {
-            const simbolo = document.getElementById('simboloDescuento');
-            simbolo.textContent = this.value === 'porcentaje' ? '%' : '$';
+        return response.json();
+    })
+    .then(data => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Promoción creada',
+            text: 'La promoción fue creada correctamente',
+            timer: 2000,
+            showConfirmButton: false
         });
 
-        // Toggle todos los servicios
-        function toggleAllServicios() {
-            const selectAll = document.getElementById('selectAll');
-            const checkboxes = document.querySelectorAll('.servicio-check');
-            checkboxes.forEach(cb => cb.checked = selectAll.checked);
-            calcularPreciosCombo();
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalNuevaPromocion'));
+        modal.hide();
+        form.reset();
+
+        setTimeout(() => {
+            location.reload();
+        }, 2000);
+    })
+    .catch(error => {
+        console.error('Error completo:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al crear promoción',
+            text: error.message || 'Ocurrió un error inesperado'
+        });
+    });
+});
+
+// ========================================
+// CREAR NUEVO COMBO
+// ========================================
+document.getElementById('formNuevoCombo')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const form = this;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    
+    if (!csrfToken) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de seguridad',
+            text: 'No se encontró el token CSRF. Recarga la página.'
+        });
+        return;
+    }
+
+    const serviciosSeleccionados = document.querySelectorAll('.servicio-check:checked');
+    
+    if (serviciosSeleccionados.length < 2) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Servicios insuficientes',
+            text: 'Debes seleccionar al menos 2 servicios para crear un combo'
+        });
+        return;
+    }
+
+    const precioCombo = parseFloat(document.getElementById('precioCombo').value);
+    const precioRegular = parseFloat(document.getElementById('precioRegularTotal').textContent.replace('$', ''));
+
+    if (precioCombo >= precioRegular) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Precio incorrecto',
+            text: 'El precio del combo debe ser menor al precio regular para que sea atractivo'
+        });
+        return;
+    }
+
+    // Preparar datos
+    const formData = new FormData(form);
+    const data = {};
+    
+    formData.forEach((value, key) => {
+        if (key === 'servicios[]') {
+            if (!data.servicios) {
+                data.servicios = [];
+            }
+            data.servicios.push(value);
+        } else {
+            data[key] = value;
+        }
+    });
+
+    console.log('Datos del combo:', data); // Para debug
+
+    fetch('/admin/combos', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(async response => {
+        const contentType = response.headers.get('content-type');
+
+        if (!response.ok) {
+            if (contentType && contentType.includes('application/json')) {
+                const errorData = await response.json();
+                const mensaje = Object.values(errorData.errors || {}).flat().join('\n') || 'Error al crear combo.';
+                throw new Error(mensaje);
+            } else {
+                const text = await response.text();
+                throw new Error(text || 'Error desconocido');
+            }
         }
 
-        // Calcular precios del combo
-        function calcularPreciosCombo() {
-            const checkboxes = document.querySelectorAll('.servicio-check:checked');
-            let total = 0;
-            
-            checkboxes.forEach(cb => {
-                total += parseFloat(cb.dataset.precio);
+        return response.json();
+    })
+    .then(data => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Combo creado',
+            text: 'El combo fue creado correctamente',
+            timer: 2000,
+            showConfirmButton: false
+        });
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalNuevoCombo'));
+        modal.hide();
+        form.reset();
+
+        setTimeout(() => {
+            location.reload();
+        }, 2000);
+    })
+    .catch(error => {
+        console.error('Error completo:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al crear combo',
+            text: error.message || 'Ocurrió un error inesperado'
+        });
+    });
+});
+
+// ========================================
+// TOGGLE ESTADO PROMOCIÓN
+// ========================================
+function togglePromocion(id) {
+    fetch(`/admin/promociones/${id}/estado`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Estado actualizado',
+                text: `La promoción fue ${data.nuevo_estado ? 'activada' : 'desactivada'} correctamente`,
+                timer: 2000,
+                showConfirmButton: false
             });
 
-            document.getElementById('precioRegularTotal').textContent = '$' + total.toFixed(2);
-            
-            const precioCombo = parseFloat(document.getElementById('precioCombo').value) || 0;
-            const ahorro = total - precioCombo;
-            const porcentaje = total > 0 ? ((ahorro / total) * 100).toFixed(1) : 0;
-
-            document.getElementById('ahorroTotal').textContent = '$' + ahorro.toFixed(2);
-            document.getElementById('porcentajeAhorro').textContent = porcentaje + '% de descuento';
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            throw new Error('No se pudo actualizar el estado');
         }
-
-        // Event listeners
-        document.querySelectorAll('.servicio-check').forEach(cb => {
-            cb.addEventListener('change', calcularPreciosCombo);
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Ocurrió un error inesperado'
         });
+    });
+}
 
-        document.getElementById('precioCombo')?.addEventListener('input', calcularPreciosCombo);
+// ========================================
+// TOGGLE ESTADO COMBO
+// ========================================
+function toggleCombo(id) {
+    fetch(`/admin/combos/${id}/estado`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Estado actualizado',
+                text: `El combo fue ${data.nuevo_estado ? 'activado' : 'desactivado'} correctamente`,
+                timer: 2000,
+                showConfirmButton: false
+            });
 
-        // Validación formulario nueva promoción
-        document.getElementById('formNuevaPromocion')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            console.log('Crear nueva promoción');
-            alert('Formulario validado - Conectar con backend');
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            throw new Error('No se pudo actualizar el estado');
+        }
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Ocurrió un error inesperado'
         });
+    });
+}
 
-        // Validación formulario nuevo combo
-        document.getElementById('formNuevoCombo')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const serviciosSeleccionados = document.querySelectorAll('.servicio-check:checked').length;
-            
-            if (serviciosSeleccionados < 2) {
-                alert('Debes seleccionar al menos 2 servicios para crear un combo');
-                return;
-            }
+// ========================================
+// SELECCIONAR TODOS LOS DÍAS
+// ========================================
+function seleccionarTodosDias() {
+    const checkboxes = document.querySelectorAll('input[name="dias[]"]');
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    checkboxes.forEach(cb => cb.checked = !allChecked);
+}
 
-            const precioCombo = parseFloat(document.getElementById('precioCombo').value);
-            const precioRegular = parseFloat(document.getElementById('precioRegularTotal').textContent.replace('$', ''));
+// ========================================
+// CAMBIAR SÍMBOLO SEGÚN TIPO DE DESCUENTO
+// ========================================
+document.getElementById('tipoDescuento')?.addEventListener('change', function() {
+    const simbolo = document.getElementById('simboloDescuento');
+    simbolo.textContent = this.value === 'porcentaje' ? '%' : '$';
+});
 
-            if (precioCombo >= precioRegular) {
-                alert('El precio del combo debe ser menor al precio regular para que sea atractivo');
-                return;
-            }
+// ========================================
+// TOGGLE TODOS LOS SERVICIOS
+// ========================================
+function toggleAllServicios() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.servicio-check');
+    checkboxes.forEach(cb => cb.checked = selectAll.checked);
+    calcularPreciosCombo();
+}
 
-            console.log('Crear nuevo combo');
-            alert('Formulario validado - Conectar con backend');
-        });
+// ========================================
+// CALCULAR PRECIOS DEL COMBO
+// ========================================
+function calcularPreciosCombo() {
+    const checkboxes = document.querySelectorAll('.servicio-check:checked');
+    let total = 0;
+    
+    checkboxes.forEach(cb => {
+        total += parseFloat(cb.dataset.precio);
+    });
+
+    document.getElementById('precioRegularTotal').textContent = '$' + total.toFixed(2);
+    
+    const precioCombo = parseFloat(document.getElementById('precioCombo').value) || 0;
+    const ahorro = total - precioCombo;
+    const porcentaje = total > 0 ? ((ahorro / total) * 100).toFixed(1) : 0;
+
+    document.getElementById('ahorroTotal').textContent = '$' + ahorro.toFixed(2);
+    document.getElementById('porcentajeAhorro').textContent = porcentaje + '% de descuento';
+}
+
+// Event listeners para cálculo de combo
+document.querySelectorAll('.servicio-check').forEach(cb => {
+    cb.addEventListener('change', calcularPreciosCombo);
+});
+
+document.getElementById('precioCombo')?.addEventListener('input', calcularPreciosCombo);
 
 
         // ========================================
