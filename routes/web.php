@@ -38,9 +38,9 @@ Route::get('/recepcionista/dashboardRecep', function () {
 })->name('recepcionista.dashboardRecep');
 
 //Ruta Gestión de Servicios Recepcionista
-Route::get('/recepcionista/serviciosRecep', function () {
+/*Route::get('/recepcionista/serviciosRecep', function () {
     return view('recepcionista.serviciosRecepcionista');
-})->name('recepcionista.serviciosRecep');
+})->name('recepcionista.serviciosRecep');*/
 
 //Ruta Gestión de Citas Recepcionista
 Route::get('/recepcionista/citasRecep', function () {
@@ -160,6 +160,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
 // Rutas de Recepcionista
 Route::prefix('recepcionista')->name('recepcionista.')->group(function () {
     // ... otras rutas de recepcionista ...
+    Route::get('/serviciosRecep', [ServicioController::class, 'indexRecep'])->name('serviciosRecep');
+        // ✅ RUTAS DE CITAS (AGREGAR ESTAS)
+    Route::get('/citas/{id}/editar', [CitaController::class, 'editarCita'])->name('citas.editar');
+    Route::put('/citas/{id}/actualizar', [CitaController::class, 'actualizarCita'])->name('citas.actualizar');
+    Route::put('/citas/{id}/estado', [CitaController::class, 'actualizarEstado'])->name('citas.estado');
+
+    Route::post('/promocion/validar', [CitaController::class, 'validarPromocion'])->name('promocion.validar');
+    // Vista de dashboard recepcionista
     Route::get('/dashboardRecep', [CitaController::class, 'dashboardRecepcionista'])->name('dashboardRecep');
 
     // Vista de promociones recepcionista
@@ -167,18 +175,10 @@ Route::prefix('recepcionista')->name('recepcionista.')->group(function () {
 });
 
 Route::post('/recepcionista/servicios', [ServicioController::class, 'store'])->name('servicios.store');
-Route::get('/recepcionista/serviciosRecep', [ServicioController::class, 'index'])->name('recepcionista.serviciosRecep');
+//Route::get('/recepcionista/serviciosRecep', [ServicioController::class, 'index'])->name('recepcionista.serviciosRecep');
 Route::put('/servicios/{id}/actualizar', [ServicioController::class, 'update'])->name('servicios.update');
 Route::get('/servicios/{id}', [ServicioController::class, 'show'])->name('servicios.show');
 Route::put('/servicios/{id}/toggle-estado', [ServicioController::class, 'toggleEstado'])->name('servicios.toggleEstado');
-
-Route::prefix('recepcionista')->name('recepcionista.')->group(function () {
-    // Gestión de Promociones para Recepcionista
-    Route::get('/promocionesRecep', [PromocionController::class, 'indexRecepcionista'])->name('promocionesRecep');
-    Route::get('/serviciosRecep', [ServicioController::class, 'indexRecep'])->name('serviciosRecep');
-    // KPIs y citas de hoy/mañana
-    //Route::get('/kpiCitas', [CitaController::class, 'citaRecepcionista'])->name('kpiCitas');
-});
 
 //clientes 
 Route::get('/cliente/clientes/dashboard', [ClienteController::class, 'index'])->name('clientes.dashboard');

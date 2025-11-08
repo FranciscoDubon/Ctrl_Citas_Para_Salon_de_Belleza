@@ -555,7 +555,7 @@ public function filtrarPorEstado(Request $request)
 }
 
 
-public function actualizarEstado(Request $request, $id)
+/*public function actualizarEstado(Request $request, $id)
 {
     $cita = Cita::findOrFail($id);
     $nuevoEstado = $request->estado;
@@ -570,25 +570,244 @@ public function actualizarEstado(Request $request, $id)
     $cita->save();
 
     return response()->json(['mensaje' => 'Estado actualizado', 'estado' => $nuevoEstado]);
-}
+}*/
 
 public function editarCita($id)
 {
-    $cita = Cita::with(['cliente', 'servicios', 'estilista'])->findOrFail($id);
 
-    return response()->json([
-        'idCita' => $cita->idCita,
-        'fecha' => $cita->fecha,
-        'hora' => $cita->hora,
-        'cliente_id' => $cita->cliente->idCliente,
-        'cliente_nombre' => $cita->cliente->nombre,
-        'cliente_apellido' => $cita->cliente->apellido,
-        'estilista_id' => $cita->estilista->idEstilista,
-        'servicio_id' => $cita->servicio->idServicio,
-        'notas' => $cita->notas,
-        'estado' => $cita->estado
-    ]);
+    try {
+        $cita = Cita::with(['cliente', 'servicios', 'estilista', 'promocion'])->findOrFail($id);
+        
+        // Obtener el primer servicio (ya que es relación many-to-many)
+        $servicio = $cita->servicios->first();
+
+        return response()->json([
+            'idCita' => $cita->idCita,
+            'fecha' => $cita->fecha,
+            'hora' => $cita->hora,
+            'cliente_id' => $cita->idCliente,
+            'cliente_nombre' => $cita->cliente->nombre,
+            'cliente_apellido' => $cita->cliente->apellido,
+            'estilista_id' => $cita->idEstilista,
+            'servicio_id' => $servicio ? $servicio->idServicio : null,
+            'notas' => $cita->notas,
+            'estado' => $cita->estado,
+            'codigo_promocional' => $cita->promocion ? $cita->promocion->codigoPromocional : null
+        ]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Cita no encontrada: ' . $e->getMessage()], 404);
+    }
 }
 
+// ACTUALIZAR CITA COMPLETA
+public function actualizarCita(Request $request, $id)
+{
+    try {
+        // Normalizar estado
+        $estadoNormalizado = strtoupper(trim($request->estado));
+        $request->merge(['estado' => $estadoNormalizado]);
+
+        // Validar datos principales
+        $request->validate([
+            'cliente_id' => 'required|exists:cliente,idCliente',
+            'estilista_id' => 'required|exists:empleado,idEmpleado',
+            'fecha' => 'required|date',
+            'hora' => 'required',
+            'servicio_id' => 'required|exists:servicio,idServicio',
+            'estado' => 'required|in:PENDIENTE,CONFIRMADA,EN_PROCESO,COMPLETADA,CANCELADA'
+        ]);
+
+        DB::beginTransaction();
+
+        // Buscar cita y servicio
+        $cita = Cita::findOrFail($id);
+        $servicio = Servicio::findOrFail($request->servicio_id);
+
+        // Actualizar datos principales
+        $cita->idCliente = $request->cliente_id;
+        $cita->idEstilista = $request->estilista_id;
+        $cita->fecha = $request->fecha;
+        $cita->hora = $request->hora;
+        $cita->estado = $estadoNormalizado;
+        $cita->duracion = $servicio->duracionBase;
+        $cita->save();
+
+        // Sincronizar servicio (cita-servicio)
+        $cita->servicios()->sync([$servicio->idServicio]);
+
+        // ===============================
+        // VALIDAR CÓDIGO PROMOCIONAL
+        // ===============================
+        $mensajePromo = null;
+        $descuento = 0;
+        $precioFinal = $servicio->precioBase;
+
+        if ($request->filled('codigo_promocional')) {
+            $codigo = $request->codigo_promocional;
+
+            // Buscar promoción válida y activa
+            $promocion = Promocion::where('codigoPromocional', $codigo)
+                ->where('activo', true)
+                ->whereDate('fechaInicio', '<=', now())
+                ->whereDate('fechaFin', '>=', now())
+                ->first();
+
+            if ($promocion) {
+                // Verificar si aplica al servicio
+                $aplica = DB::table('promocionservicio')
+                    ->where('idPromocion', $promocion->idPromocion)
+                    ->where('idServicio', $servicio->idServicio)
+                    ->exists();
+
+                if ($aplica) {
+                    // Calcular descuento
+                    if ($promocion->tipoDescuento === 'porcentaje') {
+                        $descuento = $servicio->precioBase * ($promocion->valorDescuento / 100);
+                    } else {
+                        $descuento = $promocion->valorDescuento;
+                    }
+                    $precioFinal = max(0, $servicio->precioBase - $descuento);
+
+                    $mensajePromo = "Promoción aplicada: {$promocion->nombre} - descuento de {$promocion->valorDescuento}" .
+                        ($promocion->tipoDescuento === 'porcentaje' ? '%' : '$');
+                } else {
+                    $mensajePromo = "El código no aplica a este servicio.";
+                }
+            } else {
+                $mensajePromo = "Código promocional no válido o expirado.";
+            }
+        }
+
+        DB::commit();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cita actualizada correctamente.',
+            'promocion' => $mensajePromo,
+            'precios' => [
+                'base' => number_format($servicio->precioBase, 2),
+                'descuento' => number_format($descuento, 2),
+                'final' => number_format($precioFinal, 2)
+            ]
+        ]);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        DB::rollBack();
+        return response()->json([
+            'success' => false,
+            'message' => 'Error de validación',
+            'errors' => $e->errors()
+        ], 422);
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'success' => false,
+            'message' => 'Error al actualizar cita: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
+
+
+// ACTUALIZAR SOLO EL ESTADO
+public function actualizarEstado(Request $request, $id)
+{
+    try {
+        $cita = Cita::findOrFail($id);
+        $nuevoEstado = strtoupper($request->estado);
+
+        // Validar estado permitido
+        $estadosValidos = ['PENDIENTE', 'CONFIRMADA', 'EN_PROCESO', 'COMPLETADA', 'CANCELADA'];
+        if (!in_array($nuevoEstado, $estadosValidos)) {
+            return response()->json(['error' => 'Estado inválido'], 400);
+        }
+
+        $cita->estado = $nuevoEstado;
+        $cita->save();
+
+        return response()->json([
+            'success' => true,
+            'mensaje' => 'Estado actualizado correctamente',
+            'estado' => $nuevoEstado
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => 'No se pudo actualizar el estado: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
+// VALIDAR CÓDIGO PROMOCIONAL
+public function validarPromocion(Request $request)
+{
+    try {
+        $codigo = $request->codigo_promocional;
+        $servicioId = $request->servicio_id;
+        
+        if (!$codigo) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Código promocional requerido'
+            ], 400);
+        }
+        
+        // Buscar promoción válida
+        $promocion = Promocion::where('codigoPromocional', $codigo)
+            ->where('activo', true)
+            ->whereDate('fechaInicio', '<=', now())
+            ->whereDate('fechaFin', '>=', now())
+            ->first();
+        
+        if (!$promocion) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Código promocional no válido o expirado'
+            ], 404);
+        }
+        
+        // Verificar si puede usarse
+        if (!$promocion->puedeUsarse()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Esta promoción ha alcanzado su límite de usos'
+            ], 400);
+        }
+        
+        // Obtener precio del servicio
+        $servicio = Servicio::find($servicioId);
+        $precioBase = $servicio ? $servicio->precioBase : 0;
+        
+        // Calcular descuento
+        $descuento = 0;
+        if ($promocion->tipoDescuento === 'porcentaje') {
+            $descuento = $precioBase * ($promocion->valorDescuento / 100);
+        } else {
+            $descuento = $promocion->valorDescuento;
+        }
+        
+        $precioFinal = max(0, $precioBase - $descuento);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Código válido',
+            'promocion' => [
+                'nombre' => $promocion->nombre,
+                'tipo' => $promocion->tipoDescuento,
+                'valor' => $promocion->valorDescuento,
+                'descripcion' => $promocion->descripcion
+            ],
+            'precios' => [
+                'base' => number_format($precioBase, 2),
+                'descuento' => number_format($descuento, 2),
+                'final' => number_format($precioFinal, 2)
+            ]
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error al validar promoción: ' . $e->getMessage()
+        ], 500);
+    }
+}
 
 }

@@ -548,13 +548,13 @@
 
         <div class="col-md-6">
     <label class="form-label">Estado de la Cita</label>
-    <select class="form-select" name="estado" id="estado">
-        <option value="pendiente">Pendiente</option>
-        <option value="confirmada">Confirmada</option>
-        <option value="en proceso">En proceso</option>
-        <option value="completada">Completada</option>
-        <option value="cancelada">Cancelada</option>
-    </select>
+<select class="form-select" name="estado" id="estado">
+    <option value="PENDIENTE">Pendiente</option>
+    <option value="CONFIRMADA">Confirmada</option>
+    <option value="EN_PROCESO">En Proceso</option>
+    <option value="COMPLETADA">Completada</option>
+    <option value="CANCELADA">Cancelada</option>
+</select>
 </div>
 
 
@@ -635,240 +635,182 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Scripts -->
-    <script>
-        // Establecer fecha actual por defecto
-        document.getElementById('fechaFiltro').value = new Date().toISOString().split('T')[0];
-        const inputFecha = document.getElementById('fechaCita');
-if (inputFecha) {
-    inputFecha.value = new Date().toISOString().split('T')[0];
-}
+<script>
+    // ========================================
+    // CONFIGURACIÓN INICIAL
+    // ========================================
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const fechaFiltro = document.getElementById('fechaFiltro');
+        if (fechaFiltro) {
+            fechaFiltro.value = new Date().toISOString().split('T')[0];
+        }
+        
+        const nombre = localStorage.getItem('clienteNombre') || 'Cliente';
+        const apellido = localStorage.getItem('clienteApellido') || '';
+        const inicial = nombre.charAt(0).toUpperCase();
 
-
-        function actualizarAgenda() {
-            console.log('Actualizar agenda');
-            location.reload();
+        const nombreSpan = document.getElementById('nombreCliente');
+        if (nombreSpan) {
+            nombreSpan.textContent = `${nombre} ${apellido}`;
         }
 
-        function filtrarPorFecha() {
-            const fecha = document.getElementById('fechaFiltro').value;
-            console.log('Filtrar por fecha:', fecha);
-            alert('Filtro por fecha - Conectar con backend');
+        const avatarDiv = document.getElementById('avatarInicial');
+        if (avatarDiv) {
+            avatarDiv.textContent = inicial;
         }
+    });
 
-        function filtrarPorEstilista() {
-            const estilista = document.getElementById('estilistaFiltro').value;
-            console.log('Filtrar por estilista:', estilista);
-            alert('Filtro por estilista - Conectar con backend');
-        }
+    // ========================================
+    // FUNCIONES DE FILTRADO
+    // ========================================
+    
+    function actualizarAgenda() {
+        location.reload();
+    }
 
-        function filtrarPorEstado() {
-            const estado = document.getElementById('estadoFiltro').value;
-            console.log('Filtrar por estado:', estado);
-            alert('Filtro por estado - Conectar con backend');
-        }
+    function filtrarPorFecha() {
+        const fecha = document.getElementById('fechaFiltro').value;
+        console.log('Filtrar por fecha:', fecha);
+    }
 
-        function imprimirAgenda() {
-            console.log('Imprimir agenda');
-            window.print();
-        }
+    function filtrarPorEstilista() {
+        const estilista = document.getElementById('estilistaFiltro').value;
+        console.log('Filtrar por estilista:', estilista);
+    }
 
-        function cargarCita(citaId) {
-            console.log('Cargar cita:', citaId);
-        }
+    function filtrarPorEstado() {
+        const estado = document.getElementById('estadoFiltro').value;
+        console.log('Filtrar por estado:', estado);
+    }
 
-        function cargarEditarCita(citaId) {
-            console.log('Cargar editar cita:', citaId);
-        }
+    function imprimirAgenda() {
+        window.print();
+    }
 
-        function confirmarCita(citaId) {
-            console.log('Confirmar cita:', citaId);
-            alert('Enviar SMS/Email de confirmación - Conectar con backend');
-        }
-
-        function iniciarCita(citaId) {
-            console.log('Iniciar cita:', citaId);
-            if(confirm('¿Marcar esta cita como "En Proceso"?')) {
-                alert('Cita iniciada - Conectar con backend');
-            }
-        }
-
-        function completarCita(citaId) {
-            console.log('Completar cita:', citaId);
-            if(confirm('¿Marcar esta cita como "Completada"?')) {
-                alert('Cita completada - Conectar con backend');
-            }
-        }
-
-        function mostrarCancelar(citaId) {
-            const motivo = prompt('¿Motivo de cancelación?');
-            if(motivo) {
-                console.log('Cancelar cita:', citaId, 'Motivo:', motivo);
-                alert('Cita cancelada - Conectar con backend');
-            }
-        }
-
-        function actualizarDuracion() {
-            const select = document.getElementById('servicioSelect');
-            const option = select.options[select.selectedIndex];
-            const duracion = option.getAttribute('data-duracion');
-            const precio = option.getAttribute('data-precio');
+    // ========================================
+    // FUNCIONES PARA NUEVA CITA
+    // ========================================
+    
+    function actualizarDuracion() {
+        const select = document.getElementById('servicioSelect');
+        const option = select.options[select.selectedIndex];
+        const duracion = option.getAttribute('data-duracion');
+        const precio = option.getAttribute('data-precio');
+        
+        if(duracion && precio) {
+            document.getElementById('duracionEstimada').value = duracion + ' min';
+            document.getElementById('precioBase').textContent = '$' + parseFloat(precio).toFixed(2);
+            document.getElementById('descuento').textContent = '$0.00';
+            document.getElementById('totalPagar').textContent = '$' + parseFloat(precio).toFixed(2);
             
-            if(duracion && precio) {
-                document.getElementById('duracionEstimada').value = duracion + ' min';
-                document.getElementById('precioBase').textContent = '$' + precio;
-                document.getElementById('totalPagar').textContent = '$' + precio;
-            }
+            // Limpiar promoción si se cambia el servicio
+            document.getElementById('codigoPromo').value = '';
+            document.getElementById('promoValidada').style.display = 'none';
         }
+    }
 
-        function validarPromocion() {
-            const codigo = document.getElementById('codigoPromo').value;
-            if(!codigo) {
-                alert('Ingrese un código promocional');
-                return;
-            }
-            
-            console.log('Validar promoción:', codigo);
-            // TODO: Validar con backend
-            
-            // Simulación
-            document.getElementById('promoValidada').style.display = 'block';
-            document.getElementById('promoDetalle').textContent = '30% de descuento aplicado - Código: ' + codigo;
-            document.getElementById('descuento').textContent = '$4.50';
-            document.getElementById('totalPagar').textContent = '$10.50';
-        }
-
-        // Validación formulario nueva cita
-        const form = document.getElementById('formNuevaCita');
-if (form) { form.addEventListener('submit', function(e) { e.preventDefault();
-
-        const cliente = this.querySelector('[name="cliente_id"]').value;
-        const servicio = this.querySelector('[name="servicio_id"]').value;
-        const estilista = this.querySelector('[name="estilista_id"]').value;
-        const fecha = this.querySelector('[name="fecha"]').value;
-        const hora = this.querySelector('[name="hora"]').value;
-
-        if(!cliente || !servicio || !estilista || !fecha || !hora) {
-            alert('Complete todos los campos requeridos');
+    async function validarPromocion() {
+        const codigo = document.getElementById('codigoPromo').value;
+        const servicioId = document.getElementById('servicioSelect').value;
+        
+        if(!codigo) {
+            alert('Ingrese un código promocional');
             return;
         }
-    });
-}
-
-
-document.addEventListener('DOMContentLoaded', () => {
-    const nombre = localStorage.getItem('clienteNombre') || 'Cliente';
-    const apellido = localStorage.getItem('clienteApellido') || '';
-    const inicial = nombre.charAt(0).toUpperCase();
-
-    // Insertar nombre completo
-    const nombreSpan = document.getElementById('nombreCliente');
-    if (nombreSpan) {
-        nombreSpan.textContent = `${nombre} ${apellido}`;
-    }
-
-    // Insertar inicial como avatar
-    const avatarDiv = document.getElementById('avatarInicial');
-    if (avatarDiv) {
-        avatarDiv.textContent = inicial;
-    }
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('formNuevaCita');
-
-    form.addEventListener('submit', async function (e) {
-        e.preventDefault();
-
-        const formData = new FormData(form);
-
+        
+        if(!servicioId) {
+            alert('Seleccione un servicio primero');
+            return;
+        }
+        
         try {
-            const response = await fetch(form.action, {
+            const response = await fetch('/recepcionista/promocion/validar', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
                 },
-                body: formData
+                body: JSON.stringify({
+                    codigo_promocional: codigo,
+                    servicio_id: servicioId
+                })
             });
-
-            const result = await response.json();
-
-            if (result.success) {
-                alert(result.message);
-
-                // Opcional: cerrar modal y limpiar
-                form.reset();
-                document.getElementById('duracionEstimada').value = '-- min';
-                document.getElementById('precioBase').textContent = '$0.00';
-                document.getElementById('descuento').textContent = '$0.00';
-                document.getElementById('totalPagar').textContent = '$0.00';
-                const modal = bootstrap.Modal.getInstance(document.getElementById('modalNuevaCita'));
-                modal.hide();
-                location.reload();
-                form.reset();
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                document.getElementById('promoValidada').style.display = 'block';
+                document.getElementById('promoDetalle').textContent = 
+                    `${data.promocion.nombre} - ${data.promocion.tipo === 'porcentaje' ? data.promocion.valor + '%' : '$' + data.promocion.valor} de descuento`;
+                document.getElementById('descuento').textContent = '$' + data.precios.descuento;
+                document.getElementById('totalPagar').textContent = '$' + data.precios.final;
             } else {
-                alert('Error: ' + result.message);
+                alert(data.message);
+                document.getElementById('promoValidada').style.display = 'none';
             }
         } catch (error) {
-            console.error('Error al enviar la cita:', error);
-            alert('Error inesperado al agendar la cita.');
+            console.error('Error:', error);
+            alert('Error al validar la promoción');
+        }
+    }
+
+    // Formulario de nueva cita
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('formNuevaCita');
+        
+        if (form) {
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const formData = new FormData(form);
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        alert(result.message);
+                        form.reset();
+                        document.getElementById('duracionEstimada').value = '-- min';
+                        document.getElementById('precioBase').textContent = '$0.00';
+                        document.getElementById('descuento').textContent = '$0.00';
+                        document.getElementById('totalPagar').textContent = '$0.00';
+                        document.getElementById('promoValidada').style.display = 'none';
+                        
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('modalNuevaCita'));
+                        modal.hide();
+                        location.reload();
+                    } else {
+                        alert('Error: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error al enviar la cita:', error);
+                    alert('Error inesperado al agendar la cita.');
+                }
+            });
         }
     });
-});
 
-function actualizarDuracion() {
-    const select = document.getElementById('servicioSelect');
-    const duracion = select.options[select.selectedIndex].getAttribute('data-duracion');
-    const precio = select.options[select.selectedIndex].getAttribute('data-precio');
-
-    document.getElementById('duracionEstimada').value = duracion + ' min';
-    document.getElementById('precioBase').textContent = '$' + precio;
-    document.getElementById('totalPagar').textContent = '$' + precio;
-}
-
-
-function actualizarEstadoCita(idCita, nuevoEstado) {
-    fetch(`/recepcionista/citas/${idCita}/estado`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({ estado: nuevoEstado })
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Error al actualizar estado');
-        return response.json();
-    })
-    .then(data => {
-        console.log('Estado actualizado:', data.estado);
-        // Opcional: actualizar la vista sin recargar
-        location.reload(); // o actualizar solo la fila
-    })
-    .catch(error => {
-        console.error(error);
-        alert('No se pudo actualizar el estado de la cita');
-    });
-}
-
-// Funciones específicas para cada botón
-function confirmarCita(idCita) {
-    actualizarEstadoCita(idCita, 'confirmada');
-}
-
-function iniciarCita(idCita) {
-    actualizarEstadoCita(idCita, 'en proceso');
-}
-
-function completarCita(idCita) {
-    actualizarEstadoCita(idCita, 'completada');
-}
-
-function mostrarCancelar(idCita) {
-    actualizarEstadoCita(idCita, 'cancelada');
-}
-
-function editarCita(idCita) {
-    fetch(`/recepcionista/citas/${idCita}/editar`)
+    // ========================================
+    // FUNCIONES PARA EDITAR CITA
+    // ========================================
+    
+    function editarCita(idCita) {
+        fetch(`/recepcionista/citas/${idCita}/editar`, {
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
@@ -876,58 +818,214 @@ function editarCita(idCita) {
             return response.json();
         })
         .then(data => {
-            const form = document.getElementById('formEditarCita');
-
-            // Asignar valores básicos
-            form.cita_id.value = data.idCita;
-            form.fecha.value = data.fecha;
-            form.hora.value = data.hora;
-            form.cliente_id.value = data.cliente_id;
-            form.estilista_id.value = data.estilista_id ?? '';
-            form.notas.value = data.notas ?? '';
-
-            // Asignar servicio (asegúrate que el select tenga name="servicio_id" o id="servicioSelectEditar")
+            document.getElementById('cita_id').value = data.idCita;
+            document.getElementById('fechaEditar').value = data.fecha;
+            document.getElementById('horaEditar').value = data.hora;
+            document.getElementById('cliente_id').value = data.cliente_id;
+            document.getElementById('estilista_id').value = data.estilista_id;
+            document.getElementById('notasEditar').value = data.notas || '';
+            
+            // Normalizar estado a mayúsculas
+            const estadoNormalizado = data.estado.toUpperCase();
+            document.getElementById('estado').value = estadoNormalizado;
+            
             const servicioSelect = document.getElementById('servicioSelectEditar');
-            if (servicioSelect) {
-                servicioSelect.value = String(data.servicio_id);
-                actualizarDuracionEditar(); // actualiza duración y resumen si aplica
+            if (servicioSelect && data.servicio_id) {
+                servicioSelect.value = data.servicio_id;
+                actualizarDuracionEditar();
             }
 
-            // Asignar estado si el campo existe
-            const estadoField = form.estado;
-            if (estadoField) {
-                estadoField.value = data.estado;
+            if (data.codigo_promocional) {
+                document.getElementById('codigoPromoEditar').value = data.codigo_promocional;
             }
 
-            // Actualizar título del modal
-            document.getElementById('tituloEditarCita').textContent =
+            document.getElementById('tituloEditarCita').textContent = 
                 `Editar Cita de ${data.cliente_nombre} ${data.cliente_apellido}`;
 
-            // Mostrar modal
             const modal = new bootstrap.Modal(document.getElementById('modalEditarCita'));
             modal.show();
         })
         .catch(error => {
             console.error('Error al cargar cita:', error);
-            alert('No se pudo cargar la información de la cita. Revisa la consola para más detalles.');
+            alert('No se pudo cargar la información de la cita.');
         });
-}
+    }
 
+    function actualizarDuracionEditar() {
+        const select = document.getElementById('servicioSelectEditar');
+        const option = select.options[select.selectedIndex];
+        const duracion = option.getAttribute('data-duracion');
+        const precio = option.getAttribute('data-precio');
 
-function actualizarDuracionEditar() {
-    const select = document.getElementById('servicioSelectEditar');
-    const duracion = select.selectedOptions[0].getAttribute('data-duracion');
-    const precio = select.selectedOptions[0].getAttribute('data-precio');
+        if (duracion && precio) {
+            document.getElementById('duracionEstimadaEditar').value = duracion + ' min';
+            document.getElementById('precioBaseEditar').textContent = '$' + parseFloat(precio).toFixed(2);
+            document.getElementById('descuentoEditar').textContent = '$0.00';
+            document.getElementById('totalPagarEditar').textContent = '$' + parseFloat(precio).toFixed(2);
+            
+            // Limpiar promoción si se cambia el servicio
+            document.getElementById('codigoPromoEditar').value = '';
+            document.getElementById('promoValidadaEditar').style.display = 'none';
+        }
+    }
 
-    // Actualizar duración estimada
-    document.getElementById('duracionEstimadaEditar').value = duracion + ' min';
+    async function validarPromocionEditar() {
+        const codigo = document.getElementById('codigoPromoEditar').value;
+        const servicioId = document.getElementById('servicioSelectEditar').value;
+        
+        if(!codigo) {
+            alert('Ingrese un código promocional');
+            return;
+        }
+        
+        if(!servicioId) {
+            alert('Seleccione un servicio primero');
+            return;
+        }
+        
+        try {
+            const response = await fetch('/recepcionista/promocion/validar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    codigo_promocional: codigo,
+                    servicio_id: servicioId
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                document.getElementById('promoValidadaEditar').style.display = 'block';
+                document.getElementById('promoDetalleEditar').textContent = 
+                    `${data.promocion.nombre} - ${data.promocion.tipo === 'porcentaje' ? data.promocion.valor + '%' : '$' + data.promocion.valor} de descuento`;
+                document.getElementById('descuentoEditar').textContent = '$' + data.precios.descuento;
+                document.getElementById('totalPagarEditar').textContent = '$' + data.precios.final;
+            } else {
+                alert(data.message);
+                document.getElementById('promoValidadaEditar').style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al validar la promoción');
+        }
+    }
 
-    // Actualizar resumen de precios
-    document.getElementById('precioBaseEditar').textContent = `$${parseFloat(precio).toFixed(2)}`;
-    document.getElementById('descuentoEditar').textContent = '$0.00'; // puedes ajustar si hay promoción
-    document.getElementById('totalPagarEditar').textContent = `$${parseFloat(precio).toFixed(2)}`;
-}
+    // Formulario de editar cita
+    document.addEventListener('DOMContentLoaded', function() {
+        const formEditar = document.getElementById('formEditarCita');
+        
+        if (formEditar) {
+            formEditar.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const citaId = document.getElementById('cita_id').value;
+                const formData = new FormData(this);
+                
+                // Normalizar estado a mayúsculas
+                const estado = formData.get('estado').toUpperCase();
+                
+                try {
+                    const response = await fetch(`/recepcionista/citas/${citaId}/actualizar`, {
+                        method: 'PUT',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            cliente_id: formData.get('cliente_id'),
+                            estilista_id: formData.get('estilista_id'),
+                            fecha: formData.get('fecha'),
+                            hora: formData.get('hora'),
+                            servicio_id: formData.get('servicio_id'),
+                            estado: estado,
+                            notas: formData.get('notas'),
+                            codigo_promocional: formData.get('codigo_promocional')
+                        })
+                    });
 
+                    const result = await response.json();
+
+                    if (result.success) {
+                        alert(result.message);
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarCita'));
+                        modal.hide();
+                        location.reload();
+                    } else {
+                        alert('Error: ' + result.message);
+                        if (result.errors) {
+                            console.error('Errores de validación:', result.errors);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error al actualizar la cita:', error);
+                    alert('Error inesperado al actualizar la cita.');
+                }
+            });
+        }
+    });
+
+    // ========================================
+    // FUNCIONES PARA CAMBIAR ESTADO DE CITAS
+    // ========================================
+    
+    function actualizarEstadoCita(idCita, nuevoEstado) {
+        fetch(`/recepcionista/citas/${idCita}/estado`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ estado: nuevoEstado })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Error al actualizar estado');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alert(data.mensaje);
+                location.reload();
+            } else {
+                throw new Error(data.error || 'Error desconocido');
+            }
+        })
+        .catch(error => {
+            console.error(error);
+            alert('No se pudo actualizar el estado de la cita: ' + error.message);
+        });
+    }
+
+    function confirmarCita(idCita) {
+        if (confirm('¿Confirmar esta cita?')) {
+            actualizarEstadoCita(idCita, 'CONFIRMADA');
+        }
+    }
+
+    function iniciarCita(idCita) {
+        if (confirm('¿Marcar esta cita como "En Proceso"?')) {
+            actualizarEstadoCita(idCita, 'EN_PROCESO');
+        }
+    }
+
+    function completarCita(idCita) {
+        if (confirm('¿Marcar esta cita como "Completada"?')) {
+            actualizarEstadoCita(idCita, 'COMPLETADA');
+        }
+    }
+
+    function mostrarCancelar(idCita) {
+        const motivo = prompt('¿Motivo de cancelación?');
+        if (motivo) {
+            actualizarEstadoCita(idCita, 'CANCELADA');
+        }
+    }
 </script>
 
 </body>

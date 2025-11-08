@@ -73,7 +73,7 @@
         todo esto por que como solo trabaje frontend y necesitaba ver como funcionaban xd-->
         <div class="d-flex gap-3">
             <a href="{{ route('logn') }}" class="text-decoration-none" style="color: #e91e63;">Login</a>
-            <a href="{{ route('dashboardAdm') }}" class="text-decoration-none" style="color: #e91e63;">Administrador</a>
+            <a href="{{ route('admin.dashboardAdm') }}" class="text-decoration-none" style="color: #e91e63;">Administrador</a>
             <a href="{{ route('recepcionista.dashboardRecep') }}" class="text-decoration-none" style="color: #e91e63;">Recepcionista</a>
             <a href="{{ route('estilista.dashboardEsti') }}" class="text-decoration-none" style="color: #e91e63;">Estilista</a>
             <a href="{{ route('cliente.dashboardCli') }}" class="text-decoration-none" style="color: #e91e63;">Cliente</a>
