@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ServicioController;
+use App\Http\Controllers\PromocionController;
+use App\Http\Controllers\CitaController;
+use App\Http\Controllers\ClienteController;
 
 // Ruta Dashboard Admin
 Route::get('/', function () {
@@ -103,7 +107,7 @@ Route::get('login', function () {
     return view('login');
 })->name('logn');
 
-use App\Http\Controllers\ClienteController;
+
 // Ruta POST para registrar cliente
 Route::post('/registro', [ClienteController::class, 'registrar'])->name('registro');
 Route::post('/login', [ClienteController::class, 'login'])->name('login.post');
@@ -132,8 +136,6 @@ Route::get('/recepcionista/dashboard', function () {
     return redirect()->route('recepcionista.dashboardRecep');
 });
 
-use App\Http\Controllers\ServicioController;
-use App\Http\Controllers\PromocionController;
 
 // Rutas de Admin
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -158,7 +160,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 // Rutas de Recepcionista
 Route::prefix('recepcionista')->name('recepcionista.')->group(function () {
     // ... otras rutas de recepcionista ...
-    
+    Route::get('/dashboardRecep', [CitaController::class, 'dashboardRecepcionista'])->name('dashboardRecep');
+
     // Vista de promociones recepcionista
     Route::get('/promocionesRecep', [PromocionController::class, 'indexRecepcionista'])->name('promocionesRecep');
 });
@@ -172,6 +175,8 @@ Route::put('/servicios/{id}/toggle-estado', [ServicioController::class, 'toggleE
 Route::prefix('recepcionista')->name('recepcionista.')->group(function () {
     // Gestión de Promociones para Recepcionista
     Route::get('/promocionesRecep', [PromocionController::class, 'indexRecepcionista'])->name('promocionesRecep');
+    // KPIs y citas de hoy/mañana
+    //Route::get('/kpiCitas', [CitaController::class, 'citaRecepcionista'])->name('kpiCitas');
 });
 
 //clientes 
@@ -182,8 +187,8 @@ Route::get('/recepcionista/clientes/{id}/editar', [ClienteController::class, 'ed
 //citas
 
 Route::post('/citas/crear', [CitaController::class, 'store'])->name('citas.store');
-use App\Http\Controllers\CitaController;
-Route::put('/recepcionista/citas/{id}/estado', [CitaController::class, 'actualizarEstado']);
+
+
 Route::get('/recepcionista/citasRecep', [CitaController::class, 'crear'])->name('recepcionista.citasRecep');
 Route::post('/citas/crear', [CitaController::class, 'store'])->name('citas.store');
 Route::get('/recepcionista/citasRecep', [CitaController::class, 'agendaSemana'])->name('recepcionista.citasRecep');
@@ -196,6 +201,7 @@ Route::get('/admin/serviciosAdm', [ServicioController::class, 'indexAdmin'])->na
 
 Route::prefix('admin')->name('admin.')->group(function () {
     // ... tus otras rutas existentes ...
+    Route::get('/dashboard', [CitaController::class, 'dashboardAdmin'])->name('dashboardAdm');
 
     // Gestión de Promociones
     Route::get('/promocionesAdm', [PromocionController::class, 'indexAdmin'])->name('promocionesAdm');
@@ -212,3 +218,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::put('/combos/{id}', [PromocionController::class, 'updateCombo'])->name('combo.update');
     Route::post('/combos/{id}/estado', [PromocionController::class, 'toggleEstadoCombo'])->name('combo.toggleEstado');
 });  
+// ========================================
+// RUTAS DE ESTILISTA
+// ========================================
+Route::prefix('estilista')->name('estilista.')->group(function () {
+    // Dashboard redirige a citas
+    Route::get('/dashboardEsti', function () {
+        return redirect()->route('estilista.citasEsti');
+    })->name('dashboardEsti');
+    
+    // Gestión de Citas (VISTA PRINCIPAL)
+    Route::get('/citasEsti', [CitaController::class, 'indexEstilista'])->name('citasEsti');
+    Route::get('/citas/{id}/detalle', [CitaController::class, 'showCitaEstilista'])->name('cita.detalle');
+    Route::post('/citas/{id}/iniciar', [CitaController::class, 'iniciarCita'])->name('cita.iniciar');
+    Route::post('/citas/{id}/finalizar', [CitaController::class, 'finalizarCita'])->name('cita.finalizar');
+    Route::post('/citas/{id}/confirmar', [CitaController::class, 'confirmarAsistencia'])->name('cita.confirmar');
+    Route::get('/citas/filtrar', [CitaController::class, 'filtrarPorEstado'])->name('citas.filtrar');
+});

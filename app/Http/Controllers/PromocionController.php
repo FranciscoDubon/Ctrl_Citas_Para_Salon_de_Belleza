@@ -15,6 +15,9 @@ class PromocionController extends Controller
     // Mostrar vista de promociones (Admin)
     public function indexAdmin()
     {
+        // Fechas del mes actual
+        $inicioMes = Carbon::now()->startOfMonth();
+        $finMes = Carbon::now()->endOfMonth();
         $promociones = Promocion::orderBy('activo', 'desc')
             ->orderBy('fechaInicio', 'desc')
             ->get();
@@ -28,12 +31,20 @@ class PromocionController extends Controller
             ->count();
 
         $combosDisponibles = Combo::where('activo', true)->count();
+       // Obtener los registros de promociones aplicadas este mes
+       $promosEsteMes = \DB::table('citaservicio')
+    ->join('cita', 'citaservicio.idCita', '=', 'cita.idCita')
+    ->join('promocionservicio', 'citaservicio.idServicio', '=', 'promocionservicio.idServicio')
+    ->join('promocion', 'promocionservicio.idPromocion', '=', 'promocion.idPromocion')
+    ->whereBetween('cita.fecha', [$inicioMes, $finMes])
+    ->select('promocion.descuento')
+    ->get();
+  
+    // Total de usos (cuántas veces se aplicó una promo)
+    $usosEsteMes = $promosEsteMes->count();
 
-        // Usos este mes (esto dependerá de tu tabla de citas cuando la implementes)
-        $usosEsteMes = 87; // Valor temporal
-
-        // Descuentos otorgados (esto dependerá de tu tabla de citas)
-        $descuentosOtorgados = 342; // Valor temporal
+   // Total de descuentos sumados
+    $descuentosOtorgados = $promosEsteMes->sum('descuento');
 
         return view('admin.promocionesAdmin', compact(
             'promociones',

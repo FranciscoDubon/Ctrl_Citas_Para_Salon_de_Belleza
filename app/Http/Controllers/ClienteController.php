@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 
 class ClienteController extends Controller
 {
-    public function login(Request $request)
+   public function login(Request $request)
 {
     $request->validate([
         'correoElectronico' => 'required|email',
@@ -34,12 +34,20 @@ class ClienteController extends Controller
                 'message' => 'El empleado no tiene un rol asignado válido'
             ]);
         }
+        // ✅ GUARDAR EN SESIÓN
+        session([
+            'clienteId' => $empleado->idEmpleado,  // Lo guardamos como clienteId para que funcione igual
+            'clienteNombre' => $empleado->nombre,
+            'clienteApellido' => $empleado->apellido,
+            'tipoUsuario' => 'empleado'
+        ]);
 
         return response()->json([
             'success' => true,
             'rol' => $rolNombre,
             'nombre' => $empleado->nombre,
             'apellido' => $empleado->apellido,
+            'id' => $empleado->idEmpleado,
             'tipoUsuario' => 'empleado'
         ]);
     }
@@ -48,11 +56,19 @@ class ClienteController extends Controller
     $cliente = Cliente::where('correoElectronico', $request->correoElectronico)->first();
 
     if ($cliente && Hash::check($request->clave, $cliente->clave)) {
+        // ✅ GUARDAR EN SESIÓN
+        session([
+            'clienteId' => $cliente->idCliente,
+            'clienteNombre' => $cliente->nombre,
+            'clienteApellido' => $cliente->apellido,
+            'tipoUsuario' => 'cliente'
+        ]);
         return response()->json([
             'success' => true,
             'rol' => $cliente->rol, // campo enum directo
             'nombre' => $cliente->nombre,
             'apellido' => $cliente->apellido,
+            'Id' => $cliente->idCliente,
             'tipoUsuario' => 'cliente'
         ]);
     }

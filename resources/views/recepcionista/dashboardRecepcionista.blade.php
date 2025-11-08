@@ -72,28 +72,10 @@
      todo esto por que como solo trabaje frontend y necesitaba ver como funcionaban xd-->
         <div class="d-flex gap-3">
             <a href="{{ route('logn') }}" class="text-decoration-none" style="color: #e91e63;">Login</a>
-            <a href="{{ route('dashboardAdm') }}" class="text-decoration-none" style="color: #e91e63;">Administrador</a>
+            <a href="{{ route('admin.dashboardAdm') }}" class="text-decoration-none" style="color: #e91e63;">Administrador</a>
             <a href="{{ route('recepcionista.dashboardRecep') }}" class="text-decoration-none" style="color: #e91e63;">Recepcionista</a>
             <a href="{{ route('estilista.dashboardEsti') }}" class="text-decoration-none" style="color: #e91e63;">Estilista</a>
             <a href="{{ route('cliente.dashboardCli') }}" class="text-decoration-none" style="color: #e91e63;">Cliente</a>
-        </div>
-
-        <!-- Botones de Acción Rápida -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <button class="btn btn-gold me-2" data-bs-toggle="modal" data-bs-target="#modalNuevaCita">
-                    <i class="bi bi-plus-circle"></i> Nueva Cita
-                </button>
-                <button class="btn btn-premium me-2" data-bs-toggle="modal" data-bs-target="#modalBuscarCliente">
-                    <i class="bi bi-search"></i> Buscar Cliente
-                </button>
-                <button class="btn btn-outline-gold me-2" onclick="actualizarDashboard()">
-                    <i class="bi bi-arrow-clockwise"></i> Actualizar
-                </button>
-                <button class="btn btn-soft" data-bs-toggle="modal" data-bs-target="#modalPromocionesActivas">
-                    <i class="bi bi-gift"></i> Ver Promociones
-                </button>
-            </div>
         </div>
 
         <!-- Alertas y Notificaciones -->
@@ -149,10 +131,10 @@
                             <i class="bi bi-calendar-check"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">18</h3>
+                    <h3 class="kpi-value">{{ $totalCitasHoy }}</h3>
                     <p class="kpi-label">Citas de Hoy</p>
                     <span class="kpi-badge badge-success">
-                        <i class="bi bi-check-circle"></i> 12 completadas
+                        <i class="bi bi-check-circle"></i> {{ $citasCompletadas }} completadas
                     </span>
                 </div>
             </div>
@@ -175,7 +157,7 @@
                             <i class="bi bi-clock-history"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">6</h3>
+                    <h3 class="kpi-value">{{ $citasPendientes }}</h3>
                     <p class="kpi-label">Citas Pendientes</p>
                     <span class="kpi-badge badge-neutral">
                         <i class="bi bi-hourglass-split"></i> Por atender
@@ -201,10 +183,10 @@
                             <i class="bi bi-gift-fill"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">5</h3>
+                    <h3 class="kpi-value">{{ $promocionesAplicadas }}</h3>
                     <p class="kpi-label">Promociones Aplicadas</p>
                     <span class="kpi-badge badge-success">
-                        <i class="bi bi-percent"></i> $87 en descuentos
+                        <i class="bi bi-percent"></i> ${{ number_format($totalDescuento, 2) }} en descuentos
                     </span>
                 </div>
             </div>
@@ -220,19 +202,18 @@
             AND fecha_hora > NOW()
             ================================================
             -->
-            <div class="col-xl-3 col-md-6">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon info">
-                            <i class="bi bi-calendar-event"></i>
-                        </div>
-                    </div>
-                    <h3 class="kpi-value">4</h3>
-                    <p class="kpi-label">Próximas Citas</p>
-                    <span class="kpi-badge badge-neutral">
-                        <i class="bi bi-clock"></i> Resto del día
-                    </span>
-                </div>
+           <div class="col-xl-3 col-md-6">
+<div class="card kpi-card">
+    <div class="kpi-header">
+        <div class="kpi-icon warning">
+            <i class="bi bi-clock-history"></i>
+        </div>
+    </div>
+    <h3 class="kpi-value">{{ $promosDesactivadas }}</h3>
+    <p class="kpi-label">Promociones desactivadas</p>
+
+</div>
+
             </div>
         </div>
 
@@ -455,98 +436,61 @@
             </div>
         </div>
 
-        <!-- Sección de Promociones y Estilistas -->
-        <div class="row g-4 mb-4">
-            
-            <!-- Promociones Activas Hoy -->
-            <div class="col-lg-6">
-                <div class="card-custom">
-                    <h5 class="card-title-custom">
-                        <i class="bi bi-gift-fill"></i>
-                        Promociones Activas Hoy
-                    </h5>
-                    
-                    <!-- 
-                    ================================================
-                    TODO BACKEND: Conectar con BD
-                    ================================================
-                    CONSULTA SQL:
-                    SELECT id, nombre, codigo_promocional, tipo_descuento, 
-                           valor_descuento, usos_maximos, usos_actuales
-                    FROM promociones 
-                    WHERE activo = 1 
-                    AND fecha_inicio <= CURDATE()
-                    AND fecha_fin >= CURDATE()
-                    AND (DAYNAME(CURDATE()) IN (dias_aplicables) OR dias_aplicables IS NULL)
-                    ORDER BY prioridad DESC
-                    LIMIT 5
-                    ================================================
-                    -->
-                    <ul class="list-custom">
-                        <li class="list-item-custom">
-                            <div class="list-avatar" style="background: linear-gradient(135deg, var(--borgona), var(--borgona-light));">
-                                <i class="bi bi-percent"></i>
-                            </div>
-                            <div class="list-content">
-                                <h6>Black Friday Beauty</h6>
-                                <p><code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">BLACK30</code> - 30% de descuento</p>
-                                <small style="color: var(--borgona); opacity: 0.7;">Usado: 45/100 veces</small>
-                            </div>
-                            <div class="list-badge">
-                                <button class="btn btn-sm btn-gold" onclick="copiarCodigo('BLACK30')" title="Copiar código">
-                                    <i class="bi bi-clipboard"></i>
-                                </button>
-                            </div>
-                        </li>
+<!-- Sección de Promociones Activas Hoy -->
+ <div class="row g-4 mb-4" id="promociones">
+<div class="col-lg-6">
+    <div class="card-custom">
+        <h5 class="card-title-custom">
+            <i class="bi bi-gift-fill"></i>
+            Promociones Activas Hoy
+        </h5>
 
-                        <li class="list-item-custom">
-                            <div class="list-avatar" style="background: linear-gradient(135deg, var(--dorado-palido), var(--dorado-hover));">
-                                <i class="bi bi-currency-dollar"></i>
-                            </div>
-                            <div class="list-content">
-                                <h6>Nuevo Cliente VIP</h6>
-                                <p><code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">NUEVO10</code> - $10 de descuento</p>
-                                <small style="color: var(--borgona); opacity: 0.7;">Solo primeras visitas</small>
-                            </div>
-                            <div class="list-badge">
-                                <button class="btn btn-sm btn-gold" onclick="copiarCodigo('NUEVO10')" title="Copiar código">
-                                    <i class="bi bi-clipboard"></i>
-                                </button>
-                            </div>
-                        </li>
+        @if ($promocionesHoy->isEmpty())
+            <p class="text-muted">No hay promociones activas hoy.</p>
+        @else
+            <ul class="list-custom">
+                @foreach ($promocionesHoy as $promo)
+                    <li class="list-item-custom">
+                        <div class="list-avatar" style="background: linear-gradient(135deg, var(--borgona), var(--borgona-light));">
+                            <i class="bi bi-percent"></i>
+                        </div>
+                        <div class="list-content">
+                            <h6>{{ $promo->nombre }}</h6>
 
-                        <li class="list-item-custom">
-                            <div class="list-avatar" style="background: linear-gradient(135deg, var(--rosa-empolvado), var(--rosa-empolvado-light));">
-                                <i class="bi bi-calendar-check"></i>
-                            </div>
-                            <div class="list-content">
-                                <h6>Martes de Spa</h6>
-                                <p><code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">MARSPA20</code> - 20% OFF</p>
-                                <small style="color: var(--borgona); opacity: 0.7;">Solo servicios faciales</small>
-                            </div>
-                            <div class="list-badge">
-                                <button class="btn btn-sm btn-gold" onclick="copiarCodigo('MARSPA20')" title="Copiar código">
-                                    <i class="bi bi-clipboard"></i>
-                                </button>
-                            </div>
-                        </li>
+                            @if ($promo->tipoDescuento === 'porcentaje')
+                                <p>
+                                    <code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">
+                                        {{ $promo->codigoPromocional }}
+                                    </code>
+                                    - {{ $promo->valorDescuento }}% de descuento
+                                </p>
+                            @else
+                                <p>
+                                    <code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">
+                                        {{ $promo->codigoPromocional }}
+                                    </code>
+                                    - ${{ number_format($promo->valorDescuento, 2) }} de descuento
+                                </p>
+                            @endif
 
-                        <li class="list-item-custom">
-                            <div class="list-avatar" style="background: linear-gradient(135deg, var(--champagne), var(--champagne-light));">
-                                <i class="bi bi-box-seam"></i>
-                            </div>
-                            <div class="list-content">
-                                <h6>Combo Novia Perfecta</h6>
-                                <p>Peinado + Maquillaje + Manicure - <strong style="color: var(--borgona);">$85.00</strong></p>
-                                <small style="color: var(--dorado-palido); font-weight: 600;">¡Ahorra $35!</small>
-                            </div>
-                            <div class="list-badge">
-                                <span class="badge badge-gold">Combo</span>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+                            <small style="color: var(--borgona); opacity: 0.7;">
+                                Usado: {{ $promo->usosActuales }}/{{ $promo->usosMaximos }} veces
+                            </small>
+                        </div>
+                        <div class="list-badge">
+                            <button class="btn btn-sm btn-gold"
+                                    onclick="copiarCodigo('{{ $promo->codigoPromocional }}')"
+                                    title="Copiar código">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+        @endif
+    </div>
+</div>
+
 
             <!-- Disponibilidad de Estilistas -->
             <div class="col-lg-6">
@@ -624,7 +568,7 @@
                 </div>
             </div>
         </div>
-
+</div>
         <!-- Recordatorios y Notas del Día -->
         <div class="row g-4 mb-4" id="conflictos">
             <div class="col-lg-6">

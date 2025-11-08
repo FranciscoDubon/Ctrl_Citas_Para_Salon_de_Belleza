@@ -31,7 +31,7 @@
         <!-- Menú de Navegación -->
          <!-- Solo el de configuracion y citas tengo duda si ponerle al admin-->
         <nav class="sidebar-menu">
-            <a href="{{ route('dashboardAdm') }}" class="menu-item active">
+            <a href="{{ route('admin.dashboardAdm') }}" class="menu-item active">
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
             <a href="{{ route('admin.usuariosAdm') }}" class="menu-item">
@@ -77,7 +77,7 @@
      todo esto por que como solo trabaje frontend y necesitaba ver como funcionaban xd-->
         <div class="d-flex gap-3">
             <a href="{{ route('logn') }}" class="text-decoration-none" style="color: #e91e63;">Login</a>
-            <a href="{{ route('dashboardAdm') }}" class="text-decoration-none" style="color: #e91e63;">Administrador</a>
+            <a href="{{ route('admin.dashboardAdm') }}" class="text-decoration-none" style="color: #e91e63;">Administrador</a>
             <a href="{{ route('recepcionista.dashboardRecep') }}" class="text-decoration-none" style="color: #e91e63;">Recepcionista</a>
             <a href="{{ route('estilista.dashboardEsti') }}" class="text-decoration-none" style="color: #e91e63;">Estilista</a>
             <a href="{{ route('cliente.dashboardCli') }}" class="text-decoration-none" style="color: #e91e63;">Cliente</a>
@@ -104,11 +104,17 @@
                             <i class="bi bi-calendar-check"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">12</h3>
+                    <h3 class="kpi-value">{{ $totalCitasHoy }}</h3>
                     <p class="kpi-label">Citas de Hoy</p>
-                    <span class="kpi-badge badge-success">
-                        <i class="bi bi-arrow-up"></i> +15%
-                    </span>
+@php
+    $citasIcon = $porcentajeCitas >= 0 ? 'bi-arrow-up' : 'bi-arrow-down';
+@endphp
+
+<span class="kpi-badge badge-success">
+    <i class="bi {{ $citasIcon }}"></i>
+    {{ abs($porcentajeCitas) }}%
+</span>
+
                 </div>
             </div>
 
@@ -130,10 +136,13 @@
                             <i class="bi bi-currency-dollar"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">$5,420.50</h3>
+                    <h3 class="kpi-value">${{ $ingresosTotales }}</h3>
                     <p class="kpi-label">Ingresos del Mes</p>
+                    @php
+                          $ingresosIcon = $porcentajeIngresos >= 0 ? 'bi-arrow-up' : 'bi-arrow-down';
+                    @endphp
                     <span class="kpi-badge badge-success">
-                        <i class="bi bi-arrow-up"></i> +8.2%
+                        <i class="bi {{$ingresosIcon}}"></i> {{$porcentajeIngresos}}%
                     </span>
                 </div>
             </div>
@@ -155,10 +164,10 @@
                             <i class="bi bi-people"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">87</h3>
+                    <h3 class="kpi-value">{{ $totalClientes }}</h3>
                     <p class="kpi-label">Clientes Activos</p>
                     <span class="kpi-badge badge-success">
-                        <i class="bi bi-arrow-up"></i> +12 nuevos
+                        <i class="bi bi-arrow-up"></i> +{{$clientesNuevos}} nuevos
                     </span>
                 </div>
             </div>
@@ -181,11 +190,8 @@
                             <i class="bi bi-gift"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">4</h3>
+                    <h3 class="kpi-value">{{ $promocionesActivas}}</h3>
                     <p class="kpi-label">Promociones Activas</p>
-                    <span class="kpi-badge badge-neutral">
-                        <i class="bi bi-dash"></i> Sin cambios
-                    </span>
                 </div>
             </div>
         </div>
@@ -225,38 +231,23 @@
                                 <th>Ingresos</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Corte de Cabello</td>
-                                <td>45</td>
-                                <td>$675.00</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Manicure</td>
-                                <td>38</td>
-                                <td>$380.00</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Pedicure</td>
-                                <td>32</td>
-                                <td>$480.00</td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>Tinte Completo</td>
-                                <td>28</td>
-                                <td>$1,120.00</td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>Peinado Especial</td>
-                                <td>25</td>
-                                <td>$750.00</td>
-                            </tr>
-                        </tbody>
+<tbody>
+    @forelse($serviciosMasSolicitados as $index => $servicio)
+        <tr>
+            <td>{{ $index + 1 }}</td>
+            <td>{{ $servicio->nombre }}</td>
+            <td>{{ $servicio->cantidad }}</td>
+            <td>${{ number_format($servicio->ingresos, 2, '.', ',') }}</td>
+        </tr>
+    @empty
+        <tr>
+            <td colspan="4" class="text-center text-muted">
+                No hay datos disponibles para este mes.
+            </td>
+        </tr>
+    @endforelse
+</tbody>
+
                     </table>
                 </div>
             </div>
@@ -284,55 +275,20 @@
                     </h5>
 
                     <ul class="list-custom">
-                        <li class="list-item-custom">
-                            <div class="list-avatar">M</div>
-                            <div class="list-content">
-                                <h6>María García</h6>
-                                <p>15 visitas</p>
-                            </div>
-                            <div class="list-badge">
-                                <i class="bi bi-trophy-fill"></i>
-                            </div>
-                        </li>
-                        <li class="list-item-custom">
-                            <div class="list-avatar">A</div>
-                            <div class="list-content">
-                                <h6>Ana Rodríguez</h6>
-                                <p>12 visitas</p>
-                            </div>
-                            <div class="list-badge">
-                                <i class="bi bi-trophy-fill"></i>
-                            </div>
-                        </li>
-                        <li class="list-item-custom">
-                            <div class="list-avatar">L</div>
-                            <div class="list-content">
-                                <h6>Laura Martínez</h6>
-                                <p>10 visitas</p>
-                            </div>
-                            <div class="list-badge">
-                                <i class="bi bi-trophy-fill"></i>
-                            </div>
-                        </li>
-                        <li class="list-item-custom">
-                            <div class="list-avatar">C</div>
-                            <div class="list-content">
-                                <h6>Carla Hernández</h6>
-                                <p>9 visitas</p>
-                            </div>
-                            <div class="list-badge">
-                                <i class="bi bi-trophy-fill"></i>
-                            </div>
-                        </li>
-                        <li class="list-item-custom">
-                            <div class="list-avatar">S</div>
-                            <div class="list-content">
-                                <h6>Sofía Ramírez</h6>
-                                <p>8 visitas</p>
-                            </div>
-                            <div class="list-badge">
-                                <i class="bi bi-trophy-fill"></i>
-                            </div>
+            @foreach ($clientesFrecuentes as $cliente)
+                <li class="list-item-custom">
+                    <div class="list-avatar">
+                        {{ strtoupper(substr($cliente->nombre, 0, 1)) }}
+                    </div>
+                    <div class="list-content">
+                        <h6>{{ $cliente->nombre }} {{ $cliente->apellido }}</h6>
+                        <p>{{ $cliente->visitas }} visitas</p>
+                    </div>
+                    <div class="list-badge">
+                        <i class="bi bi-trophy-fill"></i>
+                    </div>
+                </li>
+            @endforeach
                         </li>
                     </ul>
                 </div>
@@ -373,48 +329,31 @@
                                 <th>Estado</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>#001</td>
-                                <td>María García</td>
-                                <td>Corte de Cabello</td>
-                                <td>Ana López</td>
-                                <td>30 Oct 2024, 10:00 AM</td>
-                                <td><span class="badge bg-success">Completada</span></td>
-                            </tr>
-                            <tr>
-                                <td>#002</td>
-                                <td>Laura Martínez</td>
-                                <td>Manicure</td>
-                                <td>Sofía Ramírez</td>
-                                <td>30 Oct 2024, 11:30 AM</td>
-                                <td><span class="badge bg-warning">Pendiente</span></td>
-                            </tr>
-                            <tr>
-                                <td>#003</td>
-                                <td>Carla Hernández</td>
-                                <td>Tinte Completo</td>
-                                <td>María Torres</td>
-                                <td>30 Oct 2024, 2:00 PM</td>
-                                <td><span class="badge bg-primary">Confirmada</span></td>
-                            </tr>
-                            <tr>
-                                <td>#004</td>
-                                <td>Ana Rodríguez</td>
-                                <td>Peinado Especial</td>
-                                <td>Ana López</td>
-                                <td>30 Oct 2024, 3:30 PM</td>
-                                <td><span class="badge bg-primary">Confirmada</span></td>
-                            </tr>
-                            <tr>
-                                <td>#005</td>
-                                <td>Sofía Ramírez</td>
-                                <td>Pedicure</td>
-                                <td>Sofía Ramírez</td>
-                                <td>30 Oct 2024, 4:00 PM</td>
-                                <td><span class="badge bg-warning">Pendiente</span></td>
-                            </tr>
-                        </tbody>
+<tbody>
+    @foreach ($ultimasCitas as $cita)
+        <tr>
+            <td>#{{ $cita->idCita }}</td>
+            <td>{{ $cita->cliente_nombre }} {{ $cita->cliente_apellido }}</td>
+            <td>{{ $cita->servicio }}</td>
+            <td>{{ $cita->estilista_nombre }} {{ $cita->estilista_apellido }}</td>
+            <td>{{ \Carbon\Carbon::parse($cita->fecha)->format('d M Y') }}</td>
+            <td>
+                @php
+                    $estado = strtolower($cita->estado);
+                    $color = match($estado) {
+                        'completada' => 'success',
+                        'pendiente' => 'warning',
+                        'confirmada' => 'primary',
+                        'cancelada' => 'danger',
+                        default => 'secondary',
+                    };
+                @endphp
+                <span class="badge bg-{{ $color }}">{{ ucfirst($cita->estado) }}</span>
+            </td>
+        </tr>
+    @endforeach
+</tbody>
+
                     </table>
                 </div>
             </div>

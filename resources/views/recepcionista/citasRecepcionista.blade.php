@@ -78,9 +78,6 @@
                 <button class="btn btn-premium me-2" onclick="actualizarAgenda()">
                     <i class="bi bi-arrow-clockwise"></i> Actualizar
                 </button>
-
-
-                
             </div>
             
            
@@ -91,112 +88,71 @@
             </div>
         </div>
 
-        <!-- KPI Cards - Resumen de Citas -->
-        <div class="row g-4 mb-4">
-            
-            <!-- 
-            ================================================
-            TODO BACKEND: Conectar con BD
-            ================================================
-            CONSULTA SQL:
-            SELECT COUNT(*) as total 
-            FROM citas 
-            WHERE DATE(fecha_hora) = CURDATE()
-            ================================================
-            -->
-            <div class="col-xl-3 col-md-6">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon primary">
-                            <i class="bi bi-calendar-check"></i>
-                        </div>
-                    </div>
-                    <h3 class="kpi-value">18</h3>
-                    <p class="kpi-label">Citas Hoy</p>
-                    <span class="kpi-badge badge-success">
-                        <i class="bi bi-check-circle"></i> 12 completadas
-                    </span>
-                </div>
-            </div>
-
-            <!-- 
-            ================================================
-            TODO BACKEND: Conectar con BD
-            ================================================
-            CONSULTA SQL:
-            SELECT COUNT(*) as total 
-            FROM citas 
-            WHERE DATE(fecha_hora) = CURDATE()
-            AND estado = 'pendiente'
-            ================================================
-            -->
-            <div class="col-xl-3 col-md-6">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon warning">
-                            <i class="bi bi-clock-history"></i>
-                        </div>
-                    </div>
-                    <h3 class="kpi-value">6</h3>
-                    <p class="kpi-label">Pendientes</p>
-                    <span class="kpi-badge badge-neutral">
-                        <i class="bi bi-exclamation-circle"></i> Sin confirmar
-                    </span>
-                </div>
-            </div>
-
-            <!-- 
-            ================================================
-            TODO BACKEND: Conectar con BD
-            ================================================
-            CONSULTA SQL:
-            SELECT COUNT(*) as total 
-            FROM citas 
-            WHERE DATE(fecha_hora) = DATE_ADD(CURDATE(), INTERVAL 1 DAY)
-            ================================================
-            -->
-            <div class="col-xl-3 col-md-6">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon info">
-                            <i class="bi bi-calendar-event"></i>
-                        </div>
-                    </div>
-                    <h3 class="kpi-value">22</h3>
-                    <p class="kpi-label">Citas Mañana</p>
-                    <span class="kpi-badge badge-success">
-                        <i class="bi bi-arrow-right"></i> Sábado 01 Nov
-                    </span>
-                </div>
-            </div>
-
-            <!-- 
-            ================================================
-            TODO BACKEND: Conectar con BD
-            ================================================
-            CONSULTA SQL:
-            SELECT COUNT(*) as total 
-            FROM citas 
-            WHERE DATE(fecha_hora) = CURDATE()
-            AND estado = 'cancelada'
-            ================================================
-            -->
-            <div class="col-xl-3 col-md-6">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon success">
-                            <i class="bi bi-x-circle"></i>
-                        </div>
-                    </div>
-                    <h3 class="kpi-value">2</h3>
-                    <p class="kpi-label">Canceladas Hoy</p>
-                    <span class="kpi-badge badge-neutral">
-                        <i class="bi bi-info-circle"></i> Motivos varios
-                    </span>
-                </div>
+<!-- Citas de Hoy -->
+         <div class="row g-4 mb-4">
+<div class="col-xl-3 col-md-6">
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <div class="kpi-icon primary">
+                <i class="bi bi-calendar-check"></i>
             </div>
         </div>
+        <h3 class="kpi-value">{{ $kpiCitas['totalHoy'] }}</h3>
+        <p class="kpi-label">Citas Hoy</p>
+        <span class="kpi-badge badge-success">
+            <i class="bi bi-check-circle"></i> {{ $kpiCitas['completadasHoy'] }} completadas
+        </span>
+    </div>
+</div>
 
+<!-- Citas Pendientes -->
+<div class="col-xl-3 col-md-6">
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <div class="kpi-icon warning">
+                <i class="bi bi-clock-history"></i>
+            </div>
+        </div>
+        <h3 class="kpi-value">{{ $kpiCitas['pendientesHoy'] }}</h3>
+        <p class="kpi-label">Pendientes</p>
+        <span class="kpi-badge badge-neutral">
+            <i class="bi bi-exclamation-circle"></i> Por atender
+        </span>
+    </div>
+</div>
+
+<!-- Citas Mañana -->
+<div class="col-xl-3 col-md-6">
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <div class="kpi-icon info">
+                <i class="bi bi-calendar-event"></i>
+            </div>
+        </div>
+        <h3 class="kpi-value">{{ $kpiCitas['totalManana'] }}</h3>
+        <p class="kpi-label">Citas Mañana</p>
+        <span class="kpi-badge badge-success">
+            <i class="bi bi-arrow-right"></i> {{ $manana->format('l d M') }}
+        </span>
+    </div>
+</div>
+
+<!-- Canceladas Hoy -->
+<div class="col-xl-3 col-md-6">
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <div class="kpi-icon success">
+                <i class="bi bi-x-circle"></i>
+            </div>
+        </div>
+        <h3 class="kpi-value">{{ $kpiCitas['canceladasHoy'] }}</h3>
+        <p class="kpi-label">Canceladas Hoy</p>
+        <span class="kpi-badge badge-neutral">
+            <i class="bi bi-info-circle"></i> Motivos varios
+        </span>
+    </div>
+</div>
+</div>
         <!-- Agenda Completa de Estilistas -->
         <div class="row g-4 mb-4">
             <div class="col-12">
