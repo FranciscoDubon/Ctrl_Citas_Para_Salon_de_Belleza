@@ -175,6 +175,7 @@ Route::put('/servicios/{id}/toggle-estado', [ServicioController::class, 'toggleE
 Route::prefix('recepcionista')->name('recepcionista.')->group(function () {
     // Gestión de Promociones para Recepcionista
     Route::get('/promocionesRecep', [PromocionController::class, 'indexRecepcionista'])->name('promocionesRecep');
+    Route::get('/serviciosRecep', [ServicioController::class, 'indexRecep'])->name('serviciosRecep');
     // KPIs y citas de hoy/mañana
     //Route::get('/kpiCitas', [CitaController::class, 'citaRecepcionista'])->name('kpiCitas');
 });
