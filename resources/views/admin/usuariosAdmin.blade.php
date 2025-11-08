@@ -29,7 +29,7 @@
         
         <!-- Menú de Navegación -->
         <nav class="sidebar-menu">
-            <a href="{{ route('dashboardAdm') }}" class="menu-item">
+            <a href="{{ route('admin.dashboardAdm') }}" class="menu-item">
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
             

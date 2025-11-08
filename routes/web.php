@@ -199,6 +199,7 @@ Route::get('/admin/serviciosAdm', [ServicioController::class, 'indexAdmin'])->na
 
 Route::prefix('admin')->name('admin.')->group(function () {
     // ... tus otras rutas existentes ...
+    Route::get('/dashboard', [CitaController::class, 'dashboardAdmin'])->name('dashboardAdm');
 
     // Gestión de Promociones
     Route::get('/promocionesAdm', [PromocionController::class, 'indexAdmin'])->name('promocionesAdm');

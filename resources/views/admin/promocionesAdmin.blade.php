@@ -34,7 +34,7 @@
 
         <!-- Menú de Navegación -->
         <nav class="sidebar-menu">
-            <a href="{{ route('dashboardAdm') }}" class="menu-item">
+            <a href="{{ route('admin.dashboardAdm') }}" class="menu-item">
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
             
@@ -132,7 +132,7 @@
                     <i class="bi bi-ticket-perforated"></i>
                 </div>
             </div>
-            <h3 class="kpi-value">{{ $usosEsteMes }}</h3>
+            <h3 class="kpi-value">{{$usosEsteMes}}</h3>
             <p class="kpi-label">Usos Este Mes</p>
             <span class="kpi-badge badge-success">
                 <i class="bi bi-arrow-up"></i> +15%
@@ -148,7 +148,7 @@
                     <i class="bi bi-cash-stack"></i>
                 </div>
             </div>
-            <h3 class="kpi-value">${{ number_format($descuentosOtorgados, 2) }}</h3>
+            <h3 class="kpi-value">${{$descuentosOtorgados}}</h3>
             <p class="kpi-label">Descuentos Otorgados</p>
             <span class="kpi-badge badge-success">
                 <i class="bi bi-graph-up-arrow"></i> Este Mes

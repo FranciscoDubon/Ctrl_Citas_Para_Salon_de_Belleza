@@ -127,6 +127,170 @@ public function filtrarTabla(Request $request)
     return view('recepcionista.partials.filas-citas', compact('citas'))->render();
 }
 
+public function dashboardAdmin()
+{
+    $hoy = now()->toDateString();
+    $ayer = now()->subDay()->toDateString();
+    $año = date('Y');
+    $mes = date('m');
+    $mesAnterior = date('m', strtotime('-1 month'));
+    $anioAnterior = date('Y', strtotime('-1 month'));
+    $fechaActual = Carbon::now();
+    $fechaLimite = Carbon::now()->subMonths(6);
+
+    // Obtener los 5 clientes más frecuentes
+    $clientesFrecuentes = DB::table('cliente as u')
+        ->join('cita as c', 'u.idCliente', '=', 'c.idCliente')
+        ->where('c.estado', 'completada')
+        ->where('c.fecha', '>=', $fechaLimite)
+        ->select('u.idCliente', 'u.nombre', 'u.apellido', DB::raw('COUNT(c.idCita) as visitas'))
+        ->groupBy('u.idCliente', 'u.nombre', 'u.apellido')
+        ->orderByDesc('visitas')
+        ->limit(5)
+        ->get();
+
+    $ultimasCitas = DB::table('cita as c')
+    ->join('cliente as cli', 'c.idCliente', '=', 'cli.idCliente')
+    ->join('empleado as e', 'c.idEstilista', '=', 'e.idEmpleado')
+    ->join('citaservicio as cs', 'c.idCita', '=', 'cs.idCita')
+    ->join('servicio as s', 'cs.idServicio', '=', 's.idServicio')
+    ->select(
+        'c.idCita',
+        'cli.nombre as cliente_nombre',
+        'cli.apellido as cliente_apellido',
+        's.nombre as servicio',
+        'e.nombre as estilista_nombre',
+        'e.apellido as estilista_apellido',
+        'c.fecha',
+        'c.hora',
+        'c.estado'
+    )
+    ->orderByDesc('c.fecha')
+    ->limit(10)
+    ->get();
+
+
+    // =======================================
+    // Servicios más solicitados del mes actual
+    // =======================================
+    $serviciosMasSolicitados = DB::table('servicio as s')
+        ->join('citaservicio as cs', 's.idServicio', '=', 'cs.idServicio')
+        ->join('cita as c', 'cs.idCita', '=', 'c.idCita')
+        ->select(
+            's.nombre as nombre',
+            DB::raw('COUNT(cs.idServicio) as cantidad'),
+            DB::raw('SUM(s.precioBase) as ingresos')
+        )
+        ->where('c.estado', '=', 'completada')
+        ->whereYear('c.fecha', $fechaActual->year)
+        ->whereMonth('c.fecha', $fechaActual->month)
+        ->groupBy('s.idServicio', 's.nombre')
+        ->orderByDesc('cantidad')
+        ->limit(10)
+        ->get();
+
+
+    // INGRESOS POR SERVICIOS (sin combos)
+    $ingresosServicios = DB::table('cita')
+        ->join('citaservicio', 'cita.idCita', '=', 'citaservicio.idCita')
+        ->join('servicio', 'citaservicio.idServicio', '=', 'servicio.idServicio')
+        ->whereYear('cita.fecha', $año)
+        ->whereMonth('cita.fecha', $mes)
+        ->sum('servicio.precioBase');
+
+    // INGRESOS POR COMBOS
+    $ingresosCombos = DB::table('combo')
+        ->join('combo_servicio', 'combo.idCombo', '=', 'combo_servicio.idCombo')
+        ->join('servicio', 'combo_servicio.idServicio', '=', 'servicio.idServicio')
+        ->sum('combo.precioCombo');
+
+    // DESCUENTOS POR PROMOCIONES A SERVICIOS
+    $descuentoServicios = DB::table('promocion')
+        ->join('promocionservicio', 'promocion.idPromocion', '=', 'promocionservicio.idPromocion')
+        ->join('servicio', 'promocionservicio.idServicio', '=', 'servicio.idServicio')
+        ->where('promocion.activo', 1)
+        ->select(DB::raw("
+            SUM(
+                CASE 
+                    WHEN promocion.tipoDescuento = 'porcentaje' THEN servicio.precioBase * (promocion.valorDescuento / 100)
+                    ELSE promocion.valorDescuento
+                END
+            ) AS totalDescuento
+        "))
+        ->value('totalDescuento');
+
+    // DESCUENTOS POR PROMOCIONES A COMBOS
+    $descuentoCombos = DB::table('promocion')
+        ->join('promocioncombo', 'promocion.idPromocion', '=', 'promocioncombo.idPromocion')
+        ->join('combo', 'promocioncombo.idCombo', '=', 'combo.idCombo')
+        ->where('promocion.activo', 1)
+        ->select(DB::raw("
+            SUM(
+                CASE 
+                    WHEN promocion.tipoDescuento = 'porcentaje' THEN combo.precioCombo * (promocion.valorDescuento / 100)
+                    ELSE promocion.valorDescuento
+                END
+            ) AS totalDescuento
+        "))
+        ->value('totalDescuento');
+
+    $ingresosTotales = ($ingresosServicios + $ingresosCombos) - (($descuentoServicios ?? 0) + ($descuentoCombos ?? 0));
+    $ingresosTotales = number_format($ingresosTotales, 2, '.', '');
+
+    // Ingresos del mes anterior
+$ingresosMesAnterior = \DB::table('cita')
+    ->join('citaservicio', 'cita.idCita', '=', 'citaservicio.idCita')
+    ->join('servicio', 'citaservicio.idServicio', '=', 'servicio.idServicio')
+    ->whereYear('cita.fecha', $anioAnterior)
+    ->whereMonth('cita.fecha', $mesAnterior)
+    ->sum('servicio.precioBase');
+
+// Calcular el cambio porcentual
+if ($ingresosMesAnterior > 0) {
+    $porcentajeIngresos = (($ingresosTotales - $ingresosMesAnterior) / $ingresosMesAnterior) * 100;
+} else {
+    $porcentajeIngresos = 0;
+}
+
+
+    // KPIs
+    $totalCitasHoy = Cita::whereDate('fecha', $hoy)->count();
+    // Total de citas de ayer
+    $citasAyer = \DB::table('cita')->whereDate('fecha', $ayer)->count();
+    // Calcular porcentaje de crecimiento
+if ($citasAyer > 0) {
+    $porcentajeCitas = (($totalCitasHoy - $citasAyer) / $citasAyer) * 100;
+} else {
+    $porcentajeCitas = 0;
+}
+
+    $totalClientes = Cliente::count();
+    $clientesNuevos = \DB::table('cliente')
+    ->whereYear('fechaRegistro', $año)
+    ->whereMonth('fechaRegistro', $mes)
+    ->count();
+
+   // $totalEmpleados = Empleado::where('activo', 1)->count();
+    //$totalDescuento = \App\Models\Promocion::sum('valorDescuento');
+
+    // Promociones activas y desactivadas
+    $promocionesActivas = Promocion::where('activo', 1)->count();
+    $promosDesactivadas = Promocion::where('activo', 0)->count();
+    $promocionesAplicadas = Promocion::where('usosActuales', '>', 0)->count();
+
+    return view('admin.dashboardAdmin', compact(
+        'totalCitasHoy',
+        'totalClientes',
+        'promocionesActivas',
+        'ingresosTotales',
+        'porcentajeCitas',
+        'porcentajeIngresos',
+        'clientesNuevos',
+        'serviciosMasSolicitados',
+        'clientesFrecuentes',
+        'ultimasCitas'
+    ));
+}
 
 public function dashboardRecepcionista()
 {
