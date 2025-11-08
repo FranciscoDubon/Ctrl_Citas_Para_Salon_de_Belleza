@@ -436,98 +436,61 @@
             </div>
         </div>
 
-        <!-- Sección de Promociones y Estilistas -->
-        <div class="row g-4 mb-4">
-            
-            <!-- Promociones Activas Hoy -->
-            <div class="col-lg-6">
-                <div class="card-custom">
-                    <h5 class="card-title-custom">
-                        <i class="bi bi-gift-fill"></i>
-                        Promociones Activas Hoy
-                    </h5>
-                    
-                    <!-- 
-                    ================================================
-                    TODO BACKEND: Conectar con BD
-                    ================================================
-                    CONSULTA SQL:
-                    SELECT id, nombre, codigo_promocional, tipo_descuento, 
-                           valor_descuento, usos_maximos, usos_actuales
-                    FROM promociones 
-                    WHERE activo = 1 
-                    AND fecha_inicio <= CURDATE()
-                    AND fecha_fin >= CURDATE()
-                    AND (DAYNAME(CURDATE()) IN (dias_aplicables) OR dias_aplicables IS NULL)
-                    ORDER BY prioridad DESC
-                    LIMIT 5
-                    ================================================
-                    -->
-                    <ul class="list-custom">
-                        <li class="list-item-custom">
-                            <div class="list-avatar" style="background: linear-gradient(135deg, var(--borgona), var(--borgona-light));">
-                                <i class="bi bi-percent"></i>
-                            </div>
-                            <div class="list-content">
-                                <h6>Black Friday Beauty</h6>
-                                <p><code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">BLACK30</code> - 30% de descuento</p>
-                                <small style="color: var(--borgona); opacity: 0.7;">Usado: 45/100 veces</small>
-                            </div>
-                            <div class="list-badge">
-                                <button class="btn btn-sm btn-gold" onclick="copiarCodigo('BLACK30')" title="Copiar código">
-                                    <i class="bi bi-clipboard"></i>
-                                </button>
-                            </div>
-                        </li>
+<!-- Sección de Promociones Activas Hoy -->
+ <div class="row g-4 mb-4" id="promociones">
+<div class="col-lg-6">
+    <div class="card-custom">
+        <h5 class="card-title-custom">
+            <i class="bi bi-gift-fill"></i>
+            Promociones Activas Hoy
+        </h5>
 
-                        <li class="list-item-custom">
-                            <div class="list-avatar" style="background: linear-gradient(135deg, var(--dorado-palido), var(--dorado-hover));">
-                                <i class="bi bi-currency-dollar"></i>
-                            </div>
-                            <div class="list-content">
-                                <h6>Nuevo Cliente VIP</h6>
-                                <p><code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">NUEVO10</code> - $10 de descuento</p>
-                                <small style="color: var(--borgona); opacity: 0.7;">Solo primeras visitas</small>
-                            </div>
-                            <div class="list-badge">
-                                <button class="btn btn-sm btn-gold" onclick="copiarCodigo('NUEVO10')" title="Copiar código">
-                                    <i class="bi bi-clipboard"></i>
-                                </button>
-                            </div>
-                        </li>
+        @if ($promocionesHoy->isEmpty())
+            <p class="text-muted">No hay promociones activas hoy.</p>
+        @else
+            <ul class="list-custom">
+                @foreach ($promocionesHoy as $promo)
+                    <li class="list-item-custom">
+                        <div class="list-avatar" style="background: linear-gradient(135deg, var(--borgona), var(--borgona-light));">
+                            <i class="bi bi-percent"></i>
+                        </div>
+                        <div class="list-content">
+                            <h6>{{ $promo->nombre }}</h6>
 
-                        <li class="list-item-custom">
-                            <div class="list-avatar" style="background: linear-gradient(135deg, var(--rosa-empolvado), var(--rosa-empolvado-light));">
-                                <i class="bi bi-calendar-check"></i>
-                            </div>
-                            <div class="list-content">
-                                <h6>Martes de Spa</h6>
-                                <p><code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">MARSPA20</code> - 20% OFF</p>
-                                <small style="color: var(--borgona); opacity: 0.7;">Solo servicios faciales</small>
-                            </div>
-                            <div class="list-badge">
-                                <button class="btn btn-sm btn-gold" onclick="copiarCodigo('MARSPA20')" title="Copiar código">
-                                    <i class="bi bi-clipboard"></i>
-                                </button>
-                            </div>
-                        </li>
+                            @if ($promo->tipoDescuento === 'porcentaje')
+                                <p>
+                                    <code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">
+                                        {{ $promo->codigoPromocional }}
+                                    </code>
+                                    - {{ $promo->valorDescuento }}% de descuento
+                                </p>
+                            @else
+                                <p>
+                                    <code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">
+                                        {{ $promo->codigoPromocional }}
+                                    </code>
+                                    - ${{ number_format($promo->valorDescuento, 2) }} de descuento
+                                </p>
+                            @endif
 
-                        <li class="list-item-custom">
-                            <div class="list-avatar" style="background: linear-gradient(135deg, var(--champagne), var(--champagne-light));">
-                                <i class="bi bi-box-seam"></i>
-                            </div>
-                            <div class="list-content">
-                                <h6>Combo Novia Perfecta</h6>
-                                <p>Peinado + Maquillaje + Manicure - <strong style="color: var(--borgona);">$85.00</strong></p>
-                                <small style="color: var(--dorado-palido); font-weight: 600;">¡Ahorra $35!</small>
-                            </div>
-                            <div class="list-badge">
-                                <span class="badge badge-gold">Combo</span>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+                            <small style="color: var(--borgona); opacity: 0.7;">
+                                Usado: {{ $promo->usosActuales }}/{{ $promo->usosMaximos }} veces
+                            </small>
+                        </div>
+                        <div class="list-badge">
+                            <button class="btn btn-sm btn-gold"
+                                    onclick="copiarCodigo('{{ $promo->codigoPromocional }}')"
+                                    title="Copiar código">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+        @endif
+    </div>
+</div>
+
 
             <!-- Disponibilidad de Estilistas -->
             <div class="col-lg-6">
@@ -605,7 +568,7 @@
                 </div>
             </div>
         </div>
-
+</div>
         <!-- Recordatorios y Notas del Día -->
         <div class="row g-4 mb-4" id="conflictos">
             <div class="col-lg-6">

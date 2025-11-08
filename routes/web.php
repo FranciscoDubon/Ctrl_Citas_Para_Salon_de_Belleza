@@ -215,3 +215,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::put('/combos/{id}', [PromocionController::class, 'updateCombo'])->name('combo.update');
     Route::post('/combos/{id}/estado', [PromocionController::class, 'toggleEstadoCombo'])->name('combo.toggleEstado');
 });  
+// ========================================
+// RUTAS DE ESTILISTA
+// ========================================
+Route::prefix('estilista')->name('estilista.')->group(function () {
+    // Dashboard redirige a citas
+    Route::get('/dashboardEsti', function () {
+        return redirect()->route('estilista.citasEsti');
+    })->name('dashboardEsti');
+    
+    // Gestión de Citas (VISTA PRINCIPAL)
+    Route::get('/citasEsti', [CitaController::class, 'indexEstilista'])->name('citasEsti');
+    Route::get('/citas/{id}/detalle', [CitaController::class, 'showCitaEstilista'])->name('cita.detalle');
+    Route::post('/citas/{id}/iniciar', [CitaController::class, 'iniciarCita'])->name('cita.iniciar');
+    Route::post('/citas/{id}/finalizar', [CitaController::class, 'finalizarCita'])->name('cita.finalizar');
+    Route::post('/citas/{id}/confirmar', [CitaController::class, 'confirmarAsistencia'])->name('cita.confirmar');
+    Route::get('/citas/filtrar', [CitaController::class, 'filtrarPorEstado'])->name('citas.filtrar');
+});

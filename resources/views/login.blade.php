@@ -588,6 +588,7 @@
             if (data.success) {
                 localStorage.setItem('clienteNombre', data.nombre);
                 localStorage.setItem('clienteApellido', data.apellido);
+                localStorage.setItem('clienteId', data.id); 
                 mostrarExito();
 
             setTimeout(() => {
@@ -862,9 +863,9 @@
                     window.location.href = '/admin/dashboard';
                     break;
                 case 'estilista':
-                    console.log('Redirigir a: /estilista/dashboard');
+                    console.log('Redirigir a: /estilista/citasEsti');
                     alert('Redirigiendo al Dashboard de Estilista...');
-                    window.location.href = '/estilista/dashboard';
+                    window.location.href = '/estilista/citasEsti';
                     break;
 
                 case 'recepcionista':
