@@ -75,6 +75,12 @@
                 <button class="btn btn-gold me-2" data-bs-toggle="modal" data-bs-target="#modalNuevoServicio">
                     <i class="bi bi-plus-circle"></i> Nuevo Servicio
                 </button>
+                <button class="btn btn-outline-gold me-2">
+                    <i class="bi bi-funnel"></i> Filtrar por Categoría
+                </button>
+                <button class="btn btn-soft">
+                    <i class="bi bi-file-earmark-excel"></i> Exportar
+                </button>
             </div>
         </div>
 
