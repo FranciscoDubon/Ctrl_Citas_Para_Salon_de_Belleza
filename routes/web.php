@@ -182,6 +182,7 @@ Route::prefix('recepcionista')->name('recepcionista.')->group(function () {
 //clientes 
 Route::get('/cliente/clientes/dashboard', [ClienteController::class, 'index'])->name('clientes.dashboard');
 Route::get('/recepcionista/clientesRecep', [ClienteController::class, 'dashboardRecepcionista'])->name('recepcionista.clientesRecep');
+Route::get('/recepcionista/clientes/{id}/editar', [ClienteController::class, 'editarCliente']);
 
 //citas
 
@@ -192,6 +193,7 @@ Route::get('/recepcionista/citasRecep', [CitaController::class, 'crear'])->name(
 Route::post('/citas/crear', [CitaController::class, 'store'])->name('citas.store');
 Route::get('/recepcionista/citasRecep', [CitaController::class, 'agendaSemana'])->name('recepcionista.citasRecep');
 Route::get('/filtrar-citas', [CitaController::class, 'filtrarTabla'])->name('recepcionista.citasRecep');
+Route::get('/recepcionista/citas/{id}/editar', [CitaController::class, 'editarCita']);
 
 
 // Ruta Gestión de Servicios Admin
