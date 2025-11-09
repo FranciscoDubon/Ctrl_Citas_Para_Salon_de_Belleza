@@ -75,8 +75,12 @@
                 <button class="btn btn-gold me-2" data-bs-toggle="modal" data-bs-target="#modalNuevoServicio">
                     <i class="bi bi-plus-circle"></i> Nuevo Servicio
                 </button>
-                
-                
+                <button class="btn btn-outline-gold me-2">
+                    <i class="bi bi-funnel"></i> Filtrar por Categoría
+                </button>
+                <button class="btn btn-soft">
+                    <i class="bi bi-file-earmark-excel"></i> Exportar
+                </button>
             </div>
         </div>
 
@@ -178,10 +182,10 @@
                             <i class="bi bi-star-fill"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">45</h3>
-                    <p class="kpi-label">Servicio Más Vendido sigue en mantenimiento XD</p>
+                    <h3 class="kpi-value">{{$cantidadSolicitudes}}</h3>
+                    <p class="kpi-label">Servicio Más Vendido</p>
                     <span class="kpi-badge badge-success">
-                        <i class="bi bi-trophy"></i> Corte de cabello
+                        <i class="bi bi-trophy"></i> {{$nombreServicios}}
                     </span>
                 </div>
             </div>

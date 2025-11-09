@@ -29,10 +29,11 @@ class Cita extends Model
         return $this->belongsTo(Empleado::class, 'idEstilista');
     }
 
-    public function servicios()
-    {
-        return $this->belongsToMany(Servicio::class, 'citaservicio', 'idCita', 'idServicio');
-    }
+public function servicios()
+{
+    return $this->belongsToMany(Servicio::class, 'citaservicio', 'idCita', 'idServicio');
+}
+
     public function promocion()
 {
     return $this->belongsTo(Promocion::class, 'idPromocion');
