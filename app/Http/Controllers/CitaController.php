@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class CitaController extends Controller
 {
-    public function store(Request $request)
+   /* public function store(Request $request)
     {
         $request->validate([
             'cliente_id' => 'required|exists:cliente,idCliente',
@@ -63,7 +63,104 @@ class CitaController extends Controller
             DB::rollBack();
             return response()->json(['success' => false, 'message' => 'Error al agendar cita', 'error' => $e->getMessage()], 500);
         }
+    }*/
+
+ public function store(Request $request)
+{
+    $request->validate([
+        'cliente_id' => 'required|exists:cliente,idCliente',
+        'estilista_id' => 'required|exists:empleado,idEmpleado',
+        'fecha' => 'required|date|after_or_equal:today',
+        'hora' => 'required',
+        'servicio_id' => 'required|exists:servicio,idServicio',
+        'codigo_promocional' => 'nullable|string'
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+        $servicio = Servicio::findOrFail($request->servicio_id);
+        
+        // ✅ CALCULAR DURACIÓN TOTAL CON AJUSTES
+        $duracionTotal = $servicio->duracionBase;
+        $tiempoAdicional = 0;
+        
+        // Largo de cabello
+        if ($request->filled('largo_cabello') && $request->largo_cabello === 'largo') {
+            $tiempoAdicional += $servicio->tiempo_adicional_largo ?? 0;
+        }
+        
+        // Tinturado previo
+        if ($request->filled('tinturado_previo') && $request->tinturado_previo == 1) {
+            $tiempoAdicional += $servicio->tiempo_adicional_tinturado ?? 0;
+        }
+        
+        // Retiro de esmalte
+        if ($request->filled('retiro_esmalte') && $request->retiro_esmalte == 1) {
+            $tiempoAdicional += $servicio->tiempo_adicional_esmalte ?? 0;
+        }
+        
+        // Con estilizado
+        if ($request->filled('con_estilizado') && $request->con_estilizado == 1) {
+            $tiempoAdicional += $servicio->tiempo_adicional_estilizado ?? 0;
+        }
+        
+        $duracionTotal += $tiempoAdicional;
+
+        // Crear la cita
+        $cita = Cita::create([
+            'idCliente' => $request->cliente_id,
+            'idEstilista' => $request->estilista_id,
+            'fecha' => $request->fecha,
+            'hora' => $request->hora,
+            'estado' => 'PENDIENTE',
+            'duracion' => $duracionTotal
+        ]);
+        
+        // ✅ GUARDAR DETALLES ADICIONALES
+        DB::table('cita_detalles')->insert([
+            'idCita' => $cita->idCita,
+            'largo_cabello' => $request->largo_cabello ?? null,
+            'tinturado_previo' => $request->tinturado_previo ?? 0,
+            'retiro_esmalte' => $request->retiro_esmalte ?? 0,
+            'con_estilizado' => $request->con_estilizado ?? 0,
+            'tiempo_adicional_total' => $tiempoAdicional
+        ]);
+        
+        // Asignar promoción si se envió un código válido
+        if ($request->filled('codigo_promocional')) {
+            $promocion = Promocion::where('codigoPromocional', $request->codigo_promocional)
+                ->where('activo', true)
+                ->whereDate('fechaInicio', '<=', now())
+                ->whereDate('fechaFin', '>=', now())
+                ->first();
+
+            if ($promocion && $promocion->puedeUsarse()) {
+                $cita->idPromocion = $promocion->idPromocion;
+                $cita->save();
+                $promocion->increment('usosActuales');
+            }
+        }
+        
+        $cita->servicios()->attach($servicio->idServicio);
+
+        DB::commit();
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Cita agendada correctamente',
+            'duracion_total' => $duracionTotal,
+            'tiempo_adicional' => $tiempoAdicional
+        ]);
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'success' => false, 
+            'message' => 'Error al agendar cita', 
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 
 public function crear()
 {
@@ -80,6 +177,55 @@ public function crear()
 }
 
 public function agendaSemana()
+{
+    $clientes = Cliente::all();
+
+    $estilistas = Empleado::whereHas('rol', function ($query) {
+        $query->where('nombre', 'estilista');
+    })->where('activo', 1)->get();
+
+    // ✅ TRAER SERVICIOS CON SUS CONFIGURACIONES
+    $servicios = Servicio::select(
+        'idServicio',
+        'nombre',
+        'descripcion',
+        'precioBase',
+        'duracionBase',
+        'categoria',
+        'requiere_largo_cabello',
+        'requiere_tinturado_previo',
+        'requiere_retiro_esmalte',
+        'requiere_estilizado',
+        'tiempo_adicional_largo',
+        'tiempo_adicional_tinturado',
+        'tiempo_adicional_esmalte',
+        'tiempo_adicional_estilizado'
+    )
+    ->where('activo', 1)
+    ->get();
+
+    $citas = Cita::with(['cliente', 'estilista', 'servicios', 'promocion'])
+        ->orderBy('fecha')
+        ->orderBy('hora')
+        ->get();
+
+    // KPIs
+    $hoy = Carbon::today();
+    $manana = Carbon::tomorrow();
+
+    $kpiCitas = [
+        'totalHoy' => Cita::whereDate('fecha', $hoy)->count(),
+        'completadasHoy' => Cita::whereDate('fecha', $hoy)->where('estado', 'COMPLETADA')->count(),
+        'pendientesHoy' => Cita::whereDate('fecha', $hoy)->where('estado', 'PENDIENTE')->count(),
+        'canceladasHoy' => Cita::whereDate('fecha', $hoy)->where('estado', 'CANCELADA')->count(),
+        'totalManana' => Cita::whereDate('fecha', $manana)->count(),
+    ];
+
+    return view('recepcionista.citasRecepcionista', compact(
+        'clientes', 'estilistas', 'servicios', 'citas', 'kpiCitas', 'manana'
+    ));
+}
+/*public function agendaSemana()
 {
     $clientes = Cliente::all();
 
@@ -109,7 +255,7 @@ public function agendaSemana()
     return view('recepcionista.citasRecepcionista', compact(
         'clientes', 'estilistas', 'servicios', 'citas', 'kpiCitas', 'manana'
     ));
-}
+}*/
 
 public function filtrarTabla(Request $request)
 {

@@ -336,7 +336,94 @@
                             </div>
 
                             <!-- Servicio -->
-                            <div class="col-12 mt-4">
+                             <!-- Servicio -->
+<div class="col-12 mt-4">
+    <h6 style="color: var(--borgona); font-weight: 600; border-bottom: 2px solid var(--rosa-empolvado); padding-bottom: 0.5rem;">
+        <i class="bi bi-scissors"></i> Servicio y Estilista
+    </h6>
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Servicio *</label>
+    <select class="form-select" name="servicio_id" id="servicioSelect" onchange="actualizarDuracion()" required>
+        <option value="">Seleccionar servicio...</option>
+        @foreach($servicios as $servicio)
+        <option value="{{ $servicio->idServicio }}"
+            data-duracion="{{ $servicio->duracionBase }}"
+            data-precio="{{ $servicio->precioBase }}"
+            data-requiere-largo="{{ $servicio->requiere_largo_cabello }}"
+            data-requiere-tinturado="{{ $servicio->requiere_tinturado_previo }}"
+            data-requiere-esmalte="{{ $servicio->requiere_retiro_esmalte }}"
+            data-requiere-estilizado="{{ $servicio->requiere_estilizado }}"
+            data-tiempo-largo="{{ $servicio->tiempo_adicional_largo }}"
+            data-tiempo-tinturado="{{ $servicio->tiempo_adicional_tinturado }}"
+            data-tiempo-esmalte="{{ $servicio->tiempo_adicional_esmalte }}"
+            data-tiempo-estilizado="{{ $servicio->tiempo_adicional_estilizado }}">
+            {{ $servicio->nombre }} - ${{ number_format($servicio->precioBase, 2) }} ({{ $servicio->duracionBase }} min)
+        </option>
+        @endforeach
+    </select>
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Estilista *</label>
+    <select class="form-select" name="estilista_id" required>
+        <option value="">Seleccionar estilista...</option>
+        @foreach($estilistas as $estilista)
+        <option value="{{ $estilista->idEmpleado }}">
+        {{ $estilista->nombre }} {{ $estilista->apellido }}
+        </option>
+        @endforeach
+    </select>
+</div>
+
+<!-- ✅ CAMPOS DINÁMICOS PARA AJUSTES -->
+<div class="col-12 mt-3" id="ajustesServicio" style="display: none;">
+    <div class="card" style="background: var(--champagne-light); border: 1px solid var(--rosa-empolvado); padding: 1rem;">
+        <h6 style="color: var(--borgona); margin-bottom: 1rem;">
+            <i class="bi bi-sliders"></i> Ajustes del Servicio
+        </h6>
+        <div class="row g-3">
+            <!-- Largo de cabello -->
+            <div class="col-md-6" id="campo-largo" style="display: none;">
+                <label class="form-label">Largo del Cabello</label>
+                <select class="form-select" name="largo_cabello" id="largoCabello" onchange="recalcularDuracion()">
+                    <option value="corto">Corto (sin costo adicional)</option>
+                    <option value="medio">Medio (sin costo adicional)</option>
+                    <option value="largo">Largo (+<span id="tiempo-largo">0</span> min)</option>
+                </select>
+            </div>
+            
+            <!-- Tinturado previo -->
+            <div class="col-md-6" id="campo-tinturado" style="display: none;">
+                <label class="form-label">¿Tinturado Previamente?</label>
+                <select class="form-select" name="tinturado_previo" id="tinturadoPrevio" onchange="recalcularDuracion()">
+                    <option value="0">No</option>
+                    <option value="1">Sí (+<span id="tiempo-tinturado">0</span> min)</option>
+                </select>
+            </div>
+            
+            <!-- Retiro de esmalte -->
+            <div class="col-md-6" id="campo-esmalte" style="display: none;">
+                <label class="form-label">¿Requiere Retiro de Esmalte?</label>
+                <select class="form-select" name="retiro_esmalte" id="retiroEsmalte" onchange="recalcularDuracion()">
+                    <option value="0">No</option>
+                    <option value="1">Sí (+<span id="tiempo-esmalte">0</span> min)</option>
+                </select>
+            </div>
+            
+            <!-- Con estilizado -->
+            <div class="col-md-6" id="campo-estilizado" style="display: none;">
+                <label class="form-label">¿Con Estilizado?</label>
+                <select class="form-select" name="con_estilizado" id="conEstilizado" onchange="recalcularDuracion()">
+                    <option value="0">No</option>
+                    <option value="1">Sí (+<span id="tiempo-estilizado">0</span> min)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+                            <!--<div class="col-12 mt-4">
                                 <h6 style="color: var(--borgona); font-weight: 600; border-bottom: 2px solid var(--rosa-empolvado); padding-bottom: 0.5rem;">
                                     <i class="bi bi-scissors"></i> Servicio y Estilista
                                 </h6>
@@ -368,7 +455,7 @@
                                     @endforeach
                                 </select>
 
-                            </div>
+                            </div>-->
 
                             <!-- Fecha y Hora -->
                             <div class="col-12 mt-4">
@@ -1026,6 +1113,124 @@
             actualizarEstadoCita(idCita, 'CANCELADA');
         }
     }
+
+    // ========================================
+// FUNCIONES PARA AJUSTES DINÁMICOS
+// ========================================
+
+let tiemposAdicionales = {
+    largo: 0,
+    tinturado: 0,
+    esmalte: 0,
+    estilizado: 0
+};
+
+function actualizarDuracion() {
+    const select = document.getElementById('servicioSelect');
+    const option = select.options[select.selectedIndex];
+    const duracion = option.getAttribute('data-duracion');
+    const precio = option.getAttribute('data-precio');
+    
+    // Obtener configuraciones del servicio
+    const requiereLargo = option.getAttribute('data-requiere-largo') == '1';
+    const requiereTinturado = option.getAttribute('data-requiere-tinturado') == '1';
+    const requiereEsmalte = option.getAttribute('data-requiere-esmalte') == '1';
+    const requiereEstilizado = option.getAttribute('data-requiere-estilizado') == '1';
+    
+    // Guardar tiempos adicionales
+    tiemposAdicionales.largo = parseInt(option.getAttribute('data-tiempo-largo')) || 0;
+    tiemposAdicionales.tinturado = parseInt(option.getAttribute('data-tiempo-tinturado')) || 0;
+    tiemposAdicionales.esmalte = parseInt(option.getAttribute('data-tiempo-esmalte')) || 0;
+    tiemposAdicionales.estilizado = parseInt(option.getAttribute('data-tiempo-estilizado')) || 0;
+    
+    // Actualizar textos de tiempo adicional
+    document.getElementById('tiempo-largo').textContent = tiemposAdicionales.largo;
+    document.getElementById('tiempo-tinturado').textContent = tiemposAdicionales.tinturado;
+    document.getElementById('tiempo-esmalte').textContent = tiemposAdicionales.esmalte;
+    document.getElementById('tiempo-estilizado').textContent = tiemposAdicionales.estilizado;
+    
+    // Mostrar/ocultar campos según configuración
+    const ajustesDiv = document.getElementById('ajustesServicio');
+    const campoLargo = document.getElementById('campo-largo');
+    const campoTinturado = document.getElementById('campo-tinturado');
+    const campoEsmalte = document.getElementById('campo-esmalte');
+    const campoEstilizado = document.getElementById('campo-estilizado');
+    
+    // Resetear campos
+    campoLargo.style.display = 'none';
+    campoTinturado.style.display = 'none';
+    campoEsmalte.style.display = 'none';
+    campoEstilizado.style.display = 'none';
+    
+    // Mostrar solo los campos necesarios
+    let mostrarAjustes = false;
+    if (requiereLargo) {
+        campoLargo.style.display = 'block';
+        mostrarAjustes = true;
+    }
+    if (requiereTinturado) {
+        campoTinturado.style.display = 'block';
+        mostrarAjustes = true;
+    }
+    if (requiereEsmalte) {
+        campoEsmalte.style.display = 'block';
+        mostrarAjustes = true;
+    }
+    if (requiereEstilizado) {
+        campoEstilizado.style.display = 'block';
+        mostrarAjustes = true;
+    }
+    
+    ajustesDiv.style.display = mostrarAjustes ? 'block' : 'none';
+    
+    // Actualizar duración y precio
+    if(duracion && precio) {
+        document.getElementById('duracionEstimada').value = duracion + ' min';
+        document.getElementById('precioBase').textContent = '$' + parseFloat(precio).toFixed(2);
+        document.getElementById('descuento').textContent = '$0.00';
+        document.getElementById('totalPagar').textContent = '$' + parseFloat(precio).toFixed(2);
+        
+        // Limpiar promoción
+        document.getElementById('codigoPromo').value = '';
+        document.getElementById('promoValidada').style.display = 'none';
+    }
+}
+
+function recalcularDuracion() {
+    const select = document.getElementById('servicioSelect');
+    const option = select.options[select.selectedIndex];
+    const duracionBase = parseInt(option.getAttribute('data-duracion')) || 0;
+    
+    let tiempoAdicionalTotal = 0;
+    
+    // Largo de cabello
+    const largoCabello = document.getElementById('largoCabello')?.value;
+    if (largoCabello === 'largo') {
+        tiempoAdicionalTotal += tiemposAdicionales.largo;
+    }
+    
+    // Tinturado previo
+    const tinturado = document.getElementById('tinturadoPrevio')?.value;
+    if (tinturado == '1') {
+        tiempoAdicionalTotal += tiemposAdicionales.tinturado;
+    }
+    
+    // Retiro de esmalte
+    const esmalte = document.getElementById('retiroEsmalte')?.value;
+    if (esmalte == '1') {
+        tiempoAdicionalTotal += tiemposAdicionales.esmalte;
+    }
+    
+    // Con estilizado
+    const estilizado = document.getElementById('conEstilizado')?.value;
+    if (estilizado == '1') {
+        tiempoAdicionalTotal += tiemposAdicionales.estilizado;
+    }
+    
+    const duracionTotal = duracionBase + tiempoAdicionalTotal;
+    document.getElementById('duracionEstimada').value = duracionTotal + ' min' + 
+        (tiempoAdicionalTotal > 0 ? ` (base: ${duracionBase} + adicional: ${tiempoAdicionalTotal})` : '');
+}
 </script>
 
 </body>
