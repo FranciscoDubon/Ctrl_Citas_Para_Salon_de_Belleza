@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Cliente;
 use Carbon\Carbon;
 use App\Models\Empleado;
+use App\Models\Cita;
 use App\Models\Rol;
 use Illuminate\Support\Facades\Hash;
 
@@ -205,8 +206,31 @@ public function actualizarConfiguracion(Request $request)
     }
 
     return view('cliente.configCliente', compact('cliente'));
-    
-
 }
+
+public function mostrarCitasCliente()
+{
+    if (session('rol') !== 'CLIENTE') {
+        abort(403, 'Acceso no autorizado');
+    }
+
+    $clienteId = session('clienteId');
+    $cliente = Cliente::findOrFail($clienteId);
+
+    $visitas = Cita::where('idCliente', $clienteId)->count();
+
+    $ultimaCita = Cita::where('idCliente', $clienteId)
+        ->where('fecha', '<=', now())
+        ->orderByDesc('fecha')
+        ->first();
+
+    $proximaCita = Cita::where('idCliente', $clienteId)
+        ->where('fecha', '>', now())
+        ->orderBy('fecha')
+        ->first();
+
+    return view('cliente.citasCliente', compact('cliente', 'visitas', 'ultimaCita', 'proximaCita'));
+}
+
 
 }

@@ -185,11 +185,12 @@ Route::get('/cliente/clientes/dashboard', [ClienteController::class, 'index'])->
 Route::get('/recepcionista/clientesRecep', [ClienteController::class, 'dashboardRecepcionista'])->name('recepcionista.clientesRecep');
 Route::get('/recepcionista/clientes/{id}/editar', [ClienteController::class, 'editarCliente']);
 // Mostrar la vista de configuración del cliente
-Route::get('/cliente/configCli', [ClienteController::class, 'mostrarConfigCliente'])->name('cliente.configuracion');
+Route::get('/cliente/configuracion', [ClienteController::class, 'mostrarConfigCliente'])->name('cliente.configuracion');
 
 // Actualizar la configuración del cliente
-Route::post('/cliente/configCli/actualizar', [ClienteController::class, 'actualizarConfiguracion'])->name('cliente.actualizarConfig');
+Route::post('/cliente/configuracion/actualizar', [ClienteController::class, 'actualizarConfiguracion'])->name('cliente.actualizarConfig');
 Route::get('/cliente/configCli', [ClienteController::class, 'mostrarConfigCliente'])->name('cliente.configCli');
+Route::get('/cliente/citasCli', [ClienteController::class, 'mostrarCitasCliente'])->name('cliente.citasCli');
 
 //citas
 

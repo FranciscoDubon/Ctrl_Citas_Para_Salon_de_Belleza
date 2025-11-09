@@ -29,9 +29,7 @@
 
         <!-- Menú de Navegación -->
         <nav class="sidebar-menu">
-            <a href="{{ route('cliente.dashboardCli') }}" class="menu-item">
-                <i class="bi bi-house-door"></i> Dashboard
-            </a>
+            
             <a href="{{ route('cliente.citasCli') }}" class="menu-item">
                 <i class="bi bi-calendar-check"></i> Citas
             </a>

@@ -30,9 +30,7 @@
 
         <!-- Menú de Navegación -->
         <nav class="sidebar-menu">
-            <a href="{{ route('cliente.dashboardCli') }}" class="menu-item">
-                <i class="bi bi-house-door"></i> Dashboard
-            </a>
+            
             <a href="{{ route('cliente.citasCli') }}" class="menu-item active">
                 <i class="bi bi-calendar-check"></i> Citas
             </a>
@@ -71,6 +69,46 @@
          MAIN CONTENT (CONTENIDO PRINCIPAL)
          ============================================ -->
     <main class="main-content">
+
+ <!-- Mensaje de Bienvenida Personalizado -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="premium-card">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2>
+                            <h2>
+                                <i class="bi bi-heart-fill" style="color: var(--dorado-palido);"></i> 
+                                ¡Hola {{ $cliente->nombre }}! Bienvenido de nuevo 💖
+                            </h2>
+                                <p>
+                                    Es un placer tenerte con nosotros. Hoy es <strong>{{ \Carbon\Carbon::now()->translatedFormat('l, d \d\e F Y') }}</strong>
+                                </p>
+                                <p>
+                                    Tienes un total de <strong style="color: var(--dorado-palido);">{{ $visitas }} visitas</strong> · 
+                                    Tu última cita fue el <strong>{{ $ultimaCita ? \Carbon\Carbon::parse($ultimaCita->fecha)->translatedFormat('d \d\e F') : 'Sin historial' }}</strong>
+                                </p>
+                        <small>
+                            <i class="bi bi-clock-history"></i> Tu próxima cita: 
+                            <strong>{{ $proximaCita ? \Carbon\Carbon::parse($proximaCita->fecha)->translatedFormat('d \d\e F') : 'No programada' }}</strong>
+                        </small>
+
+
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-gold btn-lg mb-2" onclick="agendarCita()">
+                                <i class="bi bi-calendar-plus"></i> Agendar Nueva Cita
+                            </button>
+                            <br>
+                            <small style="color: var(--borgona); opacity: 0.7;">
+                                <i class="bi bi-clock-history"></i> Tu próxima cita: <strong>No programada</strong>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <!-- Sección: Mis Citas Actuales -->
         <div class="row mb-4">
@@ -599,14 +637,15 @@
         </div>
     </div>
 
-    <!-- ============================================
+     <!-- ============================================
          FOOTER
-         ============================================ -->
-    <footer class="main-footer">
+         ============================================ 
+ 
+  <footer class="main-footer">
         <p>&copy; 2025 BeautySalon - Sistema de Control de Citas |
             Desarrollado por <a href="#">Grupo 03 - IGF115</a>
         </p>
-    </footer>
+    </footer> -->
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
