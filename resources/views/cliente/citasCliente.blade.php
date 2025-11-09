@@ -2,6 +2,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Citas Cliente | Salón de Belleza</title>
 
@@ -59,8 +60,8 @@
         <div class="header-actions">
             <!-- Usuario -->
             <div class="user-info">
-                <div class="user-avatar">M</div>
-                <span class="user-name">María García - Cliente</span>
+               <div class="user-avatar" id="avatarInicial">A</div>
+            <span class="user-name" id="nombreCliente">Administrador</span>
             </div>
         </div>
     </header>
@@ -593,6 +594,7 @@
                         <i class="bi bi-x-circle"></i> Cancelar Cita
                     </button>
                 </div>
+                
             </div>
         </div>
     </div>
@@ -781,9 +783,22 @@
             descuentoPromocion: 0,
             notas: ''
         };
+ // Cargar nombre de usuario
+    const nombre = localStorage.getItem('clienteNombre') || 'Cliente';
+    const apellido = localStorage.getItem('clienteApellido') || '';
+    const inicial = nombre.charAt(0).toUpperCase();
 
-        // (Resto del código JavaScript anterior permanece igual)
-        // ... todas las demás funciones de reserva ...
+    const nombreSpan = document.getElementById('nombreCliente');
+    if (nombreSpan) {
+        nombreSpan.textContent = `${nombre} ${apellido}`;
+    }
+
+    const avatarDiv = document.getElementById('avatarInicial');
+    if (avatarDiv) {
+        avatarDiv.textContent = inicial;
+    }
+        
+   
     </script>
 </body>
 

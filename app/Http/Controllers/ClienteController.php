@@ -61,7 +61,8 @@ class ClienteController extends Controller
             'clienteId' => $cliente->idCliente,
             'clienteNombre' => $cliente->nombre,
             'clienteApellido' => $cliente->apellido,
-            'tipoUsuario' => 'cliente'
+            'tipoUsuario' => 'cliente',
+            'rol' => $cliente->rol
         ]);
         return response()->json([
             'success' => true,
@@ -147,6 +148,65 @@ public function editarCliente($id)
         'fuente_conocimiento' => $cliente->comoConocio,
         'acepta_promociones' => $cliente->suscripcionNewsletter,
     ]);
+}
+
+public function mostrarConfigCliente()
+{
+    if (session('rol') !== 'CLIENTE') {
+        abort(403, 'Acceso no autorizado');
+    }
+
+    $clienteId = session('clienteId');
+    $cliente = Cliente::findOrFail($clienteId);
+
+    return view('cliente.configCliente', compact('cliente'));
+}
+
+
+public function actualizarConfiguracion(Request $request)
+{
+   
+
+    if (session('rol') !== 'CLIENTE') {
+        abort(403, 'Acceso no autorizado');
+    }
+
+    $cliente = Cliente::findOrFail(session('clienteId'));
+
+    $request->validate([
+        'nombre' => 'required|string|max:100',
+        'apellido' => 'required|string|max:100',
+        'correoElectronico' => 'required|email|unique:cliente,correoElectronico,' . $cliente->idCliente . ',idCliente',
+        'telefono' => 'nullable|string|max:20',
+        'fechaNacimiento' => 'nullable|date',
+        'genero' => 'nullable|string|max:20',
+        'clave' => 'nullable|string|min:8|confirmed',
+        'comoConocio' => 'nullable|string|max:255',
+        'suscripcionNewsletter' => 'nullable|boolean'
+
+    ]);
+
+    $cliente->update([
+        'nombre' => $request->nombre,
+        'apellido' => $request->apellido,
+        'correoElectronico' => $request->correoElectronico,
+        'telefono' => $request->telefono,
+        'fechaNacimiento' => $request->fechaNacimiento,
+        'genero' => $request->genero,
+        
+        'comoConocio' => $request->comoConocio,
+        'suscripcionNewsletter' => $request->has('suscripcionNewsletter')
+
+    ]);
+
+    if ($request->filled('clave')) {
+        $cliente->clave = Hash::make($request->clave);
+        $cliente->save();
+    }
+
+    return view('cliente.configCliente', compact('cliente'));
+    
+
 }
 
 }
