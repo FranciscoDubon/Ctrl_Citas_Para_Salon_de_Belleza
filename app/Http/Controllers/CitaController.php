@@ -295,6 +295,8 @@ if ($citasAyer > 0) {
 public function dashboardRecepcionista()
 {
     $hoy = now()->toDateString();
+    $dia = strtolower(now()->locale('es')->dayName); // "viernes"
+    $horaActual = now()->format('H:i:s');
 
     // KPIs
     $totalCitasHoy = Cita::whereDate('fecha', $hoy)->count();
@@ -310,17 +312,14 @@ public function dashboardRecepcionista()
     $promocionesAplicadas = Promocion::where('usosActuales', '>', 0)->count();
 
     // 🔹 NUEVO: lista de promociones activas del día
-    $promocionesHoy = Promocion::select('idPromocion', 'nombre', 'codigoPromocional', 'tipoDescuento', 'valorDescuento', 'usosMaximos', 'usosActuales')
-        ->where('activo', 1)
-        ->whereDate('fechaInicio', '<=', $hoy)
-        ->whereDate('fechaFin', '>=', $hoy)
-        ->where(function ($query) {
-            $dia = strtolower(now()->locale('es')->dayName);
-            $query->whereNull('diasAplicables')
-                  ->orWhereRaw("json_contains(diasAplicables, '\"$dia\"')");
-        })
-        ->limit(5)
-        ->get();
+
+$promocionesHoy = Promocion::where('activo', 1)
+    ->whereDate('fechaInicio', '<=', $hoy)
+    ->whereDate('fechaFin', '>=', $hoy)
+    ->whereColumn('usosActuales', '<', 'usosMaximos')
+    ->limit(5)
+    ->get();
+
 
     // Últimas citas
     $ultimasCitas = Cita::orderBy('fecha', 'desc')
@@ -328,7 +327,46 @@ public function dashboardRecepcionista()
         ->limit(5)
         ->get();
 
-    return view('recepcionista.dashboardRecepcionista', compact(
+    // Citas del día con relaciones
+    $citasDelDia = Cita::with(['cliente', 'estilista', 'servicios', 'promocion'])
+    ->whereDate('fecha', $hoy)
+    ->orderBy('hora', 'asc')
+    ->get();
+
+// ==========================================
+// DISPONIBILIDAD DE ESTILISTAS
+// ==========================================
+$estilistas = Empleado::withCount(['citas as citas_hoy' => function ($query) use ($hoy) {
+        $query->whereDate('fecha', $hoy);
+    }])
+    ->with(['citas' => function ($query) use ($hoy) {
+        $query->whereDate('fecha', $hoy)->orderBy('hora', 'desc');
+    }])
+    ->where('idRol', 1) // 1 = estilistas
+    ->where('activo', 1)
+    ->get()
+    ->map(function ($estilista) use ($horaActual) { // 👈 se agregó "use ($horaActual)"
+        $ultimaCita = $estilista->citas->first();
+
+        // Verificar si tiene cita actual (en curso)
+        $citaActual = $estilista->citas
+            ->where('hora', '<=', $horaActual)
+            ->sortByDesc('hora')
+            ->first();
+
+        // Estado según si tiene cita en curso
+        $estado = $citaActual ? 'Atendiendo cliente' : ($ultimaCita ? 'Ocupado' : 'Disponible');
+
+        return [
+            'id' => $estilista->idEmpleado,
+            'nombre' => $estilista->nombre . ' ' . $estilista->apellido,
+            'citas_hoy' => $estilista->citas_hoy,
+            'ultima_cita' => $ultimaCita ? $ultimaCita->hora : null,
+            'estado' => $estado,
+        ];
+    });
+
+ return view('recepcionista.dashboardRecepcionista', compact(
         'totalCitasHoy',
         'citasCompletadas',
         'citasPendientes',
@@ -338,9 +376,12 @@ public function dashboardRecepcionista()
         'promosDesactivadas',
         'promocionesAplicadas',
         'totalDescuento',
+        'citasDelDia',
+        'estilistas',
         'promocionesHoy', // ✅ ya definida antes del compact
         'ultimasCitas'
     ));
+    
 }
 
 // ========================================
@@ -667,6 +708,11 @@ public function actualizarCita(Request $request, $id)
                         $descuento = $promocion->valorDescuento;
                     }
                     $precioFinal = max(0, $servicio->precioBase - $descuento);
+
+                    if($promocion) {
+                    $promocion->usosActuales = $promocion->usosActuales + 1;
+                    $promocion->save();
+                    }
 
                     $mensajePromo = "Promoción aplicada: {$promocion->nombre} - descuento de {$promocion->valorDescuento}" .
                         ($promocion->tipoDescuento === 'porcentaje' ? '%' : '$');
