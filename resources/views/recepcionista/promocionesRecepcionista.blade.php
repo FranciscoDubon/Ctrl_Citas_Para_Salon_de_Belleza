@@ -1,21 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
+@php
+    use Carbon\Carbon;
+@endphp
+
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion de Promociones Recepcionista | Salón de Belleza</title>
-    
+    <title>Gestión de Promociones Recepcionista | Salón de Belleza</title>
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    
-    <!-- CSS Global -->
+
+    <!-- CSS Global (SIN la barra inicial) -->
     <link rel="stylesheet" href="{{ asset('css/global-styles.css') }}">
 </head>
+
 <body>
-    
+
     <!-- ============================================
          SIDEBAR (MENÚ LATERAL)
          ============================================ -->
@@ -25,7 +31,7 @@
             <h3><i class="bi bi-scissors"></i> BeautySalon</h3>
             <p>Sistema de Gestión</p>
         </div>
-        
+
         <!-- Menú de Navegación -->
         <nav class="sidebar-menu">
             <a href="{{ route('recepcionista.dashboardRecep') }}" class="menu-item">
@@ -43,9 +49,6 @@
             <a href="{{ route('recepcionista.promocionesRecep') }}" class="menu-item active">
                 <i class="bi bi-gift"></i> Promociones
             </a>
-            <a href="{{ route('recepcionista.configRecep') }}" class="menu-item">
-                <i class="bi bi-gear"></i> Configuración
-            </a>
         </nav>
     </div>
 
@@ -55,14 +58,15 @@
     <header class="top-header">
         <div class="header-title">
             <h1>Gestión de Promociones</h1>
-            <p>Administra las promociones y combos del salón.</p>
+            <p>Administra promociones y combos.</p>
         </div>
-        
+
         <div class="header-actions">
             <!-- Usuario -->
-            <div class="user-info">
+             <div class="user-info">
             <div class="user-avatar" id="avatarInicial">A</div>
             <span class="user-name" id="nombreCliente">Administrador</span>
+            </div>
         </div>
     </header>
 
@@ -80,120 +84,77 @@
                 <button class="btn btn-premium me-2" data-bs-toggle="modal" data-bs-target="#modalNuevoCombo">
                     <i class="bi bi-box-seam"></i> Nuevo Combo
                 </button>
-                <button class="btn btn-outline-gold me-2">
-                    <i class="bi bi-funnel"></i> Filtrar
-                </button>
-                <button class="btn btn-soft">
-                    <i class="bi bi-file-earmark-pdf"></i> Exportar
-                </button>
             </div>
         </div>
 
-        <!-- KPI Cards - Resumen de Promociones -->
-        <div class="row g-4 mb-4">
-            
-            <!-- 
-            ================================================
-            TODO BACKEND: Conectar con BD
-            ================================================
-            CONSULTA SQL:
-            SELECT COUNT(*) as total 
-            FROM promociones 
-            WHERE activo = 1 AND fecha_fin >= CURDATE()
-            ================================================
-            -->
-            <div class="col-xl-3 col-md-6">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon primary">
-                            <i class="bi bi-gift-fill"></i>
-                        </div>
-                    </div>
-                    <h3 class="kpi-value">6</h3>
-                    <p class="kpi-label">Promociones Activas</p>
-                    <span class="kpi-badge badge-success">
-                        <i class="bi bi-check-circle"></i> Vigentes
-                    </span>
-                </div>
-            </div>
+<!-- KPI Cards - Resumen de Promociones -->
+<div class="row g-4 mb-4">
 
-            <!-- 
-            ================================================
-            TODO BACKEND: Conectar con BD
-            ================================================
-            CONSULTA SQL:
-            SELECT COUNT(*) as total 
-            FROM combos 
-            WHERE activo = 1
-            ================================================
-            -->
-            <div class="col-xl-3 col-md-6">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon success">
-                            <i class="bi bi-box-seam-fill"></i>
-                        </div>
-                    </div>
-                    <h3 class="kpi-value">4</h3>
-                    <p class="kpi-label">Combos Disponibles</p>
-                    <span class="kpi-badge badge-success">
-                        <i class="bi bi-check-circle"></i> Activos
-                    </span>
+    <!-- Promociones activas -->
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div class="kpi-icon primary">
+                    <i class="bi bi-gift-fill"></i>
                 </div>
             </div>
-
-            <!-- 
-            ================================================
-            TODO BACKEND: Conectar con BD
-            ================================================
-            CONSULTA SQL:
-            SELECT COUNT(*) as total 
-            FROM citas 
-            WHERE promocion_id IS NOT NULL 
-            AND MONTH(fecha_hora) = MONTH(CURDATE())
-            ================================================
-            -->
-            <div class="col-xl-3 col-md-6">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon info">
-                            <i class="bi bi-ticket-perforated"></i>
-                        </div>
-                    </div>
-                    <h3 class="kpi-value">87</h3>
-                    <p class="kpi-label">Usos Este Mes</p>
-                    <span class="kpi-badge badge-success">
-                        <i class="bi bi-arrow-up"></i> +15%
-                    </span>
-                </div>
-            </div>
-
-            <!-- 
-            ================================================
-            TODO BACKEND: Conectar con BD
-            ================================================
-            CONSULTA SQL:
-            SELECT SUM(descuento_aplicado) as total 
-            FROM citas 
-            WHERE promocion_id IS NOT NULL 
-            AND MONTH(fecha_hora) = MONTH(CURDATE())
-            ================================================
-            -->
-            <div class="col-xl-3 col-md-6">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon warning">
-                            <i class="bi bi-piggy-bank"></i>
-                        </div>
-                    </div>
-                    <h3 class="kpi-value">$342</h3>
-                    <p class="kpi-label">Descuentos Otorgados</p>
-                    <span class="kpi-badge badge-neutral">
-                        <i class="bi bi-graph-down"></i> Este mes
-                    </span>
-                </div>
-            </div>
+            <h3 class="kpi-value">{{ $promocionesActivas }}</h3>
+            <p class="kpi-label">Promociones Activas</p>
+            <span class="kpi-badge badge-success">
+                <i class="bi bi-check-circle"></i> Vigentes
+            </span>
         </div>
+    </div>
+
+    <!-- Combos disponibles -->
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div class="kpi-icon success">
+                    <i class="bi bi-box-seam-fill"></i>
+                </div>
+            </div>
+            <h3 class="kpi-value">{{ $combosDisponibles }}</h3>
+            <p class="kpi-label">Combos Disponibles</p>
+            <span class="kpi-badge badge-success">
+                <i class="bi bi-check-circle"></i> Activos
+            </span>
+        </div>
+    </div>
+
+    <!-- Usos de promociones este mes -->
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div class="kpi-icon info">
+                    <i class="bi bi-ticket-perforated"></i>
+                </div>
+            </div>
+            <h3 class="kpi-value">{{ $usosEsteMes }}</h3>
+            <p class="kpi-label">Usos Este Mes</p>
+            <span class="kpi-badge badge-success">
+                <i class="bi bi-arrow-up"></i> +15%
+            </span>
+        </div>
+    </div>
+
+    <!-- Descuentos otorgados -->
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div class="kpi-icon warning">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
+            </div>
+            <h3 class="kpi-value">${{ number_format($descuentosOtorgados, 2) }}</h3>
+            <p class="kpi-label">Descuentos Otorgados</p>
+            <span class="kpi-badge badge-success">
+                <i class="bi bi-graph-up-arrow"></i> Este Mes
+            </span>
+        </div>
+    </div>
+
+</div>
 
         <!-- Promociones Activas -->
         <div class="row g-4 mb-4">
@@ -232,120 +193,87 @@
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>#P001</td>
-                                    <td><strong>Black Friday Beauty</strong></td>
-                                    <td><span class="badge badge-luxury">PORCENTAJE</span></td>
-                                    <td><span class="badge badge-gold">30% OFF</span></td>
-                                    <td><code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">BLACK30</code></td>
-                                    <td>01 Nov - 30 Nov 2024</td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <strong style="color: var(--borgona);">45</strong> / 100
-                                            <div style="width: 100%; background: var(--rosa-empolvado); height: 5px; border-radius: 3px; margin-top: 3px;">
-                                                <div style="width: 45%; background: var(--dorado-palido); height: 5px; border-radius: 3px;"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge bg-success">Activa</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" data-bs-toggle="modal" data-bs-target="#modalEditarPromocion" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" data-bs-toggle="modal" data-bs-target="#modalVerPromocion" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" onclick="togglePromocion(1)" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+<tbody>
+    @forelse($promociones as $promocion)
+    <tr @if(!$promocion->activo || $promocion->fechaFin < now()) style="opacity: 0.6;" @endif>
+        <td>#P{{ str_pad($promocion->idPromocion, 3, '0', STR_PAD_LEFT) }}</td>
+        <td><strong>{{ $promocion->nombre }}</strong></td>
+        <td>
+            <span class="badge badge-luxury">
+                {{ strtoupper($promocion->tipoDescuento) }}
+            </span>
+        </td>
+        <td>
+            <span class="badge badge-gold">
+                @if($promocion->tipoDescuento == 'porcentaje')
+                    {{ $promocion->valorDescuento }}% OFF
+                @else
+                    ${{ number_format($promocion->valorDescuento, 2) }} OFF
+                @endif
+            </span>
+        </td>
+        <td>
+            <code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">
+                {{ $promocion->codigoPromocional }}
+            </code>
+        </td>
+        <td>{{ $promocion->fechaInicio->format('d M') }} - {{ $promocion->fechaFin->format('d M Y') }}</td>
+        <td>
+            <div style="font-size: 0.875rem;">
+                @if($promocion->usosMaximos)
+                    <strong style="color: var(--borgona);">{{ $promocion->usosActuales }}</strong> / {{ $promocion->usosMaximos }}
+                    <div style="width: 100%; background: var(--rosa-empolvado); height: 5px; border-radius: 3px; margin-top: 3px;">
+                        <div style="width: {{ ($promocion->usosActuales / $promocion->usosMaximos) * 100 }}%; background: var(--dorado-palido); height: 5px; border-radius: 3px;"></div>
+                    </div>
+                @else
+                    <strong style="color: var(--borgona);">∞</strong> Ilimitado
+                @endif
+            </div>
+        </td>
+        <td>
+            @if($promocion->activo && $promocion->fechaFin >= now())
+                <span class="badge bg-success">Activa</span>
+            @elseif($promocion->fechaFin < now())
+                <span class="badge bg-danger">Expirada</span>
+            @else
+                <span class="badge bg-secondary">Inactiva</span>
+            @endif
+        </td>
+        <td>
+<button class="btn btn-sm btn-soft me-1 btnEditarPromocion" 
+        title="Editar"
+        data-bs-toggle="modal" 
+        data-bs-target="#modalEditarPromocion"
+        data-id="{{ $promocion->idPromocion }}"
+        data-nombre="{{ $promocion->nombre }}"
+        data-descripcion="{{ $promocion->descripcion }}"
+        data-tipo="{{ $promocion->tipoDescuento }}"
+        data-valor="{{ $promocion->valorDescuento }}"
+        data-codigo="{{ $promocion->codigoPromocional }}"
+        data-fecha-inicio="{{ \Carbon\Carbon::parse($promocion->fechaInicio)->format('Y-m-d') }}"
+        data-fecha-fin="{{ \Carbon\Carbon::parse($promocion->fechaFin)->format('Y-m-d') }}"
+        data-usos-maximos="{{ $promocion->usosMaximos }}"
+        data-usos-cliente="{{ $promocion->usosPorCliente }}"
+        data-dias='@json(json_decode($promocion->diasAplicables))'
+        data-activo="{{ $promocion->activo }}">
+    <i class="bi bi-pencil"></i>
+</button>
 
-                                <tr>
-                                    <td>#P002</td>
-                                    <td><strong>Nuevo Cliente VIP</strong></td>
-                                    <td><span class="badge badge-luxury">FIJO</span></td>
-                                    <td><span class="badge badge-gold">$10 OFF</span></td>
-                                    <td><code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">NUEVO10</code></td>
-                                    <td>01 Oct - 31 Dic 2024</td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <strong style="color: var(--borgona);">23</strong> / 50
-                                            <div style="width: 100%; background: var(--rosa-empolvado); height: 5px; border-radius: 3px; margin-top: 3px;">
-                                                <div style="width: 46%; background: var(--dorado-palido); height: 5px; border-radius: 3px;"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge bg-success">Activa</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>#P003</td>
-                                    <td><strong>Martes de Spa</strong></td>
-                                    <td><span class="badge badge-luxury">PORCENTAJE</span></td>
-                                    <td><span class="badge badge-gold">20% OFF</span></td>
-                                    <td><code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">MARSPA20</code></td>
-                                    <td>01 Nov - 31 Dic 2024</td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <strong style="color: var(--borgona);">∞</strong> Ilimitado
-                                        </div>
-                                    </td>
-                                    <td><span class="badge bg-success">Activa</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-premium" title="Desactivar">
-                                            <i class="bi bi-toggle-on"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <tr style="opacity: 0.6;">
-                                    <td>#P004</td>
-                                    <td><strong>Halloween Especial</strong></td>
-                                    <td><span class="badge badge-luxury">PORCENTAJE</span></td>
-                                    <td><span class="badge badge-gold">25% OFF</span></td>
-                                    <td><code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">HALLOW25</code></td>
-                                    <td>25 Oct - 31 Oct 2024</td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <strong style="color: var(--borgona);">100</strong> / 100
-                                            <div style="width: 100%; background: var(--rosa-empolvado); height: 5px; border-radius: 3px; margin-top: 3px;">
-                                                <div style="width: 100%; background: var(--borgona); height: 5px; border-radius: 3px;"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge bg-danger">Expirada</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold me-1" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-gold" title="Reactivar">
-                                            <i class="bi bi-arrow-clockwise"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
+            <button class="btn btn-sm {{ $promocion->activo ? 'btn-premium' : 'btn-gold' }}" 
+                    onclick="togglePromocion({{ $promocion->idPromocion }})" 
+                    title="{{ $promocion->activo ? 'Desactivar' : 'Activar' }}">
+                <i class="bi bi-toggle-{{ $promocion->activo ? 'on' : 'off' }}"></i>
+            </button>
+        </td>
+    </tr>
+    @empty
+    <tr>
+        <td colspan="9" class="text-center">
+            <p class="text-muted my-3">No hay promociones registradas</p>
+        </td>
+    </tr>
+    @endforelse
+</tbody>
                         </table>
                     </div>
                 </div>
@@ -353,210 +281,81 @@
         </div>
 
         <!-- Combos de Servicios -->
-        <div class="row g-4 mb-4">
-            <div class="col-12">
-                <div class="card-custom">
-                    <h5 class="card-title-custom">
-                        <i class="bi bi-box-seam-fill"></i>
-                        Combos de Servicios
-                    </h5>
-                    
-                    <!-- 
-                    ================================================
-                    TODO BACKEND: Conectar con BD
-                    ================================================
-                    CONSULTA SQL:
-                    SELECT c.id, c.nombre, c.descripcion, c.precio_combo, 
-                           c.precio_regular, c.ahorro, c.activo,
-                           GROUP_CONCAT(s.nombre) as servicios
-                    FROM combos c
-                    LEFT JOIN combo_servicios cs ON c.id = cs.combo_id
-                    LEFT JOIN servicios s ON cs.servicio_id = s.id
-                    GROUP BY c.id
-                    ORDER BY c.activo DESC, c.nombre
-                    ================================================
-                    -->
-                    <div class="row g-4">
-                        
-                        <!-- Combo 1 -->
-                        <div class="col-lg-6">
-                            <div class="list-item-custom" style="flex-direction: column; align-items: flex-start;">
-                                <div class="d-flex align-items-center justify-content-between w-100 mb-3">
-                                    <div>
-                                        <h5 style="color: var(--borgona); margin: 0; font-weight: 700;">
-                                            <i class="bi bi-box-seam" style="color: var(--dorado-palido);"></i>
-                                            Combo Novia Perfecta
-                                        </h5>
-                                        <span class="badge bg-success mt-2">Activo</span>
-                                        <span class="badge badge-soft mt-2">Popular</span>
-                                    </div>
-                                    <div class="text-end">
-                                        <div style="text-decoration: line-through; color: var(--borgona); opacity: 0.6; font-size: 0.9rem;">$120.00</div>
-                                        <div style="font-size: 2rem; font-weight: 700; color: var(--dorado-palido);">$85.00</div>
-                                        <span class="badge badge-gold" style="font-size: 0.75rem;">Ahorra $35</span>
-                                    </div>
-                                </div>
-                                
-                                <p style="color: var(--negro-carbon); opacity: 0.8; margin-bottom: 1rem;">
-                                    Paquete completo para el día especial: peinado, maquillaje y manicure
-                                </p>
+<div class="row g-4">
+    <div class="col-12">
+        <div class="card-custom">
+            <h5 class="card-title-custom">
+                <i class="bi bi-box-seam-fill"></i>
+                Combos de Servicios
+            </h5>
 
-                                <div class="alert-custom w-100" style="margin-bottom: 1rem;">
-                                    <i class="bi bi-list-check"></i>
-                                    <strong>Servicios incluidos:</strong><br>
-                                    • Peinado Especial (60 min)<br>
-                                    • Maquillaje Profesional (45 min)<br>
-                                    • Manicure Premium (30 min)
+            <!-- Fila de combos -->
+            <div class="row g-4">
+                @forelse($combos as $combo)
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                        <div class="list-item-custom" 
+                             style="flex-direction: column; align-items: flex-start; @if(!$combo->activo) opacity: 0.6; @endif">
+                             
+                            <div class="d-flex align-items-center justify-content-between w-100 mb-3">
+                                <div>
+                                    <h5 style="color: var(--borgona); margin: 0; font-weight: 700;">
+                                        <i class="bi bi-box-seam" style="color: var(--dorado-palido);"></i>
+                                        {{ $combo->nombre }}
+                                    </h5>
+                                    <span class="badge {{ $combo->activo ? 'bg-success' : 'bg-secondary' }} mt-2">
+                                        {{ $combo->activo ? 'Activo' : 'Inactivo' }}
+                                    </span>
                                 </div>
 
-                                <div class="d-flex gap-2 w-100">
-                                    <button class="btn btn-soft btn-sm flex-fill" data-bs-toggle="modal" data-bs-target="#modalEditarCombo">
-                                        <i class="bi bi-pencil"></i> Editar
-                                    </button>
-                                    <button class="btn btn-outline-gold btn-sm flex-fill" data-bs-toggle="modal" data-bs-target="#modalVerCombo">
-                                        <i class="bi bi-eye"></i> Ver Detalles
-                                    </button>
-                                    <button class="btn btn-premium btn-sm" onclick="toggleCombo(1)">
-                                        <i class="bi bi-toggle-on"></i>
-                                    </button>
+                                <div class="text-end">
+                                    <div style="text-decoration: line-through; color: var(--borgona); opacity: 0.6; font-size: 0.9rem;">
+                                        ${{ number_format($combo->precioRegular, 2) }}
+                                    </div>
+                                    <div style="font-size: 2rem; font-weight: 700; color: var(--dorado-palido);">
+                                        ${{ number_format($combo->precioCombo, 2) }}
+                                    </div>
+                                    <span class="badge badge-gold" style="font-size: 0.75rem;">
+                                        Ahorra ${{ number_format($combo->ahorro, 2) }}
+                                    </span>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Combo 2 -->
-                        <div class="col-lg-6">
-                            <div class="list-item-custom" style="flex-direction: column; align-items: flex-start;">
-                                <div class="d-flex align-items-center justify-content-between w-100 mb-3">
-                                    <div>
-                                        <h5 style="color: var(--borgona); margin: 0; font-weight: 700;">
-                                            <i class="bi bi-box-seam" style="color: var(--dorado-palido);"></i>
-                                            Renovación Completa
-                                        </h5>
-                                        <span class="badge bg-success mt-2">Activo</span>
-                                    </div>
-                                    <div class="text-end">
-                                        <div style="text-decoration: line-through; color: var(--borgona); opacity: 0.6; font-size: 0.9rem;">$75.00</div>
-                                        <div style="font-size: 2rem; font-weight: 700; color: var(--dorado-palido);">$55.00</div>
-                                        <span class="badge badge-gold" style="font-size: 0.75rem;">Ahorra $20</span>
-                                    </div>
-                                </div>
-                                
-                                <p style="color: var(--negro-carbon); opacity: 0.8; margin-bottom: 1rem;">
-                                    Renueva tu look completo con corte, tinte y tratamiento
-                                </p>
+                            <p style="color: var(--negro-carbon); opacity: 0.8; margin-bottom: 1rem;">
+                                {{ $combo->descripcion }}
+                            </p>
 
-                                <div class="alert-custom w-100" style="margin-bottom: 1rem;">
-                                    <i class="bi bi-list-check"></i>
-                                    <strong>Servicios incluidos:</strong><br>
-                                    • Corte de Cabello (30 min)<br>
-                                    • Tinte Completo (90 min)<br>
-                                    • Tratamiento Capilar (45 min)
-                                </div>
+                            <div class="alert-custom w-100" style="margin-bottom: 1rem;">
+                                <i class="bi bi-list-check"></i>
+                                <strong>Servicios incluidos:</strong><br>
+                                @foreach($combo->servicios as $servicio)
+                                    • {{ $servicio->nombre }} ({{ $servicio->duracionBase }} min)<br>
+                                @endforeach
+                            </div>
 
-                                <div class="d-flex gap-2 w-100">
-                                    <button class="btn btn-soft btn-sm flex-fill">
-                                        <i class="bi bi-pencil"></i> Editar
-                                    </button>
-                                    <button class="btn btn-outline-gold btn-sm flex-fill">
-                                        <i class="bi bi-eye"></i> Ver Detalles
-                                    </button>
-                                    <button class="btn btn-premium btn-sm">
-                                        <i class="bi bi-toggle-on"></i>
-                                    </button>
-                                </div>
+                            <div class="d-flex gap-2 w-100">
+<button class="btn btn-soft btn-sm flex-fill btnEditarCombo" 
+        data-bs-toggle="modal" 
+        data-bs-target="#modalEditarCombo"
+        data-id="{{ $combo->idCombo }}">
+    <i class="bi bi-pencil"></i> Editar
+</button>
+                                <button class="btn btn-sm {{ $combo->activo ? 'btn-premium' : 'btn-gold' }}" 
+                                        onclick="toggleCombo({{ $combo->idCombo }})">
+                                    <i class="bi bi-toggle-{{ $combo->activo ? 'on' : 'off' }}"></i>
+                                </button>
                             </div>
                         </div>
-
-                        <!-- Combo 3 -->
-                        <div class="col-lg-6">
-                            <div class="list-item-custom" style="flex-direction: column; align-items: flex-start;">
-                                <div class="d-flex align-items-center justify-content-between w-100 mb-3">
-                                    <div>
-                                        <h5 style="color: var(--borgona); margin: 0; font-weight: 700;">
-                                            <i class="bi bi-box-seam" style="color: var(--dorado-palido);"></i>
-                                            Spa de Manos y Pies
-                                        </h5>
-                                        <span class="badge bg-success mt-2">Activo</span>
-                                    </div>
-                                    <div class="text-end">
-                                        <div style="text-decoration: line-through; color: var(--borgona); opacity: 0.6; font-size: 0.9rem;">$35.00</div>
-                                        <div style="font-size: 2rem; font-weight: 700; color: var(--dorado-palido);">$25.00</div>
-                                        <span class="badge badge-gold" style="font-size: 0.75rem;">Ahorra $10</span>
-                                    </div>
-                                </div>
-                                
-                                <p style="color: var(--negro-carbon); opacity: 0.8; margin-bottom: 1rem;">
-                                    Manicure y pedicure spa completo para máxima relajación
-                                </p>
-
-                                <div class="alert-custom w-100" style="margin-bottom: 1rem;">
-                                    <i class="bi bi-list-check"></i>
-                                    <strong>Servicios incluidos:</strong><br>
-                                    • Manicure Básico (30 min)<br>
-                                    • Pedicure Spa (45 min)
-                                </div>
-
-                                <div class="d-flex gap-2 w-100">
-                                    <button class="btn btn-soft btn-sm flex-fill">
-                                        <i class="bi bi-pencil"></i> Editar
-                                    </button>
-                                    <button class="btn btn-outline-gold btn-sm flex-fill">
-                                        <i class="bi bi-eye"></i> Ver Detalles
-                                    </button>
-                                    <button class="btn btn-premium btn-sm">
-                                        <i class="bi bi-toggle-on"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Combo 4 - Inactivo -->
-                        <div class="col-lg-6">
-                            <div class="list-item-custom" style="flex-direction: column; align-items: flex-start; opacity: 0.6;">
-                                <div class="d-flex align-items-center justify-content-between w-100 mb-3">
-                                    <div>
-                                        <h5 style="color: var(--borgona); margin: 0; font-weight: 700;">
-                                            <i class="bi bi-box-seam" style="color: var(--dorado-palido);"></i>
-                                            Pack Express
-                                        </h5>
-                                        <span class="badge bg-secondary mt-2">Inactivo</span>
-                                    </div>
-                                    <div class="text-end">
-                                        <div style="text-decoration: line-through; color: var(--borgona); opacity: 0.6; font-size: 0.9rem;">$45.00</div>
-                                        <div style="font-size: 2rem; font-weight: 700; color: var(--borgona); opacity: 0.6;">$35.00</div>
-                                        <span class="badge badge-neutral" style="font-size: 0.75rem;">Ahorra $10</span>
-                                    </div>
-                                </div>
-                                
-                                <p style="color: var(--negro-carbon); opacity: 0.8; margin-bottom: 1rem;">
-                                    Corte y peinado rápido para el día a día
-                                </p>
-
-                                <div class="alert-custom w-100" style="margin-bottom: 1rem;">
-                                    <i class="bi bi-list-check"></i>
-                                    <strong>Servicios incluidos:</strong><br>
-                                    • Corte de Cabello (30 min)<br>
-                                    • Peinado Básico (20 min)
-                                </div>
-
-                                <div class="d-flex gap-2 w-100">
-                                    <button class="btn btn-soft btn-sm flex-fill">
-                                        <i class="bi bi-pencil"></i> Editar
-                                    </button>
-                                    <button class="btn btn-outline-gold btn-sm flex-fill">
-                                        <i class="bi bi-eye"></i> Ver Detalles
-                                    </button>
-                                    <button class="btn btn-gold btn-sm">
-                                        <i class="bi bi-toggle-off"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
-                </div>
+                @empty
+                    <div class="col-12">
+                        <p class="text-center text-muted my-3">No hay combos registrados</p>
+                    </div>
+                @endforelse
             </div>
+            <!-- Fin fila combos -->
         </div>
+    </div>
+</div>
 
     </main>
 
@@ -595,6 +394,7 @@
                     ================================================
                     -->
                     <form id="formNuevaPromocion">
+                        @csrf <!-- Token CSRF para seguridad -->
                         <div class="row g-3">
                             <!-- Nombre -->
                             <div class="col-md-8">
@@ -605,7 +405,7 @@
                             <!-- Código Promocional -->
                             <div class="col-md-4">
                                 <label class="form-label">Código Promocional *</label>
-                                <input type="text" class="form-control" name="codigo_promocional" placeholder="Ej: BLACK30" required style="text-transform: uppercase;">
+                                <input type="text" class="form-control" name="codigoPromocional" placeholder="Ej: BLACK30" required style="text-transform: uppercase;">
                             </div>
 
                             <!-- Descripción -->
@@ -617,7 +417,7 @@
                             <!-- Tipo de Descuento -->
                             <div class="col-md-6">
                                 <label class="form-label">Tipo de Descuento *</label>
-                                <select class="form-select" name="tipo_descuento" id="tipoDescuento" required>
+                                <select class="form-select" name="tipoDescuento" id="tipoDescuento" required>
                                     <option value="">Seleccionar...</option>
                                     <option value="porcentaje">Porcentaje (%)</option>
                                     <option value="fijo">Monto Fijo ($)</option>
@@ -629,33 +429,33 @@
                                 <label class="form-label">Valor del Descuento *</label>
                                 <div class="input-group">
                                     <span class="input-group-text" id="simboloDescuento" style="background: var(--dorado-palido); color: var(--borgona); border: 2px solid var(--dorado-palido); font-weight: 700;">%</span>
-                                    <input type="number" class="form-control" name="valor_descuento" placeholder="0" step="0.01" min="0" required>
+                                    <input type="number" class="form-control" name="valorDescuento" placeholder="0" step="0.01" min="0" required>
                                 </div>
                             </div>
 
                             <!-- Fecha Inicio -->
                             <div class="col-md-6">
                                 <label class="form-label">Fecha de Inicio *</label>
-                                <input type="date" class="form-control" name="fecha_inicio" required>
+                                <input type="date" class="form-control" name="fechaInicio" required>
                             </div>
 
                             <!-- Fecha Fin -->
                             <div class="col-md-6">
                                 <label class="form-label">Fecha de Fin *</label>
-                                <input type="date" class="form-control" name="fecha_fin" required>
+                                <input type="date" class="form-control" name="fechaFin" required>
                             </div>
 
                             <!-- Usos Máximos -->
                             <div class="col-md-6">
                                 <label class="form-label">Usos Máximos</label>
-                                <input type="number" class="form-control" name="usos_maximos" placeholder="Dejar vacío para ilimitado" min="1">
+                                <input type="number" class="form-control" name="usosMaximos" placeholder="Dejar vacío para ilimitado" min="1">
                                 <small class="text-muted">Si se deja vacío, la promoción será ilimitada</small>
                             </div>
 
                             <!-- Usos por Cliente -->
                             <div class="col-md-6">
                                 <label class="form-label">Usos por Cliente</label>
-                                <input type="number" class="form-control" name="usos_por_cliente" placeholder="1" value="1" min="1">
+                                <input type="number" class="form-control" name="usosPorCliente" placeholder="1" value="1" min="1">
                             </div>
 
                             <!-- Días Aplicables -->
@@ -819,56 +619,22 @@
                                                 <th>Duración</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>
-                                                    <input class="form-check-input servicio-check" type="checkbox" name="servicios[]" value="1" data-precio="15.00">
-                                                </td>
-                                                <td>Corte de Cabello</td>
-                                                <td><span class="badge badge-gold">$15.00</span></td>
-                                                <td>30 min</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <input class="form-check-input servicio-check" type="checkbox" name="servicios[]" value="2" data-precio="40.00">
-                                                </td>
-                                                <td>Tinte Completo</td>
-                                                <td><span class="badge badge-gold">$40.00</span></td>
-                                                <td>90 min</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <input class="form-check-input servicio-check" type="checkbox" name="servicios[]" value="3" data-precio="30.00">
-                                                </td>
-                                                <td>Peinado Especial</td>
-                                                <td><span class="badge badge-gold">$30.00</span></td>
-                                                <td>60 min</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <input class="form-check-input servicio-check" type="checkbox" name="servicios[]" value="4" data-precio="10.00">
-                                                </td>
-                                                <td>Manicure Básico</td>
-                                                <td><span class="badge badge-gold">$10.00</span></td>
-                                                <td>30 min</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <input class="form-check-input servicio-check" type="checkbox" name="servicios[]" value="5" data-precio="15.00">
-                                                </td>
-                                                <td>Pedicure Spa</td>
-                                                <td><span class="badge badge-gold">$15.00</span></td>
-                                                <td>45 min</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <input class="form-check-input servicio-check" type="checkbox" name="servicios[]" value="6" data-precio="25.00">
-                                                </td>
-                                                <td>Maquillaje Profesional</td>
-                                                <td><span class="badge badge-gold">$25.00</span></td>
-                                                <td>45 min</td>
-                                            </tr>
-                                        </tbody>
+<tbody>
+    @foreach($servicios as $servicio)
+    <tr>
+        <td>
+            <input class="form-check-input servicio-check" 
+                   type="checkbox" 
+                   name="servicios[]" 
+                   value="{{ $servicio->idServicio }}" 
+                   data-precio="{{ $servicio->precioBase }}">
+        </td>
+        <td>{{ $servicio->nombre }}</td>
+        <td><span class="badge badge-gold">${{ number_format($servicio->precioBase, 2) }}</span></td>
+        <td>{{ $servicio->duracionBase }} min</td>
+    </tr>
+    @endforeach
+</tbody>
                                     </table>
                                 </div>
                             </div>
@@ -890,7 +656,7 @@
                                             <label class="form-label" style="color: var(--blanco-humo);">Precio del Combo *</label>
                                             <div class="input-group">
                                                 <span class="input-group-text" style="background: var(--dorado-palido); color: var(--borgona); border: 2px solid var(--dorado-palido); font-weight: 700;">$</span>
-                                                <input type="number" class="form-control" name="precio_combo" id="precioCombo" placeholder="0.00" step="0.01" min="0" required>
+                                                <input type="number" class="form-control" name="precioCombo" id="precioCombo" placeholder="0.00" step="0.01" min="0" required>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -928,11 +694,139 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="formEditarPromocion">
-                        <input type="hidden" name="promocion_id" value="1">
-                        <!-- Mismo contenido que formNuevaPromocion pero con valores pre-llenados -->
-                        <p class="text-muted"><small>Campos similares a Nueva Promoción con datos pre-cargados</small></p>
-                    </form>
+<form id="formEditarPromocion" method="POST">
+    @csrf
+    @method('PUT')
+    <input type="hidden" name="promocionId" id="edit_promocionId">
+
+    <div class="row g-3">
+        <!-- Nombre -->
+        <div class="col-md-8">
+            <label class="form-label">Nombre de la Promoción *</label>
+            <input type="text" class="form-control" name="nombre" id="edit_nombre" required>
+        </div>
+
+        <!-- Código Promocional -->
+        <div class="col-md-4">
+            <label class="form-label">Código Promocional *</label>
+            <input type="text" class="form-control" name="codigoPromocional" id="edit_codigo" required style="text-transform: uppercase;">
+        </div>
+
+        <!-- Descripción -->
+        <div class="col-12">
+            <label class="form-label">Descripción</label>
+            <textarea class="form-control" name="descripcion" id="edit_descripcion" rows="2"></textarea>
+        </div>
+
+        <!-- Tipo de Descuento -->
+        <div class="col-md-6">
+            <label class="form-label">Tipo de Descuento *</label>
+            <select class="form-select" name="tipoDescuento" id="edit_tipo" required>
+                <option value="">Seleccionar...</option>
+                <option value="porcentaje">Porcentaje (%)</option>
+                <option value="fijo">Monto Fijo ($)</option>
+            </select>
+        </div>
+
+        <!-- Valor del Descuento -->
+        <div class="col-md-6">
+            <label class="form-label">Valor del Descuento *</label>
+            <div class="input-group">
+                <span class="input-group-text" id="simboloDescuentoEdit" style="background: var(--dorado-palido); color: var(--borgona); border: 2px solid var(--dorado-palido); font-weight: 700;">%</span>
+                <input type="number" class="form-control" name="valorDescuento" id="edit_valor" step="0.01" min="0" required>
+            </div>
+        </div>
+
+        <!-- Fecha Inicio -->
+        <div class="col-md-6">
+            <label class="form-label">Fecha de Inicio *</label>
+            <input type="date" class="form-control" name="fechaInicio" id="edit_fechaInicio" required>
+        </div>
+
+        <!-- Fecha Fin -->
+        <div class="col-md-6">
+            <label class="form-label">Fecha de Fin *</label>
+            <input type="date" class="form-control" name="fechaFin" id="edit_fechaFin" required>
+        </div>
+
+        <!-- Usos Máximos -->
+        <div class="col-md-6">
+            <label class="form-label">Usos Máximos</label>
+            <input type="number" class="form-control" name="usosMaximos" id="edit_usosMaximos" placeholder="Dejar vacío para ilimitado" min="1">
+            <small class="text-muted">Si se deja vacío, la promoción será ilimitada</small>
+        </div>
+
+        <!-- Usos por Cliente -->
+        <div class="col-md-6">
+            <label class="form-label">Usos por Cliente *</label>
+            <input type="number" class="form-control" name="usosPorCliente" id="edit_usosCliente" placeholder="1" min="1" required>
+        </div>
+
+        <!-- Días Aplicables -->
+        <div class="col-12">
+            <label class="form-label">Días Aplicables</label>
+            <div class="alert-custom">
+                <i class="bi bi-calendar3"></i>
+                <strong>Selecciona los días en que aplica esta promoción:</strong>
+            </div>
+            <div class="row g-2 mt-2">
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="dias[]" value="lunes" id="edit_lunes">
+                        <label class="form-check-label" for="edit_lunes">Lunes</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="dias[]" value="martes" id="edit_martes">
+                        <label class="form-check-label" for="edit_martes">Martes</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="dias[]" value="miercoles" id="edit_miercoles">
+                        <label class="form-check-label" for="edit_miercoles">Miércoles</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="dias[]" value="jueves" id="edit_jueves">
+                        <label class="form-check-label" for="edit_jueves">Jueves</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="dias[]" value="viernes" id="edit_viernes">
+                        <label class="form-check-label" for="edit_viernes">Viernes</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="dias[]" value="sabado" id="edit_sabado">
+                        <label class="form-check-label" for="edit_sabado">Sábado</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="dias[]" value="domingo" id="edit_domingo">
+                        <label class="form-check-label" for="edit_domingo">Domingo</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado -->
+        <div class="col-12">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="activo" id="edit_activo">
+                <label class="form-check-label" for="edit_activo">
+                    Activar promoción
+                </label>
+            </div>
+        </div>
+    </div>
+</form>
+
                 </div>
                 <div class="modal-footer" style="border-top: 1px solid var(--rosa-empolvado);">
                     <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancelar</button>
@@ -944,119 +838,789 @@
         </div>
     </div>
 
+    <!-- ============================================
+     MODAL: EDITAR COMBO
+     ============================================ -->
+<div class="modal fade" id="modalEditarCombo" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content" style="background: linear-gradient(135deg, white 0%, var(--blanco-humo) 100%); border: 2px solid var(--rosa-empolvado);">
+            <div class="modal-header" style="border-bottom: 2px solid var(--dorado-palido);">
+                <h5 class="modal-title" style="color: var(--borgona); font-weight: 700;">
+                    <i class="bi bi-pencil" style="color: var(--dorado-palido);"></i> 
+                    Editar Combo de Servicios
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditarCombo">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="comboId" id="edit_comboId">
+                    
+                    <div class="row g-3">
+                        <!-- Nombre del Combo -->
+                        <div class="col-md-8">
+                            <label class="form-label">Nombre del Combo *</label>
+                            <input type="text" class="form-control" name="nombre" id="edit_combo_nombre" placeholder="Ej: Combo Novia Perfecta" required>
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="col-md-4">
+                            <label class="form-label">Estado *</label>
+                            <select class="form-select" name="activo" id="edit_combo_activo" required>
+                                <option value="1">Activo</option>
+                                <option value="0">Inactivo</option>
+                            </select>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="col-12">
+                            <label class="form-label">Descripción del Combo</label>
+                            <textarea class="form-control" name="descripcion" id="edit_combo_descripcion" rows="2" placeholder="Descripción atractiva del combo..."></textarea>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="divider-luxury"></div>
+                        </div>
+
+                        <!-- Selección de Servicios -->
+                        <div class="col-12">
+                            <div class="alert-custom">
+                                <i class="bi bi-info-circle"></i>
+                                <strong>Selecciona los servicios que incluye este combo:</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="table-responsive">
+                                <table class="table-custom">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 50px;">
+                                                <input type="checkbox" id="selectAllEdit" onchange="toggleAllServiciosEdit()">
+                                            </th>
+                                            <th>Servicio</th>
+                                            <th>Precio</th>
+                                            <th>Duración</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($servicios as $servicio)
+                                        <tr>
+                                            <td>
+                                                <input class="form-check-input servicio-check-edit" 
+                                                       type="checkbox" 
+                                                       name="servicios[]" 
+                                                       value="{{ $servicio->idServicio }}" 
+                                                       data-precio="{{ $servicio->precioBase }}">
+                                            </td>
+                                            <td>{{ $servicio->nombre }}</td>
+                                            <td><span class="badge badge-gold">${{ number_format($servicio->precioBase, 2) }}</span></td>
+                                            <td>{{ $servicio->duracionBase }} min</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="divider-luxury"></div>
+                        </div>
+
+                        <!-- Resumen de Precios -->
+                        <div class="col-12">
+                            <div class="premium-card">
+                                <h3 style="margin-bottom: 1.5rem;">💰 Resumen de Precios</h3>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p style="color: var(--blanco-humo); opacity: 0.8; margin: 0;">Precio Regular Total:</p>
+                                        <h4 style="color: var(--rosa-empolvado); margin: 0.5rem 0;" id="precioRegularTotalEdit">$0.00</h4>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label" style="color: var(--blanco-humo);">Precio del Combo *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text" style="background: var(--dorado-palido); color: var(--borgona); border: 2px solid var(--dorado-palido); font-weight: 700;">$</span>
+                                            <input type="number" class="form-control" name="precioCombo" id="precioComboEdit" placeholder="0.00" step="0.01" min="0" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p style="color: var(--blanco-humo); opacity: 0.8; margin: 0;">Ahorro para el Cliente:</p>
+                                        <h4 style="color: var(--dorado-palido); margin: 0.5rem 0;" id="ahorroTotalEdit">$0.00</h4>
+                                        <p style="color: var(--blanco-humo); opacity: 0.7; font-size: 0.875rem; margin: 0;" id="porcentajeAhorroEdit">0% de descuento</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid var(--rosa-empolvado);">
+                <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" form="formEditarCombo" class="btn btn-premium">
+                    <i class="bi bi-save"></i> Actualizar Combo
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- ============================================
+         FIN MODALES
+         ============================================ -->
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <!-- Scripts -->
-    <script>
-        // Toggle estado promoción
-        function togglePromocion(id) {
-            console.log('Toggle promoción:', id);
-            alert('Función toggle promoción - Conectar con backend');
-        }
+<script>
+// ========================================
+// CREAR NUEVA PROMOCIÓN
+// ========================================
+document.getElementById('formNuevaPromocion')?.addEventListener('submit', function(e) {
+    e.preventDefault();
 
-        // Toggle estado combo
-        function toggleCombo(id) {
-            console.log('Toggle combo:', id);
-            alert('Función toggle combo - Conectar con backend');
-        }
+    const form = this;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    
+    if (!csrfToken) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de seguridad',
+            text: 'No se encontró el token CSRF. Recarga la página.'
+        });
+        return;
+    }
 
-        // Seleccionar todos los días
-        function seleccionarTodosDias() {
-            const checkboxes = document.querySelectorAll('input[name="dias[]"]');
-            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-            checkboxes.forEach(cb => cb.checked = !allChecked);
-        }
+    const formData = new FormData(form);
+    const activoCheckbox = form.querySelector('[name="activo"]');
+    if (activoCheckbox) {
+        formData.set('activo', activoCheckbox.checked ? '1' : '0');
+    }
 
-        // Cambiar símbolo según tipo de descuento
-        document.getElementById('tipoDescuento')?.addEventListener('change', function() {
-            const simbolo = document.getElementById('simboloDescuento');
-            simbolo.textContent = this.value === 'porcentaje' ? '%' : '$';
+    const data = {};
+    formData.forEach((value, key) => {
+        if (key === 'dias[]') {
+            if (!data.dias) data.dias = [];
+            data.dias.push(value);
+        } else {
+            data[key] = value;
+        }
+    });
+
+    fetch('/admin/promociones', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(async response => {
+        if (!response.ok) {
+            const errorData = await response.json();
+            const mensaje = Object.values(errorData.errors || {}).flat().join('\n') || 'Error al crear promoción.';
+            throw new Error(mensaje);
+        }
+        return response.json();
+    })
+    .then(data => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Promoción creada',
+            text: 'La promoción fue creada correctamente',
+            timer: 2000,
+            showConfirmButton: false
         });
 
-        // Toggle todos los servicios
-        function toggleAllServicios() {
-            const selectAll = document.getElementById('selectAll');
-            const checkboxes = document.querySelectorAll('.servicio-check');
-            checkboxes.forEach(cb => cb.checked = selectAll.checked);
-            calcularPreciosCombo();
-        }
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalNuevaPromocion'));
+        modal.hide();
+        form.reset();
 
-        // Calcular precios del combo
-        function calcularPreciosCombo() {
-            const checkboxes = document.querySelectorAll('.servicio-check:checked');
-            let total = 0;
-            
-            checkboxes.forEach(cb => {
-                total += parseFloat(cb.dataset.precio);
-            });
-
-            document.getElementById('precioRegularTotal').textContent = '$' + total.toFixed(2);
-            
-            const precioCombo = parseFloat(document.getElementById('precioCombo').value) || 0;
-            const ahorro = total - precioCombo;
-            const porcentaje = total > 0 ? ((ahorro / total) * 100).toFixed(1) : 0;
-
-            document.getElementById('ahorroTotal').textContent = '$' + ahorro.toFixed(2);
-            document.getElementById('porcentajeAhorro').textContent = porcentaje + '% de descuento';
-        }
-
-        // Event listeners
-        document.querySelectorAll('.servicio-check').forEach(cb => {
-            cb.addEventListener('change', calcularPreciosCombo);
+        setTimeout(() => location.reload(), 2000);
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al crear promoción',
+            text: error.message || 'Ocurrió un error inesperado'
         });
+    });
+});
 
-        document.getElementById('precioCombo')?.addEventListener('input', calcularPreciosCombo);
-
-        // Validación formulario nueva promoción
-        document.getElementById('formNuevaPromocion')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            console.log('Crear nueva promoción');
-            alert('Formulario validado - Conectar con backend');
-        });
-
-        // Validación formulario nuevo combo
-        document.getElementById('formNuevoCombo')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const serviciosSeleccionados = document.querySelectorAll('.servicio-check:checked').length;
-            
-            if (serviciosSeleccionados < 2) {
-                alert('Debes seleccionar al menos 2 servicios para crear un combo');
-                return;
-            }
-
-            const precioCombo = parseFloat(document.getElementById('precioCombo').value);
-            const precioRegular = parseFloat(document.getElementById('precioRegularTotal').textContent.replace('$', ''));
-
-            if (precioCombo >= precioRegular) {
-                alert('El precio del combo debe ser menor al precio regular para que sea atractivo');
-                return;
-            }
-
-            console.log('Crear nuevo combo');
-            alert('Formulario validado - Conectar con backend');
-        });
-
+// ========================================
+// CARGAR DATOS AL MODAL DE EDICIÓN DE PROMOCIÓN
+// ========================================
+document.querySelectorAll('.btnEditarPromocion').forEach(button => {
+    button.addEventListener('click', function() {
+        const form = document.getElementById('formEditarPromocion');
         
-document.addEventListener('DOMContentLoaded', () => {
+        const id = this.dataset.id;
+        const nombre = this.dataset.nombre;
+        const codigo = this.dataset.codigo;
+        const descripcion = this.dataset.descripcion;
+        const tipo = this.dataset.tipo;
+        const valor = this.dataset.valor;
+        const fechaInicio = this.dataset.fechaInicio;
+        const fechaFin = this.dataset.fechaFin;
+        const usosMaximos = this.dataset.usosMaximos;
+        const usosCliente = this.dataset.usosCliente;
+        const dias = this.dataset.dias;
+        const activo = this.dataset.activo === '1';
+
+        form.setAttribute('action', `/admin/promociones/${id}`);
+        
+        document.getElementById('edit_promocionId').value = id;
+        document.getElementById('edit_nombre').value = nombre;
+        document.getElementById('edit_codigo').value = codigo;
+        document.getElementById('edit_descripcion').value = descripcion || '';
+        document.getElementById('edit_tipo').value = tipo;
+        document.getElementById('edit_valor').value = valor;
+        document.getElementById('edit_fechaInicio').value = fechaInicio;
+        document.getElementById('edit_fechaFin').value = fechaFin;
+        document.getElementById('edit_usosMaximos').value = usosMaximos || '';
+        document.getElementById('edit_usosCliente').value = usosCliente || '1';
+        document.getElementById('edit_activo').checked = activo;
+
+        const simbolo = document.getElementById('simboloDescuentoEdit');
+        simbolo.textContent = tipo === 'porcentaje' ? '%' : '$';
+
+        form.querySelectorAll('input[name="dias[]"]').forEach(chk => chk.checked = false);
+
+        if (dias && dias !== 'null') {
+            try {
+                const listaDias = JSON.parse(dias);
+                if (Array.isArray(listaDias)) {
+                    listaDias.forEach(dia => {
+                        const checkbox = form.querySelector(`input[name="dias[]"][value="${dia.toLowerCase()}"]`);
+                        if (checkbox) checkbox.checked = true;
+                    });
+                }
+            } catch (e) {
+                console.error('Error al parsear días:', e);
+            }
+        }
+    });
+});
+
+// ========================================
+// ENVIAR FORMULARIO DE EDICIÓN DE PROMOCIÓN
+// ========================================
+document.getElementById('formEditarPromocion')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const form = this;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    const id = document.getElementById('edit_promocionId').value;
+
+    if (!csrfToken) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de seguridad',
+            text: 'No se encontró el token CSRF. Recarga la página.'
+        });
+        return;
+    }
+
+    const formData = new FormData(form);
+    const data = {};
+    
+    formData.forEach((value, key) => {
+        if (key === '_token' || key === '_method') return;
+        
+        if (key === 'dias[]') {
+            if (!data.dias) data.dias = [];
+            data.dias.push(value);
+        } else {
+            data[key] = value;
+        }
+    });
+
+    data.activo = document.getElementById('edit_activo').checked ? '1' : '0';
+
+    fetch(`/admin/promociones/${id}`, {
+        method: 'PUT',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(async response => {
+        if (!response.ok) {
+            const errorData = await response.json();
+            const mensaje = Object.values(errorData.errors || {}).flat().join('\n') || 'Error al actualizar promoción.';
+            throw new Error(mensaje);
+        }
+        return response.json();
+    })
+    .then(data => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Promoción actualizada',
+            text: 'La promoción fue actualizada correctamente',
+            timer: 2000,
+            showConfirmButton: false
+        });
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarPromocion'));
+        if (modal) modal.hide();
+
+        setTimeout(() => location.reload(), 2000);
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al actualizar promoción',
+            text: error.message || 'Ocurrió un error inesperado'
+        });
+    });
+});
+
+// ========================================
+// CAMBIAR SÍMBOLO EN MODAL DE EDICIÓN PROMOCIÓN
+// ========================================
+document.getElementById('edit_tipo')?.addEventListener('change', function() {
+    const simbolo = document.getElementById('simboloDescuentoEdit');
+    simbolo.textContent = this.value === 'porcentaje' ? '%' : '$';
+});
+
+// ========================================
+// CREAR NUEVO COMBO
+// ========================================
+document.getElementById('formNuevoCombo')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const form = this;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    
+    if (!csrfToken) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de seguridad',
+            text: 'No se encontró el token CSRF. Recarga la página.'
+        });
+        return;
+    }
+
+    const serviciosSeleccionados = document.querySelectorAll('.servicio-check:checked');
+    
+    if (serviciosSeleccionados.length < 2) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Servicios insuficientes',
+            text: 'Debes seleccionar al menos 2 servicios para crear un combo'
+        });
+        return;
+    }
+
+    const precioCombo = parseFloat(document.getElementById('precioCombo').value);
+    const precioRegular = parseFloat(document.getElementById('precioRegularTotal').textContent.replace('$', ''));
+
+    if (precioCombo >= precioRegular) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Precio incorrecto',
+            text: 'El precio del combo debe ser menor al precio regular'
+        });
+        return;
+    }
+
+    const formData = new FormData(form);
+    const data = {};
+    
+    formData.forEach((value, key) => {
+        if (key === 'servicios[]') {
+            if (!data.servicios) data.servicios = [];
+            data.servicios.push(value);
+        } else {
+            data[key] = value;
+        }
+    });
+
+    fetch('/admin/combos', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(async response => {
+        if (!response.ok) {
+            const errorData = await response.json();
+            const mensaje = Object.values(errorData.errors || {}).flat().join('\n') || 'Error al crear combo.';
+            throw new Error(mensaje);
+        }
+        return response.json();
+    })
+    .then(data => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Combo creado',
+            text: 'El combo fue creado correctamente',
+            timer: 2000,
+            showConfirmButton: false
+        });
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalNuevoCombo'));
+        modal.hide();
+        form.reset();
+
+        setTimeout(() => location.reload(), 2000);
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al crear combo',
+            text: error.message || 'Ocurrió un error inesperado'
+        });
+    });
+});
+
+// ========================================
+// CARGAR DATOS AL MODAL DE EDICIÓN DE COMBO
+// ========================================
+document.querySelectorAll('.btnEditarCombo').forEach(button => {
+    button.addEventListener('click', function() {
+        const id = this.dataset.id;
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+
+        Swal.fire({
+            title: 'Cargando...',
+            text: 'Obteniendo datos del combo',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        fetch(`/admin/combos/${id}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken.getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(combo => {
+            Swal.close();
+
+            const form = document.getElementById('formEditarCombo');
+            form.setAttribute('action', `/admin/combos/${combo.idCombo}`);
+            
+            document.getElementById('edit_comboId').value = combo.idCombo;
+            document.getElementById('edit_combo_nombre').value = combo.nombre;
+            document.getElementById('edit_combo_descripcion').value = combo.descripcion || '';
+            document.getElementById('precioComboEdit').value = combo.precioCombo;
+            document.getElementById('edit_combo_activo').value = combo.activo ? '1' : '0';
+
+            document.querySelectorAll('.servicio-check-edit').forEach(chk => chk.checked = false);
+
+            if (combo.servicios && Array.isArray(combo.servicios)) {
+                combo.servicios.forEach(servicio => {
+                    const checkbox = document.querySelector(`.servicio-check-edit[value="${servicio.idServicio}"]`);
+                    if (checkbox) checkbox.checked = true;
+                });
+            }
+
+            setTimeout(() => calcularPreciosComboEdit(), 100);
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo cargar la información del combo'
+            });
+        });
+    });
+});
+
+// ========================================
+// ENVIAR FORMULARIO DE EDICIÓN DE COMBO
+// ========================================
+document.getElementById('formEditarCombo')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const form = this;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    const id = document.getElementById('edit_comboId').value;
+
+    if (!csrfToken) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de seguridad',
+            text: 'No se encontró el token CSRF. Recarga la página.'
+        });
+        return;
+    }
+
+    const serviciosSeleccionados = document.querySelectorAll('.servicio-check-edit:checked');
+    
+    if (serviciosSeleccionados.length < 2) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Servicios insuficientes',
+            text: 'Debes seleccionar al menos 2 servicios para el combo'
+        });
+        return;
+    }
+
+    const precioCombo = parseFloat(document.getElementById('precioComboEdit').value);
+    const precioRegular = parseFloat(document.getElementById('precioRegularTotalEdit').textContent.replace('$', ''));
+
+    if (precioCombo >= precioRegular) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Precio incorrecto',
+            text: 'El precio del combo debe ser menor al precio regular'
+        });
+        return;
+    }
+
+    const formData = new FormData(form);
+    const data = {};
+    
+    formData.forEach((value, key) => {
+        if (key === '_token' || key === '_method' || key === 'comboId') return;
+        
+        if (key === 'servicios[]') {
+            if (!data.servicios) data.servicios = [];
+            data.servicios.push(parseInt(value));
+        } else {
+            data[key] = value;
+        }
+    });
+
+    fetch(`/admin/combos/${id}`, {
+        method: 'PUT',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(async response => {
+        if (!response.ok) {
+            const errorData = await response.json();
+            const mensaje = Object.values(errorData.errors || {}).flat().join('\n') || 'Error al actualizar combo.';
+            throw new Error(mensaje);
+        }
+        return response.json();
+    })
+    .then(data => {
+        Swal.fire({
+            icon: 'success',
+            title: '¡Combo actualizado!',
+            text: 'El combo fue actualizado correctamente',
+            timer: 2000,
+            showConfirmButton: false
+        });
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarCombo'));
+        if (modal) modal.hide();
+
+        setTimeout(() => location.reload(), 2000);
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al actualizar combo',
+            text: error.message || 'Ocurrió un error inesperado'
+        });
+    });
+});
+
+// ========================================
+// CALCULAR PRECIOS DEL COMBO EN EDICIÓN
+// ========================================
+function calcularPreciosComboEdit() {
+    const checkboxes = document.querySelectorAll('.servicio-check-edit:checked');
+    let total = 0;
+    
+    checkboxes.forEach(cb => {
+        const precio = parseFloat(cb.dataset.precio);
+        if (!isNaN(precio)) total += precio;
+    });
+
+    document.getElementById('precioRegularTotalEdit').textContent = '$' + total.toFixed(2);
+    
+    const precioComboInput = document.getElementById('precioComboEdit');
+    const precioCombo = parseFloat(precioComboInput.value) || 0;
+    const ahorro = total - precioCombo;
+    const porcentaje = total > 0 ? ((ahorro / total) * 100).toFixed(1) : 0;
+
+    document.getElementById('ahorroTotalEdit').textContent = '$' + ahorro.toFixed(2);
+    document.getElementById('porcentajeAhorroEdit').textContent = porcentaje + '% de descuento';
+}
+
+// ========================================
+// TOGGLE TODOS LOS SERVICIOS EN EDICIÓN
+// ========================================
+function toggleAllServiciosEdit() {
+    const selectAll = document.getElementById('selectAllEdit');
+    const checkboxes = document.querySelectorAll('.servicio-check-edit');
+    checkboxes.forEach(cb => cb.checked = selectAll.checked);
+    calcularPreciosComboEdit();
+}
+
+// ========================================
+// TOGGLE ESTADO PROMOCIÓN
+// ========================================
+function togglePromocion(id) {
+    fetch(`/admin/promociones/${id}/estado`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Estado actualizado',
+                text: `La promoción fue ${data.nuevo_estado ? 'activada' : 'desactivada'} correctamente`,
+                timer: 2000,
+                showConfirmButton: false
+            });
+            setTimeout(() => location.reload(), 2000);
+        } else {
+            throw new Error('No se pudo actualizar el estado');
+        }
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Ocurrió un error inesperado'
+        });
+    });
+}
+
+// ========================================
+// TOGGLE ESTADO COMBO
+// ========================================
+function toggleCombo(id) {
+    fetch(`/admin/combos/${id}/estado`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Estado actualizado',
+                text: `El combo fue ${data.nuevo_estado ? 'activado' : 'desactivado'} correctamente`,
+                timer: 2000,
+                showConfirmButton: false
+            });
+            setTimeout(() => location.reload(), 2000);
+        } else {
+            throw new Error('No se pudo actualizar el estado');
+        }
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Ocurrió un error inesperado'
+        });
+    });
+}
+
+// ========================================
+// SELECCIONAR TODOS LOS DÍAS
+// ========================================
+function seleccionarTodosDias() {
+    const checkboxes = document.querySelectorAll('input[name="dias[]"]');
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    checkboxes.forEach(cb => cb.checked = !allChecked);
+}
+
+// ========================================
+// CAMBIAR SÍMBOLO SEGÚN TIPO DE DESCUENTO
+// ========================================
+document.getElementById('tipoDescuento')?.addEventListener('change', function() {
+    const simbolo = document.getElementById('simboloDescuento');
+    simbolo.textContent = this.value === 'porcentaje' ? '%' : '$';
+});
+
+// ========================================
+// TOGGLE TODOS LOS SERVICIOS
+// ========================================
+function toggleAllServicios() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.servicio-check');
+    checkboxes.forEach(cb => cb.checked = selectAll.checked);
+    calcularPreciosCombo();
+}
+
+// ========================================
+// CALCULAR PRECIOS DEL COMBO
+// ========================================
+function calcularPreciosCombo() {
+    const checkboxes = document.querySelectorAll('.servicio-check:checked');
+    let total = 0;
+    
+    checkboxes.forEach(cb => {
+        total += parseFloat(cb.dataset.precio);
+    });
+
+    document.getElementById('precioRegularTotal').textContent = '$' + total.toFixed(2);
+    
+    const precioCombo = parseFloat(document.getElementById('precioCombo').value) || 0;
+    const ahorro = total - precioCombo;
+    const porcentaje = total > 0 ? ((ahorro / total) * 100).toFixed(1) : 0;
+
+    document.getElementById('ahorroTotal').textContent = '$' + ahorro.toFixed(2);
+    document.getElementById('porcentajeAhorro').textContent = porcentaje + '% de descuento';
+}
+
+// ========================================
+// EVENT LISTENERS
+// ========================================
+document.addEventListener('DOMContentLoaded', function() {
+    // Event listeners para cálculo de combo nuevo
+    document.querySelectorAll('.servicio-check').forEach(cb => {
+        cb.addEventListener('change', calcularPreciosCombo);
+    });
+
+    document.getElementById('precioCombo')?.addEventListener('input', calcularPreciosCombo);
+    
+    // Event listeners para cálculo de combo edición
+    document.querySelectorAll('.servicio-check-edit').forEach(cb => {
+        cb.addEventListener('change', calcularPreciosComboEdit);
+    });
+
+    document.getElementById('precioComboEdit')?.addEventListener('input', calcularPreciosComboEdit);
+
+    // Cargar nombre de usuario
     const nombre = localStorage.getItem('clienteNombre') || 'Cliente';
     const apellido = localStorage.getItem('clienteApellido') || '';
     const inicial = nombre.charAt(0).toUpperCase();
 
-    // Insertar nombre completo
     const nombreSpan = document.getElementById('nombreCliente');
     if (nombreSpan) {
         nombreSpan.textContent = `${nombre} ${apellido}`;
     }
 
-    // Insertar inicial como avatar
     const avatarDiv = document.getElementById('avatarInicial');
     if (avatarDiv) {
         avatarDiv.textContent = inicial;
     }
 });
-    </script>
+</script>
+
     
 </body>
 </html>

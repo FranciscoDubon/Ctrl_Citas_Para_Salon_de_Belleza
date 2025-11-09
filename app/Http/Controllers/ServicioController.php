@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Servicio;
+use Illuminate\Support\Facades\DB;
 
 class ServicioController extends Controller
 {
@@ -53,15 +54,61 @@ class ServicioController extends Controller
         $totalActivos = Servicio::where('activo', true)->count();
         $precioPromedio = Servicio::where('activo', true)->avg('precioBase') ?? 0;
         $totalCategorias = Servicio::distinct('categoria')->count('categoria');
+        $serviciosMasSolicitados = \DB::table('servicio as s')
+        ->join('citaservicio as cs', 's.idServicio', '=', 'cs.idServicio')
+        ->join('cita as c', 'cs.idCita', '=', 'c.idCita')
+        ->select(
+            's.nombre as nombre',
+            DB::raw('COUNT(cs.idServicio) as cantidad'),
+        )
+        ->where('c.estado', '=', 'completada')
+        ->groupBy('s.idServicio', 's.nombre')
+        ->orderByDesc('cantidad')
+        ->first();
+
+        $nombreServicios = $serviciosMasSolicitados->nombre;
+        $cantidadSolicitudes = $serviciosMasSolicitados->cantidad;
 
         return view('admin.serviciosAdmin', compact(
             'servicios',
             'totalActivos',
             'precioPromedio',
-            'totalCategorias'
+            'totalCategorias',
+            'nombreServicios',
+            'cantidadSolicitudes'
         ));
     }
+public function indexRecep ()
+{
+        $servicios = Servicio::orderBy('nombre')->get();
 
+        $totalActivos = Servicio::where('activo', true)->count();
+        $precioPromedio = Servicio::where('activo', true)->avg('precioBase') ?? 0;
+        $totalCategorias = Servicio::distinct('categoria')->count('categoria');
+        $serviciosMasSolicitados = \DB::table('servicio as s')
+        ->join('citaservicio as cs', 's.idServicio', '=', 'cs.idServicio')
+        ->join('cita as c', 'cs.idCita', '=', 'c.idCita')
+        ->select(
+            's.nombre as nombre',
+            DB::raw('COUNT(cs.idServicio) as cantidad'),
+        )
+        ->where('c.estado', '=', 'completada')
+        ->groupBy('s.idServicio', 's.nombre')
+        ->orderByDesc('cantidad')
+        ->first();
+
+        $nombreServicios = $serviciosMasSolicitados->nombre;
+        $cantidadSolicitudes = $serviciosMasSolicitados->cantidad;
+
+    return view('recepcionista.serviciosRecepcionista', compact(
+        'servicios',
+        'totalActivos',
+        'precioPromedio',
+        'totalCategorias',
+        'nombreServicios',
+        'cantidadSolicitudes'
+    ));
+}
 public function show($id)
 {
     try {

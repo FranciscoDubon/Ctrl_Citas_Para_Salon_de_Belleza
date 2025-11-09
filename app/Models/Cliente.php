@@ -41,4 +41,10 @@ class Cliente extends Authenticatable
     {
         return $this->clave;
     }
+
+    public function citas()
+{
+    return $this->hasMany(Cita::class, 'idCliente');
+}
+
 }

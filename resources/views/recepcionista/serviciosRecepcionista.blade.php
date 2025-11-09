@@ -44,9 +44,6 @@
             <a href="{{ route('recepcionista.promocionesRecep') }}" class="menu-item">
                 <i class="bi bi-gift"></i> Promociones
             </a>
-            <a href="{{ route('recepcionista.configRecep') }}" class="menu-item">
-                <i class="bi bi-gear"></i> Configuración
-            </a>
         </nav>
     </div>
 
@@ -185,10 +182,10 @@
                             <i class="bi bi-star-fill"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">45</h3>
-                    <p class="kpi-label">Servicio Más Vendido sigue en mantenimiento XD</p>
+                    <h3 class="kpi-value">{{$cantidadSolicitudes}}</h3>
+                    <p class="kpi-label">Servicio Más Vendido</p>
                     <span class="kpi-badge badge-success">
-                        <i class="bi bi-trophy"></i> Corte de cabello
+                        <i class="bi bi-trophy"></i> {{$nombreServicios}}
                     </span>
                 </div>
             </div>

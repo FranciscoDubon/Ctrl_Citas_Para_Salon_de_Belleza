@@ -6,13 +6,14 @@ use Illuminate\Http\Request;
 use App\Models\Cliente;
 use Carbon\Carbon;
 use App\Models\Empleado;
+use App\Models\Cita;
 use App\Models\Rol;
 use Illuminate\Support\Facades\Hash;
 
 
 class ClienteController extends Controller
 {
-    public function login(Request $request)
+   public function login(Request $request)
 {
     $request->validate([
         'correoElectronico' => 'required|email',
@@ -34,12 +35,20 @@ class ClienteController extends Controller
                 'message' => 'El empleado no tiene un rol asignado válido'
             ]);
         }
+        // ✅ GUARDAR EN SESIÓN
+        session([
+            'clienteId' => $empleado->idEmpleado,  // Lo guardamos como clienteId para que funcione igual
+            'clienteNombre' => $empleado->nombre,
+            'clienteApellido' => $empleado->apellido,
+            'tipoUsuario' => 'empleado'
+        ]);
 
         return response()->json([
             'success' => true,
             'rol' => $rolNombre,
             'nombre' => $empleado->nombre,
             'apellido' => $empleado->apellido,
+            'id' => $empleado->idEmpleado,
             'tipoUsuario' => 'empleado'
         ]);
     }
@@ -48,11 +57,20 @@ class ClienteController extends Controller
     $cliente = Cliente::where('correoElectronico', $request->correoElectronico)->first();
 
     if ($cliente && Hash::check($request->clave, $cliente->clave)) {
+        // ✅ GUARDAR EN SESIÓN
+        session([
+            'clienteId' => $cliente->idCliente,
+            'clienteNombre' => $cliente->nombre,
+            'clienteApellido' => $cliente->apellido,
+            'tipoUsuario' => 'cliente',
+            'rol' => $cliente->rol
+        ]);
         return response()->json([
             'success' => true,
             'rol' => $cliente->rol, // campo enum directo
             'nombre' => $cliente->nombre,
             'apellido' => $cliente->apellido,
+            'Id' => $cliente->idCliente,
             'tipoUsuario' => 'cliente'
         ]);
     }
@@ -109,6 +127,109 @@ public function dashboardRecepcionista()
         'clientesNewsletter',
         'clientesNoNewsletter'
     ));
+}
+
+public function clientesRecepcionista()
+{
+   $clientes = Cliente::with(['citas.servicios'])->withCount('citas')->get();
+    return view('recepcionista.clientesRecepcionista', compact('clientes'));
+}
+
+public function editarCliente($id)
+{
+    $cliente = Cliente::findOrFail($id);
+
+    return response()->json([
+        'idCliente' => $cliente->idCliente,
+        'nombre' => $cliente->nombre,
+        'apellido' => $cliente->apellido,
+        'fechaNacimiento' => $cliente->fechaNacimiento,
+        'telefono' => $cliente->telefono,
+        'correoElectronico' => $cliente->correoElectronico,
+        'fuente_conocimiento' => $cliente->comoConocio,
+        'acepta_promociones' => $cliente->suscripcionNewsletter,
+    ]);
+}
+
+public function mostrarConfigCliente()
+{
+    if (session('rol') !== 'CLIENTE') {
+        abort(403, 'Acceso no autorizado');
+    }
+
+    $clienteId = session('clienteId');
+    $cliente = Cliente::findOrFail($clienteId);
+
+    return view('cliente.configCliente', compact('cliente'));
+}
+
+
+public function actualizarConfiguracion(Request $request)
+{
+   
+
+    if (session('rol') !== 'CLIENTE') {
+        abort(403, 'Acceso no autorizado');
+    }
+
+    $cliente = Cliente::findOrFail(session('clienteId'));
+
+    $request->validate([
+        'nombre' => 'required|string|max:100',
+        'apellido' => 'required|string|max:100',
+        'correoElectronico' => 'required|email|unique:cliente,correoElectronico,' . $cliente->idCliente . ',idCliente',
+        'telefono' => 'nullable|string|max:20',
+        'fechaNacimiento' => 'nullable|date',
+        'genero' => 'nullable|string|max:20',
+        'clave' => 'nullable|string|min:8|confirmed',
+        'comoConocio' => 'nullable|string|max:255',
+        'suscripcionNewsletter' => 'nullable|boolean'
+
+    ]);
+
+    $cliente->update([
+        'nombre' => $request->nombre,
+        'apellido' => $request->apellido,
+        'correoElectronico' => $request->correoElectronico,
+        'telefono' => $request->telefono,
+        'fechaNacimiento' => $request->fechaNacimiento,
+        'genero' => $request->genero,
+        
+        'comoConocio' => $request->comoConocio,
+        'suscripcionNewsletter' => $request->has('suscripcionNewsletter')
+
+    ]);
+
+    if ($request->filled('clave')) {
+        $cliente->clave = Hash::make($request->clave);
+        $cliente->save();
+    }
+
+    return view('cliente.configCliente', compact('cliente'));
+}
+
+public function mostrarCitasCliente()
+{
+    if (session('rol') !== 'CLIENTE') {
+        abort(403, 'Acceso no autorizado');
+    }
+
+    $clienteId = session('clienteId');
+    $cliente = Cliente::findOrFail($clienteId);
+
+    $visitas = Cita::where('idCliente', $clienteId)->count();
+
+    $ultimaCita = Cita::where('idCliente', $clienteId)
+        ->where('fecha', '<=', now())
+        ->orderByDesc('fecha')
+        ->first();
+
+    $proximaCita = Cita::where('idCliente', $clienteId)
+        ->where('fecha', '>', now())
+        ->orderBy('fecha')
+        ->first();
+
+    return view('cliente.citasCliente', compact('cliente', 'visitas', 'ultimaCita', 'proximaCita'));
 }
 
 

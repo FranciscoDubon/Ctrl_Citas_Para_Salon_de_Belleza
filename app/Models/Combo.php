@@ -28,9 +28,11 @@ class Combo extends Model
     {
         return $this->belongsToMany(
             Servicio::class,
-            'combo_servicio',
-            'idCombo',
-            'idServicio'
+        'combo_servicio',
+        'idCombo',
+        'idServicio',
+        'idCombo',
+        'idServicio'
         );
     }
 

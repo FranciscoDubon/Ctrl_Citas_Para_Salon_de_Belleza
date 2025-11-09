@@ -43,9 +43,6 @@
             <a href="{{ route('recepcionista.promocionesRecep') }}" class="menu-item">
                 <i class="bi bi-gift"></i> Promociones
             </a>
-            <a href="{{ route('recepcionista.configRecep') }}" class="menu-item">
-                <i class="bi bi-gear"></i> Configuración
-            </a>
         </nav>
     </div>
 
@@ -75,28 +72,10 @@
      todo esto por que como solo trabaje frontend y necesitaba ver como funcionaban xd-->
         <div class="d-flex gap-3">
             <a href="{{ route('logn') }}" class="text-decoration-none" style="color: #e91e63;">Login</a>
-            <a href="{{ route('dashboardAdm') }}" class="text-decoration-none" style="color: #e91e63;">Administrador</a>
+            <a href="{{ route('admin.dashboardAdm') }}" class="text-decoration-none" style="color: #e91e63;">Administrador</a>
             <a href="{{ route('recepcionista.dashboardRecep') }}" class="text-decoration-none" style="color: #e91e63;">Recepcionista</a>
             <a href="{{ route('estilista.dashboardEsti') }}" class="text-decoration-none" style="color: #e91e63;">Estilista</a>
             <a href="{{ route('cliente.dashboardCli') }}" class="text-decoration-none" style="color: #e91e63;">Cliente</a>
-        </div>
-
-        <!-- Botones de Acción Rápida -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <button class="btn btn-gold me-2" data-bs-toggle="modal" data-bs-target="#modalNuevaCita">
-                    <i class="bi bi-plus-circle"></i> Nueva Cita
-                </button>
-                <button class="btn btn-premium me-2" data-bs-toggle="modal" data-bs-target="#modalBuscarCliente">
-                    <i class="bi bi-search"></i> Buscar Cliente
-                </button>
-                <button class="btn btn-outline-gold me-2" onclick="actualizarDashboard()">
-                    <i class="bi bi-arrow-clockwise"></i> Actualizar
-                </button>
-                <button class="btn btn-soft" data-bs-toggle="modal" data-bs-target="#modalPromocionesActivas">
-                    <i class="bi bi-gift"></i> Ver Promociones
-                </button>
-            </div>
         </div>
 
         <!-- Alertas y Notificaciones -->
@@ -113,20 +92,19 @@
         ================================================
         -->
         <div class="row mb-4">
-            <!-- Alerta de Conflictos -->
-            <div class="col-md-6">
+            <!--<div class="col-md-6">
                 <div class="alert-custom" style="border-left: 5px solid var(--borgona);">
                     <i class="bi bi-exclamation-triangle-fill"></i>
                     <strong style="color: var(--borgona);">¡Atención! 2 Conflictos de Horario</strong><br>
                     <small>Hay citas programadas que se superponen. <a href="#conflictos" style="color: var(--dorado-palido); font-weight: 600;">Ver detalles</a></small>
                 </div>
-            </div>
+            </div>-->
 
             <!-- Alerta de Promociones -->
             <div class="col-md-6">
                 <div class="alert-custom" style="border-left: 5px solid var(--dorado-palido);">
                     <i class="bi bi-gift-fill"></i>
-                    <strong style="color: var(--dorado-palido);">4 Promociones Activas Hoy</strong><br>
+                    <strong style="color: var(--dorado-palido);">{{$promocionesActivas}}Promociones Activas Hoy</strong><br>
                     <small>Recuerda ofrecer las promociones disponibles a los clientes. <a href="#promociones" style="color: var(--borgona); font-weight: 600;">Ver promociones</a></small>
                 </div>
             </div>
@@ -152,10 +130,10 @@
                             <i class="bi bi-calendar-check"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">18</h3>
+                    <h3 class="kpi-value">{{ $totalCitasHoy }}</h3>
                     <p class="kpi-label">Citas de Hoy</p>
                     <span class="kpi-badge badge-success">
-                        <i class="bi bi-check-circle"></i> 12 completadas
+                        <i class="bi bi-check-circle"></i> {{ $citasCompletadas }} completadas
                     </span>
                 </div>
             </div>
@@ -178,7 +156,7 @@
                             <i class="bi bi-clock-history"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">6</h3>
+                    <h3 class="kpi-value">{{ $citasPendientes }}</h3>
                     <p class="kpi-label">Citas Pendientes</p>
                     <span class="kpi-badge badge-neutral">
                         <i class="bi bi-hourglass-split"></i> Por atender
@@ -204,11 +182,11 @@
                             <i class="bi bi-gift-fill"></i>
                         </div>
                     </div>
-                    <h3 class="kpi-value">5</h3>
-                    <p class="kpi-label">Promociones Aplicadas</p>
-                    <span class="kpi-badge badge-success">
-                        <i class="bi bi-percent"></i> $87 en descuentos
-                    </span>
+                    <h3 class="kpi-value">{{ $promocionesActivas }}</h3>
+                    <p class="kpi-label">Promociones Activas</p>
+                   <!-- <span class="kpi-badge badge-success">
+                        <i class="bi bi-percent"></i> ${{ number_format($totalDescuento, 2) }} en descuentos
+                    </span>-->
                 </div>
             </div>
 
@@ -223,19 +201,18 @@
             AND fecha_hora > NOW()
             ================================================
             -->
-            <div class="col-xl-3 col-md-6">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon info">
-                            <i class="bi bi-calendar-event"></i>
-                        </div>
-                    </div>
-                    <h3 class="kpi-value">4</h3>
-                    <p class="kpi-label">Próximas Citas</p>
-                    <span class="kpi-badge badge-neutral">
-                        <i class="bi bi-clock"></i> Resto del día
-                    </span>
-                </div>
+           <div class="col-xl-3 col-md-6">
+<div class="card kpi-card">
+    <div class="kpi-header">
+        <div class="kpi-icon warning">
+            <i class="bi bi-clock-history"></i>
+        </div>
+    </div>
+    <h3 class="kpi-value">{{ $promosDesactivadas }}</h3>
+    <p class="kpi-label">Promociones desactivadas</p>
+
+</div>
+
             </div>
         </div>
 
@@ -279,277 +256,110 @@
                                     <th>Duración</th>
                                     <th>Estado</th>
                                     <th>Promoción</th>
-                                    <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <!-- Cita Completada -->
-                                <tr style="background: rgba(212, 175, 55, 0.05);">
-                                    <td><strong style="color: var(--borgona);">09:00 AM</strong></td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">M</div>
-                                            <strong>María García</strong>
-                                        </div>
-                                    </td>
-                                    <td><small>(503) 7890-1234</small></td>
-                                    <td>Corte de Cabello</td>
-                                    <td>Ana López</td>
-                                    <td>30 min</td>
-                                    <td><span class="badge bg-success">Completada</span></td>
-                                    <td>-</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-gold" data-bs-toggle="modal" data-bs-target="#modalVerCita" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+<tbody>
+@foreach($citasDelDia as $cita)
+    @php
+        $servicio = $cita->servicios->first();
+        $estadoColor = match($cita->estado) {
+            'COMPLETADA' => 'success',
+            'EN_PROCESO' => 'primary',
+            'CONFIRMADA' => 'info',
+            'PENDIENTE' => 'warning',
+            'CANCELADA' => 'secondary',
+            default => 'light',
+        };
+    @endphp
+    <tr @if($cita->estado == 'COMPLETADA') style="background: rgba(212, 175, 55, 0.05);" @endif>
+        <td><strong style="color: var(--borgona);">{{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}</strong></td>
+        <td>
+            <div class="d-flex align-items-center">
+                <div class="list-avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">
+                    {{ substr($cita->cliente->nombre,0,1) }}
+                </div>
+                <strong>{{ $cita->cliente->nombre }} {{ $cita->cliente->apellido }}</strong>
+            </div>
+        </td>
+        <td><small>{{ $cita->cliente->telefono }}</small></td>
+        <td>{{ $servicio ? $servicio->nombre : '-' }}</td>
+        <td>{{ $cita->estilista->nombre }} {{ $cita->estilista->apellido }}</td>
+        <td>{{ $servicio ? $servicio->duracionBase . ' min' : '-' }}</td>
+        <td><span class="badge bg-{{ $estadoColor }}">{{ ucfirst(strtolower($cita->estado)) }}</span></td>
+        <td>
+            @if($cita->promocion)
+                <span class="badge badge-gold" title="Promo: {{ $cita->promocion->nombre }}">
+                    <i class="bi bi-gift"></i> {{ $cita->promocion->codigoPromocional }}
+                </span>
+            @else
+                -
+            @endif
+        </td>
+    </tr>
+@endforeach
+</tbody>
 
-                                <!-- Cita En Proceso -->
-                                <tr style="background: rgba(128, 0, 32, 0.08); border-left: 4px solid var(--borgona);">
-                                    <td><strong style="color: var(--borgona);">10:30 AM</strong></td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">A</div>
-                                            <strong>Ana Rodríguez</strong>
-                                        </div>
-                                    </td>
-                                    <td><small>(503) 7890-5678</small></td>
-                                    <td>Manicure + Pedicure</td>
-                                    <td>Sofía Ramírez</td>
-                                    <td>75 min</td>
-                                    <td><span class="badge bg-primary">En Proceso</span></td>
-                                    <td><span class="badge badge-gold" title="Promo: 20% OFF"><i class="bi bi-gift"></i> 20% OFF</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-gold" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Cita Confirmada - Próxima -->
-                                <tr style="border-left: 4px solid var(--dorado-palido);">
-                                    <td><strong style="color: var(--borgona);">12:00 PM</strong></td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">L</div>
-                                            <strong>Laura Martínez</strong>
-                                        </div>
-                                    </td>
-                                    <td><small>(503) 7890-9012</small></td>
-                                    <td>Tinte Completo</td>
-                                    <td>María Torres</td>
-                                    <td>90 min</td>
-                                    <td><span class="badge bg-info">Confirmada</span></td>
-                                    <td>-</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Marcar llegada">
-                                            <i class="bi bi-check-circle"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Cita Pendiente de Confirmación -->
-                                <tr style="background: rgba(232, 180, 184, 0.1);">
-                                    <td><strong style="color: var(--borgona);">02:00 PM</strong></td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">C</div>
-                                            <strong>Carla Hernández</strong>
-                                        </div>
-                                    </td>
-                                    <td><small>(503) 7890-3456</small></td>
-                                    <td>Peinado Especial</td>
-                                    <td>Ana López</td>
-                                    <td>60 min</td>
-                                    <td><span class="badge bg-warning text-dark">Pendiente</span></td>
-                                    <td><span class="badge badge-gold" title="Combo Novia"><i class="bi bi-box-seam"></i> Combo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-premium me-1" onclick="confirmarCita(4)" title="Confirmar">
-                                            <i class="bi bi-telephone"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Cita Confirmada -->
-                                <tr>
-                                    <td><strong style="color: var(--borgona);">03:30 PM</strong></td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">S</div>
-                                            <strong>Sofía Ramírez</strong>
-                                        </div>
-                                    </td>
-                                    <td><small>(503) 7890-7890</small></td>
-                                    <td>Limpieza Facial</td>
-                                    <td>María Torres</td>
-                                    <td>60 min</td>
-                                    <td><span class="badge bg-info">Confirmada</span></td>
-                                    <td>-</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Marcar llegada">
-                                            <i class="bi bi-check-circle"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Conflicto de Horario -->
-                                <tr style="background: rgba(255, 0, 0, 0.05); border-left: 4px solid #dc3545;">
-                                    <td><strong style="color: #dc3545;">03:45 PM</strong></td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem; background: linear-gradient(135deg, #dc3545, #ff6b6b);">P</div>
-                                            <strong>Patricia Gómez</strong>
-                                        </div>
-                                    </td>
-                                    <td><small>(503) 7890-1111</small></td>
-                                    <td>Manicure Básico</td>
-                                    <td>Sofía Ramírez</td>
-                                    <td>30 min</td>
-                                    <td><span class="badge bg-danger"><i class="bi bi-exclamation-triangle"></i> Conflicto</span></td>
-                                    <td>-</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" onclick="resolverConflicto(6)" title="Resolver conflicto">
-                                            <i class="bi bi-tools"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Cita Confirmada -->
-                                <tr>
-                                    <td><strong style="color: var(--borgona);">05:00 PM</strong></td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">R</div>
-                                            <strong>Rosa Méndez</strong>
-                                        </div>
-                                    </td>
-                                    <td><small>(503) 7890-2222</small></td>
-                                    <td>Uñas Acrílicas</td>
-                                    <td>Sofía Ramírez</td>
-                                    <td>90 min</td>
-                                    <td><span class="badge bg-info">Confirmada</span></td>
-                                    <td><span class="badge badge-gold" title="Nuevo Cliente"><i class="bi bi-star"></i> NUEVO10</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft me-1" title="Marcar llegada">
-                                            <i class="bi bi-check-circle"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-gold" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Sección de Promociones y Estilistas -->
-        <div class="row g-4 mb-4">
-            
-            <!-- Promociones Activas Hoy -->
-            <div class="col-lg-6">
-                <div class="card-custom">
-                    <h5 class="card-title-custom">
-                        <i class="bi bi-gift-fill"></i>
-                        Promociones Activas Hoy
-                    </h5>
-                    
-                    <!-- 
-                    ================================================
-                    TODO BACKEND: Conectar con BD
-                    ================================================
-                    CONSULTA SQL:
-                    SELECT id, nombre, codigo_promocional, tipo_descuento, 
-                           valor_descuento, usos_maximos, usos_actuales
-                    FROM promociones 
-                    WHERE activo = 1 
-                    AND fecha_inicio <= CURDATE()
-                    AND fecha_fin >= CURDATE()
-                    AND (DAYNAME(CURDATE()) IN (dias_aplicables) OR dias_aplicables IS NULL)
-                    ORDER BY prioridad DESC
-                    LIMIT 5
-                    ================================================
-                    -->
-                    <ul class="list-custom">
-                        <li class="list-item-custom">
-                            <div class="list-avatar" style="background: linear-gradient(135deg, var(--borgona), var(--borgona-light));">
-                                <i class="bi bi-percent"></i>
-                            </div>
-                            <div class="list-content">
-                                <h6>Black Friday Beauty</h6>
-                                <p><code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">BLACK30</code> - 30% de descuento</p>
-                                <small style="color: var(--borgona); opacity: 0.7;">Usado: 45/100 veces</small>
-                            </div>
-                            <div class="list-badge">
-                                <button class="btn btn-sm btn-gold" onclick="copiarCodigo('BLACK30')" title="Copiar código">
-                                    <i class="bi bi-clipboard"></i>
-                                </button>
-                            </div>
-                        </li>
+<!-- Sección de Promociones Activas Hoy -->
+ <div class="row g-4 mb-4" id="promociones">
+<div class="col-lg-6">
+    <div class="card-custom">
+        <h5 class="card-title-custom">
+            <i class="bi bi-gift-fill"></i>
+            Promociones Activas Hoy
+        </h5>
 
-                        <li class="list-item-custom">
-                            <div class="list-avatar" style="background: linear-gradient(135deg, var(--dorado-palido), var(--dorado-hover));">
-                                <i class="bi bi-currency-dollar"></i>
-                            </div>
-                            <div class="list-content">
-                                <h6>Nuevo Cliente VIP</h6>
-                                <p><code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">NUEVO10</code> - $10 de descuento</p>
-                                <small style="color: var(--borgona); opacity: 0.7;">Solo primeras visitas</small>
-                            </div>
-                            <div class="list-badge">
-                                <button class="btn btn-sm btn-gold" onclick="copiarCodigo('NUEVO10')" title="Copiar código">
-                                    <i class="bi bi-clipboard"></i>
-                                </button>
-                            </div>
-                        </li>
+        @if ($promocionesHoy->isEmpty())
+            <p class="text-muted">No hay promociones activas hoy.</p>
+        @else
+            <ul class="list-custom">
+                @foreach ($promocionesHoy as $promo)
+                    <li class="list-item-custom">
+                        <div class="list-avatar" style="background: linear-gradient(135deg, var(--borgona), var(--borgona-light));">
+                            <i class="bi bi-percent"></i>
+                        </div>
+                        <div class="list-content">
+                            <h6>{{ $promo->nombre }}</h6>
 
-                        <li class="list-item-custom">
-                            <div class="list-avatar" style="background: linear-gradient(135deg, var(--rosa-empolvado), var(--rosa-empolvado-light));">
-                                <i class="bi bi-calendar-check"></i>
-                            </div>
-                            <div class="list-content">
-                                <h6>Martes de Spa</h6>
-                                <p><code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">MARSPA20</code> - 20% OFF</p>
-                                <small style="color: var(--borgona); opacity: 0.7;">Solo servicios faciales</small>
-                            </div>
-                            <div class="list-badge">
-                                <button class="btn btn-sm btn-gold" onclick="copiarCodigo('MARSPA20')" title="Copiar código">
-                                    <i class="bi bi-clipboard"></i>
-                                </button>
-                            </div>
-                        </li>
+                            @if ($promo->tipoDescuento === 'porcentaje')
+                                <p>
+                                    <code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">
+                                        {{ $promo->codigoPromocional }}
+                                    </code>
+                                    - {{ $promo->valorDescuento }}% de descuento
+                                </p>
+                            @else
+                                <p>
+                                    <code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: 600;">
+                                        {{ $promo->codigoPromocional }}
+                                    </code>
+                                    - ${{ number_format($promo->valorDescuento, 2) }} de descuento
+                                </p>
+                            @endif
 
-                        <li class="list-item-custom">
-                            <div class="list-avatar" style="background: linear-gradient(135deg, var(--champagne), var(--champagne-light));">
-                                <i class="bi bi-box-seam"></i>
-                            </div>
-                            <div class="list-content">
-                                <h6>Combo Novia Perfecta</h6>
-                                <p>Peinado + Maquillaje + Manicure - <strong style="color: var(--borgona);">$85.00</strong></p>
-                                <small style="color: var(--dorado-palido); font-weight: 600;">¡Ahorra $35!</small>
-                            </div>
-                            <div class="list-badge">
-                                <span class="badge badge-gold">Combo</span>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+                            <small style="color: var(--borgona); opacity: 0.7;">
+                                Usado: {{ $promo->usosActuales }}/{{ $promo->usosMaximos }} veces
+                            </small>
+                        </div>
+                        <div class="list-badge">
+                            <button class="btn btn-sm btn-gold"
+                                    onclick="copiarCodigo('{{ $promo->codigoPromocional }}')"
+                                    title="Copiar código">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+        @endif
+    </div>
+</div>
+
 
             <!-- Disponibilidad de Estilistas -->
             <div class="col-lg-6">
@@ -575,134 +385,43 @@
                     ORDER BY citas_hoy ASC
                     ================================================
                     -->
-                    <ul class="list-custom">
-                        <li class="list-item-custom">
-                            <div class="list-avatar">A</div>
-                            <div class="list-content">
-                                <h6>Ana López García</h6>
-                                <p>5 citas hoy | Última: 2:00 PM</p>
-                                <small style="color: var(--borgona); opacity: 0.7;">Próxima disponible: 3:30 PM</small>
-                            </div>
-                            <div class="list-badge">
-                                <span class="badge bg-success">Disponible</span>
-                            </div>
-                        </li>
+<ul class="list-custom">
+@foreach ($estilistas as $estilista)
+    <li class="list-item-custom {{ $estilista['estado'] === 'Ocupada' ? 'bg-primary text-white' : '' }}">
+        <div class="list-avatar"> {{ strtoupper(substr($estilista['nombre'], 0, 1))  }}</div>
+        <div class="list-content">
+            <h6>{{ $estilista['nombre'] }}</h6>
+            <p>{{ $estilista['citas_hoy'] }} citas hoy 
+               @if ($estilista['ultima_cita'])
+                   | Última: {{ \Carbon\Carbon::parse($estilista['ultima_cita'])->format('h:i A') }}
+               @else
+                   | Sin asignaciones actuales
+               @endif
+            </p>
+            <small style="color: var(--borgona); font-weight: 600;">
+                @if ($estilista['estado'] === 'Ocupada')
+                    En servicio hasta: {{ \Carbon\Carbon::parse($estilista['ultima_cita'])->addMinutes(60)->format('h:i A') }}
+                @else
+                    Disponible inmediatamente
+                @endif
+            </small>
+        </div>
+        <div class="list-badge">
+            @if ($estilista['estado'] === 'Ocupada')
+                <span class="badge bg-primary">Ocupada</span>
+            @else
+                <span class="badge bg-success">Disponible</span>
+            @endif
+        </div>
+    </li>
+@endforeach
+</ul>
 
-                        <li class="list-item-custom">
-                            <div class="list-avatar">M</div>
-                            <div class="list-content">
-                                <h6>María Torres Sánchez</h6>
-                                <p>4 citas hoy | Última: 3:30 PM</p>
-                                <small style="color: var(--borgona); opacity: 0.7;">Próxima disponible: 5:00 PM</small>
-                            </div>
-                            <div class="list-badge">
-                                <span class="badge bg-success">Disponible</span>
-                            </div>
-                        </li>
-
-                        <li class="list-item-custom" style="background: rgba(232, 180, 184, 0.1);">
-                            <div class="list-avatar">S</div>
-                            <div class="list-content">
-                                <h6>Sofía Ramírez Cruz</h6>
-                                <p>6 citas hoy | Actual: Atendiendo cliente</p>
-                                <small style="color: var(--borgona); font-weight: 600;">En servicio hasta: 11:45 AM</small>
-                            </div>
-                            <div class="list-badge">
-                                <span class="badge bg-primary">Ocupada</span>
-                            </div>
-                        </li>
-
-                        <li class="list-item-custom">
-                            <div class="list-avatar">L</div>
-                            <div class="list-content">
-                                <h6>Laura Gómez Ortiz</h6>
-                                <p>3 citas hoy | Sin asignaciones actuales</p>
-                                <small style="color: var(--dorado-palido); font-weight: 600;">Disponible inmediatamente</small>
-                            </div>
-                            <div class="list-badge">
-                                <span class="badge badge-gold"><i class="bi bi-lightning-fill"></i> Libre</span>
-                            </div>
-                        </li>
-                    </ul>
                 </div>
             </div>
         </div>
+</div>
 
-        <!-- Recordatorios y Notas del Día -->
-        <div class="row g-4 mb-4" id="conflictos">
-            <div class="col-lg-6">
-                <div class="card-custom">
-                    <h5 class="card-title-custom">
-                        <i class="bi bi-exclamation-triangle-fill"></i>
-                        Conflictos de Horario - Requieren Atención
-                    </h5>
-                    
-                    <div class="alert-custom" style="border-left: 5px solid #dc3545; margin-bottom: 1rem;">
-                        <i class="bi bi-clock-history"></i>
-                        <strong style="color: #dc3545;">3:45 PM - Patricia Gómez</strong><br>
-                        <small>Se superpone con la cita de Sofía Ramírez (3:30 PM). Estilista: Sofía Ramírez no estará disponible.</small>
-                        <br>
-                        <button class="btn btn-sm btn-gold mt-2" onclick="resolverConflicto(6)">
-                            <i class="bi bi-tools"></i> Resolver Ahora
-                        </button>
-                    </div>
-
-                    <div class="alert-custom" style="border-left: 5px solid #dc3545;">
-                        <i class="bi bi-clock-history"></i>
-                        <strong style="color: #dc3545;">12:00 PM - Laura Martínez</strong><br>
-                        <small>Servicio de 90 min terminaría a 1:30 PM, pero María Torres tiene cita a 1:15 PM.</small>
-                        <br>
-                        <button class="btn btn-sm btn-gold mt-2" onclick="resolverConflicto(3)">
-                            <i class="bi bi-tools"></i> Resolver Ahora
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-6">
-                <div class="card-custom">
-                    <h5 class="card-title-custom">
-                        <i class="bi bi-bell-fill"></i>
-                        Recordatorios Importantes
-                    </h5>
-                    
-                    <ul class="list-custom">
-                        <li class="list-item-custom">
-                            <div class="list-avatar" style="background: linear-gradient(135deg, var(--rosa-empolvado), var(--rosa-empolvado-light));">
-                                <i class="bi bi-telephone"></i>
-                            </div>
-                            <div class="list-content">
-                                <h6>Confirmar cita de Carla Hernández</h6>
-                                <p>2:00 PM - Peinado Especial (Combo Novia)</p>
-                                <small style="color: var(--borgona); opacity: 0.7;">Cliente VIP - No confirmó asistencia</small>
-                            </div>
-                        </li>
-
-                        <li class="list-item-custom">
-                            <div class="list-avatar" style="background: linear-gradient(135deg, var(--dorado-palido), var(--dorado-hover));">
-                                <i class="bi bi-star-fill"></i>
-                            </div>
-                            <div class="list-content">
-                                <h6>Cliente nuevo - Rosa Méndez</h6>
-                                <p>5:00 PM - Primera visita al salón</p>
-                                <small style="color: var(--dorado-palido); font-weight: 600;">Ofrecer promoción NUEVO10 ($10 OFF)</small>
-                            </div>
-                        </li>
-
-                        <li class="list-item-custom">
-                            <div class="list-avatar" style="background: linear-gradient(135deg, var(--borgona), var(--borgona-light));">
-                                <i class="bi bi-cash-stack"></i>
-                            </div>
-                            <div class="list-content">
-                                <h6>Pendiente de pago</h6>
-                                <p>María García - Cita 9:00 AM ($15.00)</p>
-                                <small style="color: var(--borgona); opacity: 0.7;">Recordar cobro al finalizar servicio</small>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
 
     </main>
 

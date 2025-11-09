@@ -7,12 +7,17 @@ use App\Models\Promocion;
 use App\Models\Combo;
 use App\Models\Servicio;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+
 
 class PromocionController extends Controller
 {
     // Mostrar vista de promociones (Admin)
     public function indexAdmin()
     {
+        // Fechas del mes actual
+        $inicioMes = Carbon::now()->startOfMonth();
+        $finMes = Carbon::now()->endOfMonth();
         $promociones = Promocion::orderBy('activo', 'desc')
             ->orderBy('fechaInicio', 'desc')
             ->get();
@@ -26,12 +31,20 @@ class PromocionController extends Controller
             ->count();
 
         $combosDisponibles = Combo::where('activo', true)->count();
+       // Obtener los registros de promociones aplicadas este mes
+       $promosEsteMes = \DB::table('citaservicio')
+    ->join('cita', 'citaservicio.idCita', '=', 'cita.idCita')
+    ->join('promocionservicio', 'citaservicio.idServicio', '=', 'promocionservicio.idServicio')
+    ->join('promocion', 'promocionservicio.idPromocion', '=', 'promocion.idPromocion')
+    ->whereBetween('cita.fecha', [$inicioMes, $finMes])
+    ->select('promocion.descuento')
+    ->get();
+  
+    // Total de usos (cuántas veces se aplicó una promo)
+    $usosEsteMes = $promosEsteMes->count();
 
-        // Usos este mes (esto dependerá de tu tabla de citas cuando la implementes)
-        $usosEsteMes = 87; // Valor temporal
-
-        // Descuentos otorgados (esto dependerá de tu tabla de citas)
-        $descuentosOtorgados = 342; // Valor temporal
+   // Total de descuentos sumados
+    $descuentosOtorgados = $promosEsteMes->sum('descuento');
 
         return view('admin.promocionesAdmin', compact(
             'promociones',
@@ -43,6 +56,45 @@ class PromocionController extends Controller
             'descuentosOtorgados'
         ));
     }
+
+    // Mostrar vista de promociones (Recepcionista)
+public function indexRecepcionista()
+{
+    $promociones = Promocion::orderBy('activo', 'desc')
+        ->orderBy('fechaInicio', 'desc')
+        ->get();
+
+    $combos = Combo::with('servicios')->orderBy('activo', 'desc')->get();
+    $servicios = Servicio::where('activo', true)->orderBy('nombre')->get();
+
+    // KPIs
+    $promocionesActivas = Promocion::where('activo', true)
+        ->where('fechaFin', '>=', Carbon::now())
+        ->count();
+
+    $combosDisponibles = Combo::where('activo', true)->count();
+
+    $usosEsteMes = Promocion::where('usosActuales', '>', 0)
+        ->whereMonth('updated_at', Carbon::now()->month)
+        ->sum('usosActuales');
+
+    $descuentosOtorgados = Promocion::where('tipoDescuento', 'fijo')
+        ->where('activo', true)
+        ->whereMonth('updated_at', Carbon::now()->month)
+        ->sum(\DB::raw('valorDescuento * usosActuales'));
+    
+    $descuentosOtorgados = round($descuentosOtorgados, 2);
+
+    return view('recepcionista.promocionesRecepcionista', compact(
+        'promociones',
+        'combos',
+        'servicios',
+        'promocionesActivas',
+        'combosDisponibles',
+        'usosEsteMes',
+        'descuentosOtorgados'
+    ));
+}
 
     // Crear promoción
     public function store(Request $request)
@@ -83,36 +135,37 @@ class PromocionController extends Controller
     }
 
     // Actualizar promoción
-    public function update(Request $request, $id)
-    {
-        try {
-            $promocion = Promocion::findOrFail($id);
+public function update(Request $request, $id)
+{
+    try {
+        $promocion = Promocion::findOrFail($id);
 
-            $validated = $request->validate([
-                'nombre' => 'required|string|max:100',
-                'descripcion' => 'nullable|string',
-                'tipoDescuento' => 'required|in:porcentaje,fijo',
-                'valorDescuento' => 'required|numeric|min:0',
-                'fechaInicio' => 'required|date',
-                'fechaFin' => 'required|date|after_or_equal:fechaInicio',
-                'codigoPromocional' => 'required|string|max:50|unique:promocion,codigoPromocional,' . $id . ',idPromocion',
-                'usosMaximos' => 'nullable|integer|min:1',
-                'usosPorCliente' => 'required|integer|min:1',
-                'dias' => 'nullable|array',
-                'activo' => 'nullable|boolean'
-            ]);
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:100',
+            'descripcion' => 'nullable|string',
+            'tipoDescuento' => 'required|in:porcentaje,fijo',
+            'valorDescuento' => 'required|numeric|min:0',
+            'fechaInicio' => 'required|date',
+            'fechaFin' => 'required|date|after_or_equal:fechaInicio',
+            'codigoPromocional' => 'required|string|max:50|unique:promocion,codigoPromocional,' . $id . ',idPromocion',
+            'usosMaximos' => 'nullable|integer|min:1',
+            'usosPorCliente' => 'required|integer|min:1',
+            'dias' => 'nullable|array',
+            'activo' => 'nullable|boolean'
+        ]);
 
-            $validated['codigoPromocional'] = strtoupper($validated['codigoPromocional']);
-            $validated['diasAplicables'] = $request->has('dias') ? json_encode($request->dias) : null;
-            $validated['activo'] = $request->has('activo') ? 1 : 0;
+        $validated['codigoPromocional'] = strtoupper($validated['codigoPromocional']);
+        $validated['diasAplicables'] = $request->has('dias') ? json_encode($request->dias) : null;
+        $validated['activo'] = $request->input('activo', 0);
 
-            $promocion->update($validated);
+        $promocion->update($validated);
 
-            return response()->json(['success' => true, 'promocion' => $promocion]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        return response()->json(['success' => true, 'promocion' => $promocion]);
+
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
     }
+}
 
     // Toggle estado promoción
     public function toggleEstado(Request $request, $id)

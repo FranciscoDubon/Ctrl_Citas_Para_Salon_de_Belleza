@@ -30,5 +30,8 @@ class Empleado extends Model
     {
         return $this->belongsTo(Rol::class, 'idRol');
     }
-    
+        public function citas()
+    {
+        return $this->hasMany(Cita::class, 'idEstilista', 'idEmpleado');
+    }
 }
