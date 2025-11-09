@@ -1,4 +1,9 @@
+<!DOCTYPE html>
 <html lang="es">
+    @php
+$promoSeleccionada = request()->query('promo', '');
+@endphp
+
 
 <head>
     <meta charset="UTF-8">

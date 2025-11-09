@@ -6,6 +6,7 @@ use App\Http\Controllers\PromocionController;
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\PromocionClienteController;
 
 // Ruta Dashboard Admin
 Route::get('/', function () {
@@ -242,4 +243,12 @@ Route::prefix('estilista')->name('estilista.')->group(function () {
     Route::post('/citas/{id}/finalizar', [CitaController::class, 'finalizarCita'])->name('cita.finalizar');
     Route::post('/citas/{id}/confirmar', [CitaController::class, 'confirmarAsistencia'])->name('cita.confirmar');
     Route::get('/citas/filtrar', [CitaController::class, 'filtrarPorEstado'])->name('citas.filtrar');
+});
+Route::prefix('cliente')->name('cliente.')->group(function () {
+    Route::post('/promociones/validar-codigo', [PromocionClienteController::class, 'validarCodigo'])->name('promociones.validar');
+    Route::get('/promociones/combo/{id}', [PromocionClienteController::class, 'detalleCombo'])->name('promociones.combo');
+});
+
+Route::prefix('cliente')->name('cliente.')->group(function () {
+    Route::get('/promocionesCli', [PromocionClienteController::class, 'index'])->name('promocionesCli');
 });
