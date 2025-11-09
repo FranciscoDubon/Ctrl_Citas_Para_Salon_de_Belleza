@@ -5,6 +5,7 @@ use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\PromocionController;
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\ReporteController;
 
 // Ruta Dashboard Admin
 Route::get('/', function () {
@@ -218,6 +219,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/combos/{id}', [PromocionController::class, 'showCombo'])->name('combo.show');
     Route::put('/combos/{id}', [PromocionController::class, 'updateCombo'])->name('combo.update');
     Route::post('/combos/{id}/estado', [PromocionController::class, 'toggleEstadoCombo'])->name('combo.toggleEstado');
+
+    Route::get('/reportesAdm', [ReporteController::class, 'index'])->name('reportesAdm');
+    Route::get('/reportes/cliente/{id}', [ReporteController::class, 'detalleCliente'])->name('reportes.cliente');
+    Route::get('/reportes/estilista/{id}', [ReporteController::class, 'detalleEstilista'])->name('reportes.estilista');
+    Route::get('/reportes/exportar-pdf', [ReporteController::class, 'exportarPDF'])->name('reportes.pdf');
+    Route::post('/reportes/exportar-excel', [ReporteController::class, 'exportarExcel'])->name('reportes.excel');
 });  
 // ========================================
 // RUTAS DE ESTILISTA

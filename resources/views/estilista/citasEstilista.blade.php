@@ -195,9 +195,6 @@
                     </div>
                 </div>
                 <div class="col-md-3 text-end">
-                    <button class="btn btn-gold mb-2 w-100" onclick="iniciarCita({{ $proximaCita->idCita }})">
-                        <i class="bi bi-play-circle"></i> Iniciar Servicio
-                    </button>
                     <button class="btn btn-outline-gold w-100" onclick="verDetalleCita({{ $proximaCita->idCita }})">
                         <i class="bi bi-eye"></i> Ver Detalles
                     </button>

@@ -79,12 +79,6 @@
                 <button class="btn btn-gold me-2" onclick="generarReportePDF()">
                     <i class="bi bi-file-pdf"></i> Generar PDF
                 </button>
-                <button class="btn btn-premium me-2" onclick="exportarExcel()">
-                    <i class="bi bi-file-excel"></i> Exportar Excel
-                </button>
-                <button class="btn btn-outline-gold me-2" data-bs-toggle="modal" data-bs-target="#modalFiltros">
-                    <i class="bi bi-funnel"></i> Filtros Avanzados
-                </button>
                 <button class="btn btn-soft" onclick="actualizarReportes()">
                     <i class="bi bi-arrow-clockwise"></i> Actualizar
                 </button>
@@ -96,35 +90,39 @@
             <div class="col-12">
                 <div class="card-custom">
                     <div class="row g-3 align-items-end">
-                        <div class="col-md-3">
-                            <label class="form-label">Tipo de Reporte</label>
-                            <select class="form-select" id="tipoReporte" onchange="cambiarReporte()">
-                                <option value="general">Reporte General</option>
-                                <option value="clientes">Historial de Clientes</option>
-                                <option value="servicios">Servicios Más Solicitados</option>
-                                <option value="estilistas">Rendimiento de Estilistas</option>
-                                <option value="financiero">Análisis Financiero</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Período</label>
-                            <select class="form-select" id="periodo">
-                                <option value="hoy">Hoy</option>
-                                <option value="semana">Esta Semana</option>
-                                <option value="mes" selected>Este Mes</option>
-                                <option value="trimestre">Este Trimestre</option>
-                                <option value="anio">Este Año</option>
-                                <option value="personalizado">Personalizado</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Fecha Inicio</label>
-                            <input type="date" class="form-control" id="fechaInicio">
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Fecha Fin</label>
-                            <input type="date" class="form-control" id="fechaFin">
-                        </div>
+<div class="col-md-3">
+    <label class="form-label">Tipo de Reporte</label>
+    <select class="form-select" id="tipoReporte">
+        <option value="general" {{ $tipoReporte == 'general' ? 'selected' : '' }}>Reporte General</option>
+        <option value="clientes" {{ $tipoReporte == 'clientes' ? 'selected' : '' }}>Historial de Clientes</option>
+        <option value="servicios" {{ $tipoReporte == 'servicios' ? 'selected' : '' }}>Servicios Más Solicitados</option>
+        <option value="estilistas" {{ $tipoReporte == 'estilistas' ? 'selected' : '' }}>Rendimiento de Estilistas</option>
+        <option value="financiero" {{ $tipoReporte == 'financiero' ? 'selected' : '' }}>Análisis Financiero</option>
+    </select>
+</div>
+<div class="col-md-3">
+    <label class="form-label">Período</label>
+    <select class="form-select" id="periodo">
+        <option value="hoy" {{ $periodo == 'hoy' ? 'selected' : '' }}>Hoy</option>
+        <option value="semana" {{ $periodo == 'semana' ? 'selected' : '' }}>Esta Semana</option>
+        <option value="mes" {{ $periodo == 'mes' ? 'selected' : '' }}>Este Mes</option>
+        <option value="trimestre" {{ $periodo == 'trimestre' ? 'selected' : '' }}>Este Trimestre</option>
+        <option value="anio" {{ $periodo == 'anio' ? 'selected' : '' }}>Este Año</option>
+        <option value="personalizado" {{ $periodo == 'personalizado' ? 'selected' : '' }}>Personalizado</option>
+    </select>
+</div>
+<div class="col-md-2">
+    <label class="form-label">Fecha Inicio</label>
+    <input type="date" class="form-control" id="fechaInicio" 
+           value="{{ $fechaInicio }}" 
+           {{ $periodo !== 'personalizado' ? 'disabled' : '' }}>
+</div>
+<div class="col-md-2">
+    <label class="form-label">Fecha Fin</label>
+    <input type="date" class="form-control" id="fechaFin" 
+           value="{{ $fechaFin }}" 
+           {{ $periodo !== 'personalizado' ? 'disabled' : '' }}>
+</div>
                         <div class="col-md-2">
                             <button class="btn btn-gold w-100" onclick="aplicarFiltros()">
                                 <i class="bi bi-search"></i> Buscar
@@ -135,112 +133,71 @@
             </div>
         </div>
 
-        <!-- KPI Cards - Resumen General -->
-        <div class="row g-4 mb-4">
-            
-            <!-- 
-            ================================================
-            TODO BACKEND: Conectar con BD
-            ================================================
-            CONSULTA SQL:
-            SELECT COUNT(*) as total 
-            FROM citas 
-            WHERE MONTH(fecha_hora) = MONTH(CURDATE())
-            AND estado = 'completada'
-            ================================================
-            -->
-            <div class="col-xl-3 col-md-6">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon primary">
-                            <i class="bi bi-calendar-check"></i>
-                        </div>
-                    </div>
-                    <h3 class="kpi-value">287</h3>
-                    <p class="kpi-label">Citas Completadas</p>
-                    <span class="kpi-badge badge-success">
-                        <i class="bi bi-arrow-up"></i> +18% vs mes anterior
-                    </span>
+<!-- KPI Cards - Resumen General -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div class="kpi-icon primary">
+                    <i class="bi bi-calendar-check"></i>
                 </div>
             </div>
-
-            <!-- 
-            ================================================
-            TODO BACKEND: Conectar con BD
-            ================================================
-            CONSULTA SQL:
-            SELECT SUM(precio_total) as total 
-            FROM citas 
-            WHERE MONTH(fecha_hora) = MONTH(CURDATE())
-            AND estado = 'completada'
-            ================================================
-            -->
-            <div class="col-xl-3 col-md-6">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon success">
-                            <i class="bi bi-cash-stack"></i>
-                        </div>
-                    </div>
-                    <h3 class="kpi-value">$8,420</h3>
-                    <p class="kpi-label">Ingresos Totales</p>
-                    <span class="kpi-badge badge-success">
-                        <i class="bi bi-arrow-up"></i> +12.5%
-                    </span>
-                </div>
-            </div>
-
-            <!-- 
-            ================================================
-            TODO BACKEND: Conectar con BD
-            ================================================
-            CONSULTA SQL:
-            SELECT AVG(precio_total) as promedio 
-            FROM citas 
-            WHERE MONTH(fecha_hora) = MONTH(CURDATE())
-            AND estado = 'completada'
-            ================================================
-            -->
-            <div class="col-xl-3 col-md-6">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon info">
-                            <i class="bi bi-receipt"></i>
-                        </div>
-                    </div>
-                    <h3 class="kpi-value">$29.34</h3>
-                    <p class="kpi-label">Ticket Promedio</p>
-                    <span class="kpi-badge badge-success">
-                        <i class="bi bi-arrow-up"></i> +5.2%
-                    </span>
-                </div>
-            </div>
-
-            <!-- 
-            ================================================
-            TODO BACKEND: Conectar con BD
-            ================================================
-            CONSULTA SQL:
-            SELECT COUNT(DISTINCT cliente_id) as total 
-            FROM citas 
-            WHERE MONTH(fecha_hora) = MONTH(CURDATE())
-            ================================================
-            -->
-            <div class="col-xl-3 col-md-6">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon warning">
-                            <i class="bi bi-people-fill"></i>
-                        </div>
-                    </div>
-                    <h3 class="kpi-value">142</h3>
-                    <p class="kpi-label">Clientes Únicos</p>
-                    <span class="kpi-badge badge-success">
-                        <i class="bi bi-arrow-up"></i> +24 nuevos
-                    </span>
-                </div>
-            </div>
+            <h3 class="kpi-value">{{ $kpis['citas_completadas'] }}</h3>
+            <p class="kpi-label">Citas Completadas</p>
+            <span class="kpi-badge {{ $kpis['porcentaje_citas'] >= 0 ? 'badge-success' : 'badge-danger' }}">
+                <i class="bi bi-arrow-{{ $kpis['porcentaje_citas'] >= 0 ? 'up' : 'down' }}"></i> 
+                {{ abs($kpis['porcentaje_citas']) }}% vs período anterior
+            </span>
         </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div class="kpi-icon success">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
+            </div>
+            <h3 class="kpi-value">${{ $kpis['ingresos_totales'] }}</h3>
+            <p class="kpi-label">Ingresos Totales</p>
+            <span class="kpi-badge {{ $kpis['porcentaje_ingresos'] >= 0 ? 'badge-success' : 'badge-danger' }}">
+                <i class="bi bi-arrow-{{ $kpis['porcentaje_ingresos'] >= 0 ? 'up' : 'down' }}"></i> 
+                {{ abs($kpis['porcentaje_ingresos']) }}%
+            </span>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div class="kpi-icon info">
+                    <i class="bi bi-receipt"></i>
+                </div>
+            </div>
+            <h3 class="kpi-value">${{ $kpis['ticket_promedio'] }}</h3>
+            <p class="kpi-label">Ticket Promedio</p>
+            <span class="kpi-badge {{ $kpis['porcentaje_ticket'] >= 0 ? 'badge-success' : 'badge-danger' }}">
+                <i class="bi bi-arrow-{{ $kpis['porcentaje_ticket'] >= 0 ? 'up' : 'down' }}"></i> 
+                {{ abs($kpis['porcentaje_ticket']) }}%
+            </span>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <div class="kpi-icon warning">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+            </div>
+            <h3 class="kpi-value">{{ $kpis['clientes_unicos'] }}</h3>
+            <p class="kpi-label">Clientes Únicos</p>
+            <span class="kpi-badge badge-success">
+                <i class="bi bi-arrow-up"></i> +{{ $kpis['clientes_nuevos'] }} nuevos
+            </span>
+        </div>
+    </div>
+</div>
 
         <!-- ============================================
              REPORTE: HISTORIAL DE CLIENTES
@@ -284,156 +241,42 @@
                                     <th>Primera Visita</th>
                                     <th>Última Visita</th>
                                     <th>Estado</th>
-                                    <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">M</div>
-                                            <strong>María García López</strong>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <i class="bi bi-envelope"></i> maria.garcia@email.com<br>
-                                            <i class="bi bi-phone"></i> (503) 7890-1234
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-luxury" style="font-size: 0.9rem;">18 citas</span>
-                                    </td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">$642.00</strong>
-                                    </td>
-                                    <td>$35.67</td>
-                                    <td>15 Ene 2024</td>
-                                    <td>28 Oct 2024</td>
-                                    <td><span class="badge bg-success">VIP</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft" data-bs-toggle="modal" data-bs-target="#modalDetalleCliente" title="Ver historial">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">A</div>
-                                            <strong>Ana Rodríguez Pérez</strong>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <i class="bi bi-envelope"></i> ana.rodriguez@email.com<br>
-                                            <i class="bi bi-phone"></i> (503) 7890-5678
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-luxury" style="font-size: 0.9rem;">15 citas</span>
-                                    </td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">$520.00</strong>
-                                    </td>
-                                    <td>$34.67</td>
-                                    <td>22 Feb 2024</td>
-                                    <td>30 Oct 2024</td>
-                                    <td><span class="badge bg-success">VIP</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft" title="Ver historial">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">L</div>
-                                            <strong>Laura Martínez Díaz</strong>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <i class="bi bi-envelope"></i> laura.martinez@email.com<br>
-                                            <i class="bi bi-phone"></i> (503) 7890-9012
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-luxury" style="font-size: 0.9rem;">12 citas</span>
-                                    </td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">$385.00</strong>
-                                    </td>
-                                    <td>$32.08</td>
-                                    <td>10 Mar 2024</td>
-                                    <td>25 Oct 2024</td>
-                                    <td><span class="badge badge-gold">Frecuente</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft" title="Ver historial">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">C</div>
-                                            <strong>Carla Hernández Silva</strong>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <i class="bi bi-envelope"></i> carla.hernandez@email.com<br>
-                                            <i class="bi bi-phone"></i> (503) 7890-3456
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-luxury" style="font-size: 0.9rem;">8 citas</span>
-                                    </td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">$245.00</strong>
-                                    </td>
-                                    <td>$30.63</td>
-                                    <td>05 Jun 2024</td>
-                                    <td>20 Oct 2024</td>
-                                    <td><span class="badge badge-gold">Frecuente</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft" title="Ver historial">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">S</div>
-                                            <strong>Sofía Ramírez Castro</strong>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <i class="bi bi-envelope"></i> sofia.ramirez@email.com<br>
-                                            <i class="bi bi-phone"></i> (503) 7890-7890
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-luxury" style="font-size: 0.9rem;">3 citas</span>
-                                    </td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">$95.00</strong>
-                                    </td>
-                                    <td>$31.67</td>
-                                    <td>15 Oct 2024</td>
-                                    <td>28 Oct 2024</td>
-                                    <td><span class="badge badge-soft">Nuevo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft" title="Ver historial">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
+<tbody>
+@forelse($historialClientes as $cliente)
+<tr>
+    <td>
+        <div class="d-flex align-items-center">
+            <div class="list-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">
+                {{ strtoupper(substr($cliente->nombre, 0, 1)) }}
+            </div>
+            <strong>{{ $cliente->nombre }} {{ $cliente->apellido }}</strong>
+        </div>
+    </td>
+    <td>
+        <div style="font-size: 0.875rem;">
+            <i class="bi bi-envelope"></i> {{ $cliente->correoElectronico }}<br>
+            <i class="bi bi-phone"></i> {{ $cliente->telefono }}
+        </div>
+    </td>
+    <td>
+        <span class="badge badge-luxury" style="font-size: 0.9rem;">{{ $cliente->total_citas }} citas</span>
+    </td>
+    <td>
+        <strong style="color: var(--borgona); font-size: 1.1rem;">${{ $cliente->total_gastado }}</strong>
+    </td>
+    <td>${{ $cliente->ticket_promedio }}</td>
+    <td>{{ $cliente->primera_visita }}</td>
+    <td>{{ $cliente->ultima_visita }}</td>
+    <td><span class="badge {{ $cliente->badge_class }}">{{ $cliente->estado }}</span></td>
+</tr>
+@empty
+<tr>
+    <td colspan="9" class="text-center">No hay datos disponibles para el período seleccionado</td>
+</tr>
+@endforelse
+</tbody>
                         </table>
                     </div>
                 </div>
@@ -482,110 +325,50 @@
                                     <th>Tendencia</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="list-avatar" style="width: 35px; height: 35px; font-size: 0.85rem; background: linear-gradient(135deg, var(--dorado-palido), var(--dorado-hover));">
-                                            <i class="bi bi-trophy-fill"></i>
-                                        </div>
-                                    </td>
-                                    <td><strong>Corte de Cabello</strong></td>
-                                    <td><span class="badge badge-luxury">CABELLO</span></td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">67</strong>
-                                        <div style="width: 100%; background: var(--rosa-empolvado); height: 5px; border-radius: 3px; margin-top: 3px;">
-                                            <div style="width: 100%; background: var(--dorado-palido); height: 5px; border-radius: 3px;"></div>
-                                        </div>
-                                    </td>
-                                    <td><strong style="color: var(--borgona);">$1,005.00</strong></td>
-                                    <td><span class="badge badge-success"><i class="bi bi-arrow-up"></i> +22%</span></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="list-avatar" style="width: 35px; height: 35px; font-size: 0.85rem; background: linear-gradient(135deg, var(--rosa-empolvado), var(--rosa-empolvado-light));">
-                                            2
-                                        </div>
-                                    </td>
-                                    <td><strong>Manicure Básico</strong></td>
-                                    <td><span class="badge badge-gold">UÑAS</span></td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">54</strong>
-                                        <div style="width: 100%; background: var(--rosa-empolvado); height: 5px; border-radius: 3px; margin-top: 3px;">
-                                            <div style="width: 80%; background: var(--dorado-palido); height: 5px; border-radius: 3px;"></div>
-                                        </div>
-                                    </td>
-                                    <td><strong style="color: var(--borgona);">$540.00</strong></td>
-                                    <td><span class="badge badge-success"><i class="bi bi-arrow-up"></i> +15%</span></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="list-avatar" style="width: 35px; height: 35px; font-size: 0.85rem; background: linear-gradient(135deg, var(--champagne), var(--champagne-light));">
-                                            3
-                                        </div>
-                                    </td>
-                                    <td><strong>Pedicure Spa</strong></td>
-                                    <td><span class="badge badge-gold">UÑAS</span></td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">48</strong>
-                                        <div style="width: 100%; background: var(--rosa-empolvado); height: 5px; border-radius: 3px; margin-top: 3px;">
-                                            <div style="width: 72%; background: var(--dorado-palido); height: 5px; border-radius: 3px;"></div>
-                                        </div>
-                                    </td>
-                                    <td><strong style="color: var(--borgona);">$720.00</strong></td>
-                                    <td><span class="badge badge-success"><i class="bi bi-arrow-up"></i> +18%</span></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="list-avatar" style="width: 35px; height: 35px; font-size: 0.85rem;">
-                                            4
-                                        </div>
-                                    </td>
-                                    <td><strong>Tinte Completo</strong></td>
-                                    <td><span class="badge badge-luxury">CABELLO</span></td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">42</strong>
-                                        <div style="width: 100%; background: var(--rosa-empolvado); height: 5px; border-radius: 3px; margin-top: 3px;">
-                                            <div style="width: 63%; background: var(--dorado-palido); height: 5px; border-radius: 3px;"></div>
-                                        </div>
-                                    </td>
-                                    <td><strong style="color: var(--borgona);">$1,680.00</strong></td>
-                                    <td><span class="badge badge-success"><i class="bi bi-arrow-up"></i> +10%</span></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="list-avatar" style="width: 35px; height: 35px; font-size: 0.85rem;">
-                                            5
-                                        </div>
-                                    </td>
-                                    <td><strong>Peinado Especial</strong></td>
-                                    <td><span class="badge badge-luxury">CABELLO</span></td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">38</strong>
-                                        <div style="width: 100%; background: var(--rosa-empolvado); height: 5px; border-radius: 3px; margin-top: 3px;">
-                                            <div style="width: 57%; background: var(--dorado-palido); height: 5px; border-radius: 3px;"></div>
-                                        </div>
-                                    </td>
-                                    <td><strong style="color: var(--borgona);">$1,140.00</strong></td>
-                                    <td><span class="badge badge-success"><i class="bi bi-arrow-up"></i> +25%</span></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="list-avatar" style="width: 35px; height: 35px; font-size: 0.85rem;">
-                                            6
-                                        </div>
-                                    </td>
-                                    <td><strong>Tratamiento Capilar</strong></td>
-                                    <td><span class="badge badge-luxury">CABELLO</span></td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">32</strong>
-                                        <div style="width: 100%; background: var(--rosa-empolvado); height: 5px; border-radius: 3px; margin-top: 3px;">
-                                            <div style="width: 48%; background: var(--dorado-palido); height: 5px; border-radius: 3px;"></div>
-                                        </div>
-                                    </td>
-                                    <td><strong style="color: var(--borgona);">$1,120.00</strong></td>
-                                    <td><span class="badge badge-neutral"><i class="bi bi-dash"></i> 0%</span></td>
-                                </tr>
-                            </tbody>
+<tbody>
+@forelse($serviciosMasSolicitados as $servicio)
+<tr>
+    <td>
+        @if($servicio->ranking == 1)
+        <div class="list-avatar" style="width: 35px; height: 35px; font-size: 0.85rem; background: linear-gradient(135deg, var(--dorado-palido), var(--dorado-hover));">
+            <i class="bi bi-trophy-fill"></i>
+        </div>
+        @elseif($servicio->ranking == 2)
+        <div class="list-avatar" style="width: 35px; height: 35px; font-size: 0.85rem; background: linear-gradient(135deg, var(--rosa-empolvado), var(--rosa-empolvado-light));">
+            {{ $servicio->ranking }}
+        </div>
+        @elseif($servicio->ranking == 3)
+        <div class="list-avatar" style="width: 35px; height: 35px; font-size: 0.85rem; background: linear-gradient(135deg, var(--champagne), var(--champagne-light));">
+            {{ $servicio->ranking }}
+        </div>
+        @else
+        <div class="list-avatar" style="width: 35px; height: 35px; font-size: 0.85rem;">
+            {{ $servicio->ranking }}
+        </div>
+        @endif
+    </td>
+    <td><strong>{{ $servicio->nombre }}</strong></td>
+    <td><span class="badge badge-luxury">{{ strtoupper($servicio->categoria) }}</span></td>
+    <td>
+        <strong style="color: var(--borgona); font-size: 1.1rem;">{{ $servicio->total_solicitudes }}</strong>
+        <div style="width: 100%; background: var(--rosa-empolvado); height: 5px; border-radius: 3px; margin-top: 3px;">
+            <div style="width: {{ $servicio->porcentaje }}%; background: var(--dorado-palido); height: 5px; border-radius: 3px;"></div>
+        </div>
+    </td>
+    <td><strong style="color: var(--borgona);">${{ $servicio->ingresos_generados }}</strong></td>
+    <td>
+        <span class="badge {{ $servicio->tendencia_positiva ? 'badge-success' : 'badge-danger' }}">
+            <i class="bi bi-arrow-{{ $servicio->tendencia_positiva ? 'up' : 'down' }}"></i> 
+            {{ $servicio->tendencia }}%
+        </span>
+    </td>
+</tr>
+@empty
+<tr>
+    <td colspan="6" class="text-center">No hay datos disponibles</td>
+</tr>
+@endforelse
+</tbody>
                         </table>
                     </div>
                 </div>
@@ -599,71 +382,25 @@
                         Por Categoría
                     </h5>
                     
-                    <ul class="list-custom">
-                        <li class="list-item-custom">
-                            <div class="list-avatar">
-                                <i class="bi bi-scissors"></i>
-                            </div>
-                            <div class="list-content">
-                                <h6>Cabello</h6>
-                                <p>179 servicios</p>
-                                <div style="width: 100%; background: var(--rosa-empolvado); height: 8px; border-radius: 4px; margin-top: 5px;">
-                                    <div style="width: 75%; background: var(--borgona); height: 8px; border-radius: 4px;"></div>
-                                </div>
-                            </div>
-                            <div class="list-badge">
-                                <strong style="color: var(--borgona); font-size: 1.2rem;">45%</strong>
-                            </div>
-                        </li>
-
-                        <li class="list-item-custom">
-                            <div class="list-avatar">
-                                <i class="bi bi-hand-index"></i>
-                            </div>
-                            <div class="list-content">
-                                <h6>Uñas</h6>
-                                <p>142 servicios</p>
-                                <div style="width: 100%; background: var(--rosa-empolvado); height: 8px; border-radius: 4px; margin-top: 5px;">
-                                    <div style="width: 60%; background: var(--dorado-palido); height: 8px; border-radius: 4px;"></div>
-                                </div>
-                            </div>
-                            <div class="list-badge">
-                                <strong style="color: var(--dorado-palido); font-size: 1.2rem;">35%</strong>
-                            </div>
-                        </li>
-
-                        <li class="list-item-custom">
-                            <div class="list-avatar">
-                                <i class="bi bi-emoji-smile"></i>
-                            </div>
-                            <div class="list-content">
-                                <h6>Faciales</h6>
-                                <p>67 servicios</p>
-                                <div style="width: 100%; background: var(--rosa-empolvado); height: 8px; border-radius: 4px; margin-top: 5px;">
-                                    <div style="width: 35%; background: var(--rosa-empolvado); height: 8px; border-radius: 4px;"></div>
-                                </div>
-                            </div>
-                            <div class="list-badge">
-                                <strong style="color: var(--rosa-empolvado); font-size: 1.2rem;">17%</strong>
-                            </div>
-                        </li>
-
-                        <li class="list-item-custom">
-                            <div class="list-avatar">
-                                <i class="bi bi-droplet"></i>
-                            </div>
-                            <div class="list-content">
-                                <h6>Otros</h6>
-                                <p>12 servicios</p>
-                                <div style="width: 100%; background: var(--rosa-empolvado); height: 8px; border-radius: 4px; margin-top: 5px;">
-                                    <div style="width: 10%; background: var(--champagne); height: 8px; border-radius: 4px;"></div>
-                                </div>
-                            </div>
-                            <div class="list-badge">
-                                <strong style="color: var(--negro-carbon); font-size: 1.2rem; opacity: 0.6;">3%</strong>
-                            </div>
-                        </li>
-                    </ul>
+<ul class="list-custom">
+@foreach($categorias as $categoria)
+    <li class="list-item-custom">
+        <div class="list-avatar">
+            <i class="{{ $categoria->icono }}"></i>
+        </div>
+        <div class="list-content">
+            <h6>{{ ucfirst($categoria->categoria) }}</h6>
+            <p>{{ $categoria->total_servicios }} servicios</p>
+            <div style="width: 100%; background: var(--rosa-empolvado); height: 8px; border-radius: 4px; margin-top: 5px;">
+                <div style="width: {{ $categoria->porcentaje }}%; background: var(--borgona); height: 8px; border-radius: 4px;"></div>
+            </div>
+        </div>
+        <div class="list-badge">
+            <strong style="color: var(--borgona); font-size: 1.2rem;">{{ $categoria->porcentaje }}%</strong>
+        </div>
+    </li>
+@endforeach
+</ul>
                 </div>
             </div>
         </div>
@@ -713,183 +450,68 @@
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 40px; height: 40px;">A</div>
-                                            <div>
-                                                <strong>Ana López García</strong>
-                                                <br>
-                                                <small style="color: var(--borgona); opacity: 0.7;">
-                                                    <i class="bi bi-trophy-fill"></i> Mejor del Mes
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">78</strong> citas
-                                    </td>
-                                    <td>54 clientes</td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.2rem;">$2,845.00</strong>
-                                    </td>
-                                    <td>$36.47</td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <strong style="color: var(--borgona);">98%</strong>
-                                            <div style="width: 100%; background: var(--rosa-empolvado); height: 8px; border-radius: 4px; margin-top: 3px;">
-                                                <div style="width: 98%; background: var(--dorado-palido); height: 8px; border-radius: 4px;"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style="color: var(--dorado-palido); font-size: 1rem;">
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <br>
-                                            <small style="color: var(--negro-carbon);">4.9 / 5.0</small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft" data-bs-toggle="modal" data-bs-target="#modalDetalleEstilista" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 40px; height: 40px;">M</div>
-                                            <div>
-                                                <strong>María Torres Sánchez</strong>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">72</strong> citas
-                                    </td>
-                                    <td>48 clientes</td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.2rem;">$2,520.00</strong>
-                                    </td>
-                                    <td>$35.00</td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <strong style="color: var(--borgona);">92%</strong>
-                                            <div style="width: 100%; background: var(--rosa-empolvado); height: 8px; border-radius: 4px; margin-top: 3px;">
-                                                <div style="width: 92%; background: var(--dorado-palido); height: 8px; border-radius: 4px;"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style="color: var(--dorado-palido); font-size: 1rem;">
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-half"></i>
-                                            <br>
-                                            <small style="color: var(--negro-carbon);">4.7 / 5.0</small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 40px; height: 40px;">S</div>
-                                            <div>
-                                                <strong>Sofía Ramírez Cruz</strong>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">65</strong> citas
-                                    </td>
-                                    <td>42 clientes</td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.2rem;">$2,180.00</strong>
-                                    </td>
-                                    <td>$33.54</td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <strong style="color: var(--borgona);">88%</strong>
-                                            <div style="width: 100%; background: var(--rosa-empolvado); height: 8px; border-radius: 4px; margin-top: 3px;">
-                                                <div style="width: 88%; background: var(--rosa-empolvado); height: 8px; border-radius: 4px;"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style="color: var(--dorado-palido); font-size: 1rem;">
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-half"></i>
-                                            <br>
-                                            <small style="color: var(--negro-carbon);">4.6 / 5.0</small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="list-avatar me-2" style="width: 40px; height: 40px;">L</div>
-                                            <div>
-                                                <strong>Laura Gómez Ortiz</strong>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.1rem;">58</strong> citas
-                                    </td>
-                                    <td>38 clientes</td>
-                                    <td>
-                                        <strong style="color: var(--borgona); font-size: 1.2rem;">$1,875.00</strong>
-                                    </td>
-                                    <td>$32.33</td>
-                                    <td>
-                                        <div style="font-size: 0.875rem;">
-                                            <strong style="color: var(--borgona);">82%</strong>
-                                            <div style="width: 100%; background: var(--rosa-empolvado); height: 8px; border-radius: 4px; margin-top: 3px;">
-                                                <div style="width: 82%; background: var(--rosa-empolvado); height: 8px; border-radius: 4px;"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style="color: var(--dorado-palido); font-size: 1rem;">
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star"></i>
-                                            <br>
-                                            <small style="color: var(--negro-carbon);">4.5 / 5.0</small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-soft" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
+<tbody>
+@forelse($rendimientoEstilistas as $index => $estilista)
+<tr>
+    <td>
+        <div class="d-flex align-items-center">
+            <div class="list-avatar me-2" style="width: 40px; height: 40px;">
+                {{ strtoupper(substr($estilista->nombre, 0, 1)) }}
+            </div>
+            <div>
+                <strong>{{ $estilista->nombre }} {{ $estilista->apellido }}</strong>
+                @if($index == 0)
+                <br>
+                <small style="color: var(--borgona); opacity: 0.7;">
+                    <i class="bi bi-trophy-fill"></i> Mejor del Período
+                </small>
+                @endif
+            </div>
+        </div>
+    </td>
+    <td>
+        <strong style="color: var(--borgona); font-size: 1.1rem;">{{ $estilista->total_citas }}</strong> citas
+    </td>
+    <td>{{ $estilista->clientes_atendidos }} clientes</td>
+    <td>
+        <strong style="color: var(--borgona); font-size: 1.2rem;">${{ $estilista->ingresos_generados }}</strong>
+    </td>
+    <td>${{ $estilista->ticket_promedio }}</td>
+    <td>
+        <div style="font-size: 0.875rem;">
+            <strong style="color: var(--borgona);">{{ $estilista->productividad }}%</strong>
+            <div style="width: 100%; background: var(--rosa-empolvado); height: 8px; border-radius: 4px; margin-top: 3px;">
+                <div style="width: {{ $estilista->productividad }}%; background: var(--dorado-palido); height: 8px; border-radius: 4px;"></div>
+            </div>
+        </div>
+    </td>
+    <td>
+        <div style="color: var(--dorado-palido); font-size: 1rem;">
+            @for($i = 1; $i <= 5; $i++)
+                @if($i <= floor($estilista->calificacion))
+                    <i class="bi bi-star-fill"></i>
+                @elseif($i == ceil($estilista->calificacion) && $estilista->calificacion - floor($estilista->calificacion) >= 0.5)
+                    <i class="bi bi-star-half"></i>
+                @else
+                    <i class="bi bi-star"></i>
+                @endif
+            @endfor
+            <br>
+            <small style="color: var(--negro-carbon);">{{ $estilista->calificacion }} / 5.0</small>
+        </div>
+    </td>
+    <td>
+        <button class="btn btn-sm btn-soft" onclick="verDetalleEstilista({{ $estilista->idEmpleado }})" title="Ver detalles">
+            <i class="bi bi-eye"></i>
+        </button>
+    </td>
+</tr>
+@empty
+<tr>
+    <td colspan="8" class="text-center">No hay datos disponibles</td>
+</tr>
+@endforelse
+</tbody>
                         </table>
                     </div>
                 </div>
@@ -897,74 +519,80 @@
         </div>
 
         <!-- Análisis Comparativo -->
-        <div class="row g-4 mb-4">
-            <div class="col-lg-4">
-                <div class="premium-card" style="height: 100%;">
-                    <h3><i class="bi bi-star-fill"></i> Mejor Desempeño</h3>
-                    <div style="text-align: center; padding: 2rem 0;">
-                        <div class="list-avatar" style="width: 80px; height: 80px; font-size: 2rem; margin: 0 auto 1rem;">A</div>
-                        <h4 style="color: var(--dorado-palido); margin-bottom: 0.5rem;">Ana López García</h4>
-                        <p style="color: var(--blanco-humo); opacity: 0.8; margin-bottom: 1rem;">Estilista del Mes</p>
-                        <div style="display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem;">
-                            <div>
-                                <h5 style="color: var(--dorado-palido);">78</h5>
-                                <p style="font-size: 0.875rem;">Citas</p>
-                            </div>
-                            <div>
-                                <h5 style="color: var(--dorado-palido);">$2,845</h5>
-                                <p style="font-size: 0.875rem;">Ingresos</p>
-                            </div>
-                            <div>
-                                <h5 style="color: var(--dorado-palido);">4.9</h5>
-                                <p style="font-size: 0.875rem;">Rating</p>
-                            </div>
-                        </div>
-                    </div>
+@if($mejorEstilista)
+<div class="row g-4 mb-4">
+    <div class="col-lg-4">
+        <div class="premium-card" style="height: 100%;">
+            <h3><i class="bi bi-star-fill"></i> Mejor Desempeño</h3>
+            <div style="text-align: center; padding: 2rem 0;">
+                <div class="list-avatar" style="width: 80px; height: 80px; font-size: 2rem; margin: 0 auto 1rem;">
+                    {{ strtoupper(substr($mejorEstilista->nombre, 0, 1)) }}
                 </div>
-            </div>
-
-            <div class="col-lg-4">
-                <div class="card-custom" style="height: 100%;">
-                    <h5 class="card-title-custom">
-                        <i class="bi bi-lightning-charge-fill"></i>
-                        Más Productivo
-                    </h5>
-                    <div class="list-item-custom">
-                        <div class="list-avatar">A</div>
-                        <div class="list-content">
-                            <h6>Ana López García</h6>
-                            <p>98% de productividad</p>
-                            <div style="width: 100%; background: var(--rosa-empolvado); height: 10px; border-radius: 5px; margin-top: 5px;">
-                                <div style="width: 98%; background: var(--dorado-palido); height: 10px; border-radius: 5px;"></div>
-                            </div>
-                        </div>
+                <h4 style="color: var(--dorado-palido); margin-bottom: 0.5rem;">
+                    {{ $mejorEstilista->nombre }} {{ $mejorEstilista->apellido }}
+                </h4>
+                <p style="color: var(--blanco-humo); opacity: 0.8; margin-bottom: 1rem;">Estilista del Período</p>
+                <div style="display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem;">
+                    <div>
+                        <h5 style="color: var(--dorado-palido);">{{ $mejorEstilista->total_citas }}</h5>
+                        <p style="font-size: 0.875rem;">Citas</p>
                     </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4">
-                <div class="card-custom" style="height: 100%;">
-                    <h5 class="card-title-custom">
-                        <i class="bi bi-heart-fill"></i>
-                        Mejor Calificado
-                    </h5>
-                    <div class="list-item-custom">
-                        <div class="list-avatar">A</div>
-                        <div class="list-content">
-                            <h6>Ana López García</h6>
-                            <p>4.9 / 5.0 estrellas</p>
-                            <div style="color: var(--dorado-palido); font-size: 1.2rem; margin-top: 5px;">
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                            </div>
-                        </div>
+                    <div>
+                        <h5 style="color: var(--dorado-palido);">${{ number_format($mejorEstilista->ingresos_generados, 0) }}</h5>
+                        <p style="font-size: 0.875rem;">Ingresos</p>
+                    </div>
+                    <div>
+                        <h5 style="color: var(--dorado-palido);">{{ number_format($mejorEstilista->ticket_promedio, 1) }}</h5>
+                        <p style="font-size: 0.875rem;">Ticket Prom.</p>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card-custom" style="height: 100%;">
+            <h5 class="card-title-custom">
+                <i class="bi bi-lightning-charge-fill"></i>
+                Más Productivo
+            </h5>
+            <div class="list-item-custom">
+                <div class="list-avatar">{{ strtoupper(substr($mejorEstilista->nombre, 0, 1)) }}</div>
+                <div class="list-content">
+                    <h6>{{ $mejorEstilista->nombre }} {{ $mejorEstilista->apellido }}</h6>
+                    <p>{{ $mejorEstilista->total_citas }} citas completadas</p>
+                    <div style="width: 100%; background: var(--rosa-empolvado); height: 10px; border-radius: 5px; margin-top: 5px;">
+                        <div style="width: 98%; background: var(--dorado-palido); height: 10px; border-radius: 5px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card-custom" style="height: 100%;">
+            <h5 class="card-title-custom">
+                <i class="bi bi-heart-fill"></i>
+                Mayor Ingreso
+            </h5>
+            <div class="list-item-custom">
+                <div class="list-avatar">{{ strtoupper(substr($mejorEstilista->nombre, 0, 1)) }}</div>
+                <div class="list-content">
+                    <h6>{{ $mejorEstilista->nombre }} {{ $mejorEstilista->apellido }}</h6>
+                    <p>${{ number_format($mejorEstilista->ingresos_generados, 2) }} generados</p>
+                    <div style="color: var(--dorado-palido); font-size: 1.2rem; margin-top: 5px;">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
 
     </main>
 
@@ -1129,61 +757,283 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Scripts -->
-    <script>
-        function cambiarReporte() {
-            const tipo = document.getElementById('tipoReporte').value;
-            console.log('Cambiar a reporte:', tipo);
-            // TODO: Implementar cambio de vista según tipo de reporte
-        }
+<script>
+    // ========================================
+    // VARIABLES GLOBALES
+    // ========================================
+    let fechaInicio = '{{ $fechaInicio }}';
+    let fechaFin = '{{ $fechaFin }}';
 
-        function aplicarFiltros() {
-            console.log('Aplicar filtros');
-            // TODO: Implementar filtrado de reportes
-        }
+// ========================================
+// FUNCIONES DE FILTRADO
+// ========================================
+function cambiarReporte() {
+    // No hacer nada, esperar a que el usuario presione "Buscar"
+    console.log('Tipo de reporte seleccionado');
+}
 
-        function generarReportePDF() {
-            console.log('Generar PDF');
-            alert('Generando reporte PDF - Conectar con backend');
+function aplicarFiltros() {
+    const tipoReporte = document.getElementById('tipoReporte').value;
+    const periodo = document.getElementById('periodo').value;
+    let fechaInicio = document.getElementById('fechaInicio').value;
+    let fechaFin = document.getElementById('fechaFin').value;
+    
+    // Validar que si es personalizado, tenga fechas
+    if (periodo === 'personalizado') {
+        if (!fechaInicio || !fechaFin) {
+            alert('Por favor seleccione las fechas de inicio y fin');
+            return;
         }
-
-        function exportarExcel() {
-            console.log('Exportar Excel');
-            alert('Exportando a Excel - Conectar con backend');
-        }
-
-        function actualizarReportes() {
-            console.log('Actualizar reportes');
-            alert('Actualizando datos - Conectar con backend');
-        }
-
-        // Establecer fechas por defecto
-        const hoy = new Date();
-        const primerDiaMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
         
-        document.getElementById('fechaInicio').value = primerDiaMes.toISOString().split('T')[0];
-        document.getElementById('fechaFin').value = hoy.toISOString().split('T')[0];
-
-        // ========================================
-        // FUNCIONES PARA CARGAR NOMBRE DE USAURIO 
-        // ========================================
-
-document.addEventListener('DOMContentLoaded', () => {
-    const nombre = localStorage.getItem('clienteNombre') || 'Cliente';
-    const apellido = localStorage.getItem('clienteApellido') || '';
-    const inicial = nombre.charAt(0).toUpperCase();
-
-    // Insertar nombre completo
-    const nombreSpan = document.getElementById('nombreCliente');
-    if (nombreSpan) {
-        nombreSpan.textContent = `${nombre} ${apellido}`;
+        if (new Date(fechaInicio) > new Date(fechaFin)) {
+            alert('La fecha de inicio no puede ser mayor que la fecha fin');
+            return;
+        }
     }
+    
+    // Construir URL con parámetros
+    let url = '{{ route("admin.reportesAdm") }}';
+    const params = new URLSearchParams();
+    
+    params.append('tipo', tipoReporte);
+    params.append('periodo', periodo);
+    
+    if (periodo === 'personalizado' && fechaInicio && fechaFin) {
+        params.append('fecha_inicio', fechaInicio);
+        params.append('fecha_fin', fechaFin);
+    }
+    
+    // Redirigir con parámetros
+    window.location.href = url + '?' + params.toString();
+}
 
-    // Insertar inicial como avatar
-    const avatarDiv = document.getElementById('avatarInicial');
-    if (avatarDiv) {
-        avatarDiv.textContent = inicial;
+// Detectar cambio de período para habilitar/deshabilitar fechas
+document.getElementById('periodo').addEventListener('change', function() {
+    const periodo = this.value;
+    const fechaInicio = document.getElementById('fechaInicio');
+    const fechaFin = document.getElementById('fechaFin');
+    
+    if (periodo === 'personalizado') {
+        fechaInicio.disabled = false;
+        fechaFin.disabled = false;
+        fechaInicio.required = true;
+        fechaFin.required = true;
+    } else {
+        fechaInicio.disabled = true;
+        fechaFin.disabled = true;
+        fechaInicio.required = false;
+        fechaFin.required = false;
     }
 });
+
+    // ========================================
+    // VER DETALLE DE CLIENTE (MODAL)
+    // ========================================
+async function verDetalleCliente(idCliente) {
+    try {
+        const response = await fetch(`/admin/reportes/cliente/${idCliente}`, {
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Error al cargar los datos');
+        }
+        
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error(result.message);
+        }
+        
+        const data = result;
+        
+        // Actualizar contenido del modal
+        const modal = document.getElementById('modalDetalleCliente');
+        
+        // Actualizar título y datos del cliente
+        modal.querySelector('.premium-card h3').textContent = 
+            `${data.cliente.nombre} ${data.cliente.apellido}`;
+        modal.querySelector('.premium-card p').innerHTML = `
+            <i class="bi bi-envelope"></i> ${data.cliente.correoElectronico} | 
+            <i class="bi bi-phone"></i> ${data.cliente.telefono} | 
+            <span class="badge bg-success">Cliente VIP</span>
+        `;
+        
+        // Actualizar KPIs
+        const kpiValues = modal.querySelectorAll('.kpi-value');
+        kpiValues[0].textContent = data.estadisticas.total_citas;
+        kpiValues[1].textContent = '$' + data.estadisticas.total_gastado;
+        kpiValues[2].textContent = '$' + data.estadisticas.ticket_promedio;
+        kpiValues[3].textContent = data.estadisticas.satisfaccion;
+        
+        // Actualizar tabla de últimas citas
+        const tbody = modal.querySelector('tbody');
+        tbody.innerHTML = '';
+        
+        if (data.ultimas_citas.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay citas registradas</td></tr>';
+        } else {
+            data.ultimas_citas.forEach(cita => {
+                const fecha = new Date(cita.fecha).toLocaleDateString('es-SV', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                });
+                
+                const estilista = cita.estilista_nombre && cita.estilista_apellido 
+                    ? `${cita.estilista_nombre} ${cita.estilista_apellido}` 
+                    : 'N/A';
+                
+                const estadoClass = cita.estado === 'COMPLETADA' ? 'bg-success' : 'bg-warning';
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${fecha}</td>
+                        <td>${cita.servicios}</td>
+                        <td>${estilista}</td>
+                        <td>$${parseFloat(cita.monto).toFixed(2)}</td>
+                        <td><span class="badge ${estadoClass}">${cita.estado}</span></td>
+                    </tr>
+                `;
+            });
+        }
+        
+        // Mostrar modal
+        const modalInstance = new bootstrap.Modal(modal);
+        modalInstance.show();
+        
+    } catch (error) {
+        console.error('Error al cargar detalle del cliente:', error);
+        alert('No se pudo cargar la información del cliente: ' + error.message);
+    }
+}
+    // ========================================
+    // VER DETALLE DE ESTILISTA (MODAL)
+    // ========================================
+    async function verDetalleEstilista(idEstilista) {
+        try {
+            const response = await fetch(
+                `/admin/reportes/estilista/${idEstilista}?fecha_inicio=${fechaInicio}&fecha_fin=${fechaFin}`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                }
+            );
+            
+            const data = await response.json();
+            
+            // Actualizar contenido del modal
+            const modal = document.getElementById('modalDetalleEstilista');
+            
+            modal.querySelector('.premium-card h3').textContent = 
+                `${data.estilista.nombre} ${data.estilista.apellido} - Estilista Destacado`;
+            
+            // Actualizar KPIs
+            const kpis = modal.querySelectorAll('.kpi-value');
+            kpis[0].textContent = data.estadisticas.total_citas;
+            kpis[1].textContent = data.estadisticas.clientes_atendidos;
+            kpis[2].textContent = '$' + parseFloat(data.estadisticas.ingresos_generados).toFixed(2);
+            
+            // Mostrar modal
+            const modalInstance = new bootstrap.Modal(modal);
+            modalInstance.show();
+            
+        } catch (error) {
+            console.error('Error al cargar detalle del estilista:', error);
+            alert('No se pudo cargar la información del estilista');
+        }
+    }
+
+    // ========================================
+    // EXPORTAR PDF Y EXCEL
+    // ========================================
+function generarReportePDF() {
+    const tipoReporte = document.getElementById('tipoReporte').value;
+    const periodo = document.getElementById('periodo').value;
+    const fechaInicio = document.getElementById('fechaInicio').value;
+    const fechaFin = document.getElementById('fechaFin').value;
+    
+    // Construir URL con parámetros GET
+    let url = '{{ route("admin.reportes.pdf") }}';
+    const params = new URLSearchParams();
+    
+    params.append('tipo', tipoReporte);
+    params.append('periodo', periodo);
+    
+    if (periodo === 'personalizado' && fechaInicio && fechaFin) {
+        params.append('fecha_inicio', fechaInicio);
+        params.append('fecha_fin', fechaFin);
+    }
+    
+    // Abrir en nueva ventana para descargar
+    const urlCompleta = url + '?' + params.toString();
+    console.log('URL PDF:', urlCompleta); // Para debugging
+    
+    window.open(urlCompleta, '_blank');
+}
+
+    async function exportarExcel() {
+        try {
+            const response = await fetch('{{ route("admin.reportes.excel") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    tipo: document.getElementById('tipoReporte').value,
+                    periodo: document.getElementById('periodo').value,
+                    fecha_inicio: fechaInicio,
+                    fecha_fin: fechaFin
+                })
+            });
+            
+            const result = await response.json();
+            alert(result.message);
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al exportar Excel');
+        }
+    }
+
+    function actualizarReportes() {
+        location.reload();
+    }
+
+    // ========================================
+    // ESTABLECER FECHAS POR DEFECTO
+    // ========================================
+    document.addEventListener('DOMContentLoaded', function() {
+        const fechaInicioInput = document.getElementById('fechaInicio');
+        const fechaFinInput = document.getElementById('fechaFin');
+        
+        if (!fechaInicioInput.value) {
+            fechaInicioInput.value = fechaInicio;
+        }
+        if (!fechaFinInput.value) {
+            fechaFinInput.value = fechaFin;
+        }
+
+        // Cargar nombre de usuario
+        const nombre = localStorage.getItem('clienteNombre') || 'Administrador';
+        const apellido = localStorage.getItem('clienteApellido') || '';
+        const inicial = nombre.charAt(0).toUpperCase();
+
+        const nombreSpan = document.getElementById('nombreCliente');
+        if (nombreSpan) {
+            nombreSpan.textContent = `${nombre} ${apellido}`;
+        }
+
+        const avatarDiv = document.getElementById('avatarInicial');
+        if (avatarDiv) {
+            avatarDiv.textContent = inicial;
+        }
+    });
 </script>
 
     
