@@ -35,9 +35,6 @@
             <a href="{{ route('cliente.citasCli') }}" class="menu-item">
                 <i class="bi bi-calendar-check"></i> Citas
             </a>
-            <a href="{{ route('cliente.serviciosCli') }}" class="menu-item">
-                <i class="bi bi-scissors"></i> Servicios
-            </a>
             <a href="{{ route('cliente.promocionesCli') }}" class="menu-item">
                 <i class="bi bi-gift"></i> Promociones
             </a>

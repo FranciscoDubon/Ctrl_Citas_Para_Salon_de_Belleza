@@ -231,6 +231,26 @@ public function mostrarCitasCliente()
 
     return view('cliente.citasCliente', compact('cliente', 'visitas', 'ultimaCita', 'proximaCita'));
 }
+public function verCita($id)
+{
+    try {
+        $cita = \App\Models\Cita::with(['servicios', 'estilista'])->find($id);
+
+        if (!$cita) {
+            return response()->json(['success' => false, 'message' => 'Cita no encontrada']);
+        }
+
+        return response()->json([
+            'success' => true,
+            'cita' => $cita
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error en el servidor: ' . $e->getMessage()
+        ]);
+    }
+}
 
 
 }

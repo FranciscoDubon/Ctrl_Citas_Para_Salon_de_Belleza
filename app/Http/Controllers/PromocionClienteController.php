@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class PromocionClienteController extends Controller
 {
+
     // ========================================
     // VISTA PRINCIPAL DE PROMOCIONES CLIENTE
     // ========================================

@@ -271,3 +271,5 @@ Route::prefix('cliente')->name('cliente.')->group(function () {
     Route::post('/promociones/validar-codigo', [PromocionClienteController::class, 'validarCodigo'])->name('promociones.validar');
     Route::get('/promociones/combo/{id}', [PromocionClienteController::class, 'detalleCombo'])->name('promociones.combo');
 });
+
+Route::get('/cliente/cita/{id}', [ClienteController::class, 'verCita']);

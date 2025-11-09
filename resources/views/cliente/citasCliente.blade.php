@@ -39,9 +39,6 @@ $promoSeleccionada = request()->query('promo', '');
             <a href="{{ route('cliente.citasCli') }}" class="menu-item active">
                 <i class="bi bi-calendar-check"></i> Citas
             </a>
-            <a href="{{ route('cliente.serviciosCli') }}" class="menu-item">
-                <i class="bi bi-scissors"></i> Servicios
-            </a>
             <a href="{{ route('cliente.promocionesCli') }}" class="menu-item">
                 <i class="bi bi-gift"></i> Promociones
             </a>
@@ -147,223 +144,74 @@ $promoSeleccionada = request()->query('promo', '');
                         </div>
 
                         <!-- Lista de Citas -->
-                        <div class="row g-4" id="listaMisCitas">
-
-                            <!-- Cita Pendiente de Confirmación -->
-                            <div class="col-lg-6">
-                                <div class="list-item-custom" style="flex-direction: column; align-items: flex-start; background: rgba(255, 193, 7, 0.08); border-left: 4px solid #ffc107;">
-                                    <div class="d-flex align-items-center justify-content-between w-100 mb-3">
-                                        <div>
-                                            <h6 style="color: var(--borgona); margin: 0; font-weight: 700;">Limpieza Facial Profunda</h6>
-                                            <small style="color: var(--borgona); opacity: 0.7;">
-                                                <i class="bi bi-calendar3"></i> Lun, 04 Nov 2024 - 10:00 AM
-                                            </small>
-                                        </div>
-                                        <span class="badge bg-warning text-dark">
-                                            <i class="bi bi-clock-history"></i> Pendiente
-                                        </span>
-                                    </div>
-
-                                    <div class="w-100 mb-3">
-                                        <div class="row g-2">
-                                            <div class="col-6">
-                                                <small style="color: var(--borgona); opacity: 0.7;">
-                                                    <i class="bi bi-person-circle"></i> Estilista
-                                                </small>
-                                                <br>
-                                                <strong style="color: var(--borgona);">Laura Gómez</strong>
-                                            </div>
-                                            <div class="col-6 text-end">
-                                                <small style="color: var(--borgona); opacity: 0.7;">Duración</small>
-                                                <br>
-                                                <strong style="color: var(--borgona);">60 min</strong>
-                                            </div>
-                                            <div class="col-6">
-                                                <small style="color: var(--borgona); opacity: 0.7;">Precio</small>
-                                                <br>
-                                                <strong style="color: var(--dorado-palido); font-size: 1.1rem;">$31.50</strong>
-                                            </div>
-                                            <div class="col-6 text-end">
-                                                <small style="color: var(--borgona); opacity: 0.7;">Código</small>
-                                                <br>
-                                                <code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">BR-2024-00245</code>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="alert-custom w-100 mb-3" style="background: rgba(255, 193, 7, 0.1); border-left-color: #ffc107;">
-                                        <i class="bi bi-exclamation-triangle"></i>
-                                        <small><strong>Acción requerida:</strong> Por favor confirma tu asistencia llamando al salón o usando el botón de abajo.</small>
-                                    </div>
-
-                                    <div class="d-flex gap-2 w-100">
-                                        <button class="btn btn-gold btn-sm flex-fill" onclick="confirmarAsistenciaCita(1)">
-                                            <i class="bi bi-check-circle"></i> Confirmar Asistencia
-                                        </button>
-                                        <button class="btn btn-outline-gold btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetalleCita" onclick="verDetalleCita(1)">
-                                            <i class="bi bi-eye"></i> Ver Detalles
-                                        </button>
-                                        <button class="btn btn-soft btn-sm" onclick="mostrarOpcionesCita(1)">
-                                            <i class="bi bi-three-dots-vertical"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Cita Confirmada (Próxima) -->
-                            <div class="col-lg-6">
-                                <div class="list-item-custom" style="flex-direction: column; align-items: flex-start; background: rgba(212, 175, 55, 0.08); border-left: 4px solid var(--dorado-palido);">
-                                    <div class="d-flex align-items-center justify-content-between w-100 mb-3">
-                                        <div>
-                                            <h6 style="color: var(--borgona); margin: 0; font-weight: 700;">Corte de Cabello</h6>
-                                            <small style="color: var(--dorado-palido); font-weight: 600;">
-                                                <i class="bi bi-calendar-event"></i> Vie, 08 Nov 2024 - 03:00 PM
-                                            </small>
-                                        </div>
-                                        <span class="badge bg-info">
-                                            <i class="bi bi-calendar-check"></i> Confirmada
-                                        </span>
-                                    </div>
-
-                                    <div class="w-100 mb-3">
-                                        <div class="row g-2">
-                                            <div class="col-6">
-                                                <small style="color: var(--borgona); opacity: 0.7;">
-                                                    <i class="bi bi-person-circle"></i> Estilista
-                                                </small>
-                                                <br>
-                                                <strong style="color: var(--borgona);">Ana López</strong>
-                                                <br>
-                                                <small style="color: var(--dorado-palido);">
-                                                    <i class="bi bi-star-fill"></i> Tu estilista preferida
-                                                </small>
-                                            </div>
-                                            <div class="col-6 text-end">
-                                                <small style="color: var(--borgona); opacity: 0.7;">Duración</small>
-                                                <br>
-                                                <strong style="color: var(--borgona);">30 min</strong>
-                                            </div>
-                                            <div class="col-6">
-                                                <small style="color: var(--borgona); opacity: 0.7;">Precio</small>
-                                                <br>
-                                                <strong style="color: var(--dorado-palido); font-size: 1.1rem;">$13.50</strong>
-                                                <br>
-                                                <small style="color: var(--borgona); opacity: 0.6;">
-                                                    <i class="bi bi-gift"></i> Descuento VIP aplicado
-                                                </small>
-                                            </div>
-                                            <div class="col-6 text-end">
-                                                <small style="color: var(--borgona); opacity: 0.7;">Código</small>
-                                                <br>
-                                                <code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">BR-2024-00278</code>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="alert-custom w-100 mb-3" style="background: rgba(212, 175, 55, 0.1); border-left-color: var(--dorado-palido);">
-                                        <i class="bi bi-info-circle"></i>
-                                        <small>Tu cita está confirmada. Te esperamos el viernes a las 3:00 PM. Recuerda llegar 5 minutos antes.</small>
-                                    </div>
-
-                                    <div class="d-flex gap-2 w-100">
-                                        <button class="btn btn-outline-gold btn-sm flex-fill" data-bs-toggle="modal" data-bs-target="#modalDetalleCita" onclick="verDetalleCita(2)">
-                                            <i class="bi bi-eye"></i> Ver Detalles
-                                        </button>
-                                        <button class="btn btn-soft btn-sm" onclick="agregarCalendario(2)">
-                                            <i class="bi bi-calendar-plus"></i>
-                                        </button>
-                                        <button class="btn btn-soft btn-sm" onclick="mostrarOpcionesCita(2)">
-                                            <i class="bi bi-three-dots-vertical"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Cita Completada (Histórica) -->
-                            <div class="col-lg-6">
-                                <div class="list-item-custom" style="flex-direction: column; align-items: flex-start; opacity: 0.8;">
-                                    <div class="d-flex align-items-center justify-content-between w-100 mb-3">
-                                        <div>
-                                            <h6 style="color: var(--borgona); margin: 0; font-weight: 700;">Manicure + Pedicure</h6>
-                                            <small style="color: var(--borgona); opacity: 0.7;">
-                                                <i class="bi bi-calendar3"></i> Mié, 30 Oct 2024 - 11:00 AM
-                                            </small>
-                                        </div>
-                                        <span class="badge bg-success">
-                                            <i class="bi bi-check-circle"></i> Completada
-                                        </span>
-                                    </div>
-
-                                    <div class="w-100 mb-3">
-                                        <div class="row g-2">
-                                            <div class="col-6">
-                                                <small style="color: var(--borgona); opacity: 0.7;">
-                                                    <i class="bi bi-person-circle"></i> Estilista
-                                                </small>
-                                                <br>
-                                                <strong style="color: var(--borgona);">Sofía Ramírez</strong>
-                                            </div>
-                                            <div class="col-6 text-end">
-                                                <small style="color: var(--borgona); opacity: 0.7;">Duración</small>
-                                                <br>
-                                                <strong style="color: var(--borgona);">75 min</strong>
-                                            </div>
-                                            <div class="col-6">
-                                                <small style="color: var(--borgona); opacity: 0.7;">Total Pagado</small>
-                                                <br>
-                                                <strong style="color: var(--dorado-palido); font-size: 1.1rem;">$22.50</strong>
-                                            </div>
-                                            <div class="col-6 text-end">
-                                                <small style="color: var(--borgona); opacity: 0.7;">Código</small>
-                                                <br>
-                                                <code style="background: var(--rosa-empolvado); color: var(--borgona); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">BR-2024-00189</code>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div style="background: rgba(212, 175, 55, 0.1); padding: 0.75rem; border-radius: 8px; width: 100%; margin-bottom: 1rem;">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                            <div>
-                                                <small style="color: var(--borgona); opacity: 0.7;">Tu calificación:</small>
-                                                <br>
-                                                <span style="color: var(--dorado-palido); font-size: 1.1rem;">
-                                                    <i class="bi bi-star-fill"></i>
-                                                    <i class="bi bi-star-fill"></i>
-                                                    <i class="bi bi-star-fill"></i>
-                                                    <i class="bi bi-star-fill"></i>
-                                                    <i class="bi bi-star-fill"></i>
-                                                </span>
-                                            </div>
-                                            <small style="color: var(--borgona); opacity: 0.7;">Hace 2 días</small>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex gap-2 w-100">
-                                        <button class="btn btn-gold btn-sm flex-fill" onclick="reservarOtraVez(3)">
-                                            <i class="bi bi-arrow-repeat"></i> Reservar de Nuevo
-                                        </button>
-                                        <button class="btn btn-outline-gold btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetalleCita" onclick="verDetalleCita(3)">
-                                            <i class="bi bi-eye"></i> Ver Detalles
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <!-- Mensaje si no hay citas -->
-                        <div id="mensajeNoCitas" style="display: none; text-align: center; padding: 3rem;">
-                            <div style="font-size: 4rem; color: var(--rosa-empolvado); margin-bottom: 1rem;">
-                                <i class="bi bi-calendar-x"></i>
-                            </div>
-                            <h5 style="color: var(--borgona);">No tienes citas programadas</h5>
-                            <p style="color: var(--borgona); opacity: 0.7;">¡Es un buen momento para agendar tu próxima cita de belleza!</p>
-                            <button class="btn btn-gold" onclick="scrollToReservar()">
-                                <i class="bi bi-calendar-plus"></i> Agendar Nueva Cita
-                            </button>
-                        </div>
-
+<div class="row g-4" id="listaMisCitas">
+    @forelse ($citas as $cita)
+        <div class="col-lg-6 cita-item" data-estado="{{ strtolower($cita->estado) }}">
+            <div class="list-item-custom"
+                 style="flex-direction: column; align-items: flex-start; {{ $cita->estado == 'PENDIENTE' ? 'background: rgba(255, 193, 7, 0.08); border-left: 4px solid #ffc107;' : '' }}
+                        {{ $cita->estado == 'CONFIRMADA' ? 'background: rgba(212, 175, 55, 0.08); border-left: 4px solid var(--dorado-palido);' : '' }}
+                        {{ $cita->estado == 'COMPLETADA' ? 'opacity: 0.8;' : '' }}">
+                <div class="d-flex align-items-center justify-content-between w-100 mb-3">
+                    <div>
+                        <h6 style="margin:0; font-weight:700;">{{ $cita->servicios->pluck('nombre')->join(', ') }}</h6>
+                        <small style="opacity:0.7;">
+                            <i class="bi bi-calendar3"></i>
+                            {{ \Carbon\Carbon::parse($cita->fecha)->format('D, d M Y') }} - 
+                            {{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}
+                        </small>
                     </div>
+                    <span class="badge {{ $cita->estado == 'PENDIENTE' ? 'bg-warning text-dark' : ($cita->estado == 'CONFIRMADA' ? 'bg-info' : 'bg-success') }}">
+                        {{ ucfirst(strtolower($cita->estado)) }}
+                    </span>
+                </div>
+
+                <div class="w-100 mb-3">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <small style="opacity:0.7;"><i class="bi bi-person-circle"></i> Estilista</small><br>
+                            <strong>{{ $cita->estilista->nombre ?? 'N/A' }}</strong>
+                        </div>
+                        <div class="col-6 text-end">
+                            <small style="opacity:0.7;">Duración</small><br>
+                            <strong>{{ $cita->servicios->sum('duracionBase') }} min</strong>
+                        </div>
+                        <div class="col-6">
+                            <small style="opacity:0.7;">Precio</small><br>
+                            <strong>${{ $cita->servicios->sum('precioBase') }}</strong>
+                        </div>
+                        <div class="col-6 text-end">
+                            <small style="opacity:0.7;">Código</small><br>
+                            <code style="background: var(--rosa-empolvado); padding:0.25rem 0.5rem; border-radius:4px; font-size:0.75rem;">BR-{{ $cita->id }}</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 w-100">
+                    @if($cita->estado == 'PENDIENTE')
+                        <button class="btn btn-gold btn-sm flex-fill" onclick="confirmarAsistenciaCita({{ $cita->id }})">
+                            <i class="bi bi-check-circle"></i> Confirmar Asistencia
+                        </button>
+                    @endif
+                    <button class="btn btn-outline-gold btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetalleCita" onclick="verDetalleCita({{ $cita->id }})">
+                        <i class="bi bi-eye"></i> Ver Detalles
+                    </button>
+                </div>
+            </div>
+        </div>
+    @empty
+        <div id="mensajeNoCitas" style="text-align:center; padding:3rem;">
+            <div style="font-size:4rem; color: var(--rosa-empolvado); margin-bottom:1rem;">
+                <i class="bi bi-calendar-x"></i>
+            </div>
+            <h5>No tienes citas programadas</h5>
+            <p style="opacity:0.7;">¡Es un buen momento para agendar tu próxima cita!</p>
+            <button class="btn btn-gold" onclick="scrollToReservar()">
+                <i class="bi bi-calendar-plus"></i> Agendar Nueva Cita
+            </button>
+        </div>
+    @endforelse
+</div>
+
                 </div>
             </div>
         </div>
@@ -440,58 +288,60 @@ $promoSeleccionada = request()->query('promo', '');
                 <button class="btn btn-sm btn-outline-gold" onclick="filtrarPorCategoria('corporal')">Corporal</button>
             </div>
 
-            <div class="row g-3" id="listaServicios">
-                @forelse($servicios as $servicio)
-                <!-- Servicio Seleccionable {{ $loop->iteration }} -->
-                <div class="col-lg-4 col-md-6 servicio-container" data-categoria="{{ strtolower($servicio->categoria) }}">
-                    <div class="list-item-custom servicio-item" 
-                         style="cursor: pointer; transition: all 0.3s;" 
-                         onclick="seleccionarServicio(
-                             {{ $servicio->idServicio }}, 
-                             '{{ $servicio->nombre }}', 
-                             {{ $servicio->duracionBase }}, 
-                             {{ $servicio->precioBase }},
-                             {{ $servicio->requiere_largo_cabello ? 'true' : 'false' }},
-                             {{ $servicio->requiere_tinturado_previo ? 'true' : 'false' }},
-                             {{ $servicio->requiere_retiro_esmalte ? 'true' : 'false' }},
-                             {{ $servicio->requiere_estilizado ? 'true' : 'false' }}
-                         )">
-                        <div class="list-avatar" style="background: linear-gradient(135deg, var(--borgona), var(--borgona-light));">
-                            @if(stripos($servicio->categoria, 'cabello') !== false)
-                                <i class="bi bi-scissors"></i>
-                            @elseif(stripos($servicio->categoria, 'uña') !== false)
-                                <i class="bi bi-hand-index-thumb"></i>
-                            @elseif(stripos($servicio->categoria, 'facial') !== false)
-                                <i class="bi bi-emoji-smile"></i>
-                            @elseif(stripos($servicio->categoria, 'maquillaje') !== false)
-                                <i class="bi bi-palette"></i>
-                            @else
-                                <i class="bi bi-stars"></i>
-                            @endif
-                        </div>
-                        <div class="list-content">
-                            <h6>{{ $servicio->nombre }}</h6>
-                            <p>
-                                <i class="bi bi-clock"></i> {{ $servicio->duracionBase }} min | 
-                                <strong style="color: var(--dorado-palido);">${{ number_format($servicio->precioBase, 2) }}</strong>
-                            </p>
-                            @if($servicio->descripcion)
-                            <small class="text-muted">{{ Str::limit($servicio->descripcion, 50) }}</small>
-                            @endif
-                        </div>
-                        <div class="list-badge">
-                            <span class="badge badge-soft">{{ ucfirst($servicio->categoria) }}</span>
-                        </div>
-                    </div>
-                </div>
-                @empty
-                <div class="col-12">
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle"></i> No hay servicios disponibles en este momento.
-                    </div>
-                </div>
-                @endforelse
+<div class="row g-3" id="listaServicios">
+    @forelse($servicios as $servicio)
+    <div class="col-lg-4 col-md-6 servicio-container" 
+         data-categoria="{{ strtolower($servicio->categoria) }}"
+         data-id="{{ $servicio->idServicio }}">
+        <div class="list-item-custom servicio-item" 
+             style="cursor: pointer; transition: all 0.3s;" 
+             onclick="seleccionarServicio(event,
+                 {{ $servicio->idServicio }},
+                 '{{ $servicio->nombre }}',
+                 {{ $servicio->duracionBase }},
+                 {{ $servicio->precioBase }},
+                 {{ $servicio->requiere_largo_cabello ? 'true' : 'false' }},
+                 {{ $servicio->requiere_tinturado_previo ? 'true' : 'false' }},
+                 {{ $servicio->requiere_retiro_esmalte ? 'true' : 'false' }},
+                 {{ $servicio->requiere_estilizado ? 'true' : 'false' }}
+             )">
+            <div class="list-avatar" style="background: linear-gradient(135deg, var(--borgona), var(--borgona-light));">
+                @if(stripos($servicio->categoria, 'cabello') !== false)
+                    <i class="bi bi-scissors"></i>
+                @elseif(stripos($servicio->categoria, 'uña') !== false)
+                    <i class="bi bi-hand-index-thumb"></i>
+                @elseif(stripos($servicio->categoria, 'facial') !== false)
+                    <i class="bi bi-emoji-smile"></i>
+                @elseif(stripos($servicio->categoria, 'maquillaje') !== false)
+                    <i class="bi bi-palette"></i>
+                @else
+                    <i class="bi bi-stars"></i>
+                @endif
             </div>
+            <div class="list-content">
+                <h6>{{ $servicio->nombre }}</h6>
+                <p>
+                    <i class="bi bi-clock"></i> {{ $servicio->duracionBase }} min | 
+                    <strong style="color: var(--dorado-palido);">${{ number_format($servicio->precioBase, 2) }}</strong>
+                </p>
+                @if($servicio->descripcion)
+                <small class="text-muted">{{ Str::limit($servicio->descripcion, 50) }}</small>
+                @endif
+            </div>
+            <div class="list-badge">
+                <span class="badge badge-soft">{{ ucfirst($servicio->categoria) }}</span>
+            </div>
+        </div>
+    </div>
+    @empty
+    <div class="col-12">
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> No hay servicios disponibles en este momento.
+        </div>
+    </div>
+    @endforelse
+</div>
+
 
             <!-- Resumen temporal y botón continuar -->
             <div class="row mt-4">
@@ -819,78 +669,291 @@ $promoSeleccionada = request()->query('promo', '');
 
     <!-- Scripts -->
 <script>
-    // ========================================
-    // VARIABLES GLOBALES
-    // ========================================
-    let reservaData = {
-        servicios: [], // Array de servicios seleccionados
-        detalles: {}, // Detalles adicionales por servicio
-        fecha: '',
-        hora: '',
-        estilistaId: null,
-        estilista: '',
-        promocion: '{{ $promoSeleccionada }}',
-        comboId: '{{ $comboSeleccionado }}',
-        notas: '',
-        duracionTotal: 0,
-        precioBase: 0,
-        descuento: 0,
-        precioFinal: 0
-    };
 
-    // Obtener CSRF token
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+// Obtener CSRF token
+const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-    // ========================================
-    // INICIALIZACIÓN
-    // ========================================
+// ✅ PASAR DATOS DEL COMBO DESDE BLADE A JAVASCRIPT
+const comboData = @json($comboData ?? null);
+
+// ========================================
+// VARIABLES GLOBALES
+// ========================================
+let reservaData = {
+    servicios: [],
+    detalles: {},
+    fecha: '',
+    hora: '',
+    estilistaId: null,
+    estilista: '',
+    promocion: '{{ $promoSeleccionada }}',
+    comboId: '{{ $comboSeleccionado }}',
+    notas: '',
+    duracionTotal: 0,
+    precioBase: 0,
+    descuento: 0,
+    precioFinal: 0
+};
+// ========================================
+// DEBUG: Verificar datos recibidos
+// ========================================
+console.log('🔍 DEBUGGING COMBO:');
+console.log('- comboId desde URL:', '{{ $comboSeleccionado }}');
+console.log('- comboData desde Blade:', comboData);
+console.log('- reservaData.comboId:', reservaData.comboId);
+
+if (comboData) {
+    console.log('✅ Combo Data válido:');
+    console.log('  - ID:', comboData.idCombo);
+    console.log('  - Nombre:', comboData.nombre);
+    console.log('  - Servicios:', comboData.servicios.length);
+    comboData.servicios.forEach((s, i) => {
+        console.log(`  ${i+1}. ${s.nombre} (ID: ${s.idServicio})`);
+    });
+} else {
+    console.log('⚠️ No hay combo data');
+}
+
+
+console.log('🎯 Datos iniciales:', {
+    promocion: reservaData.promocion,
+    comboId: reservaData.comboId,
+    comboData: comboData
+});
+
+// ========================================
+// SCRIPT DE CARGA INICIAL DE CITAS
+// ========================================
+
+// ========================================
+// INICIALIZACIÓN
+// ========================================
 document.addEventListener('DOMContentLoaded', function() {
-    // Cargar nombre de usuario
+    console.log('📋 Inicializando vista de citas...');
+    
+    // 1️⃣ Cargar datos del usuario
     cargarDatosUsuario();
     
-    // Si viene con promoción pre-aplicada
+    // 2️⃣ Aplicar promoción si viene pre-aplicada
     if (reservaData.promocion) {
-        document.getElementById('codigoPromocion').value = reservaData.promocion;
-        setTimeout(() => {
-            validarPromocion();
-        }, 500);
+        const promoInput = document.getElementById('codigoPromocion');
+        if (promoInput) {
+            promoInput.value = reservaData.promocion;
+            setTimeout(() => { validarPromocion(); }, 500);
+        }
     }
     
-    // Si viene con combo pre-seleccionado
-    if (reservaData.comboId) {
-        cargarCombo(reservaData.comboId);
+    // 3️⃣ ✅ CARGAR COMBO Y SALTAR AL PASO 2 SI VIENE PRE-SELECCIONADO
+    if (reservaData.comboId && comboData) {
+        console.log('✅ Combo detectado, cargando automáticamente...');
+        cargarComboAutomaticamente(comboData);
     }
     
-    // Inicializar fecha mínima (hoy)
+    // 4️⃣ Inicializar fecha mínima (hoy)
     const fechaInput = document.getElementById('fechaCita');
     if (fechaInput) {
         const hoy = new Date().toISOString().split('T')[0];
         fechaInput.min = hoy;
     }
+    
+    console.log('✅ Inicialización completa');
 });
 
-// Función para cargar combo automáticamente
-async function cargarCombo(comboId) {
-    try {
-        const response = await fetch(`/cliente/promociones/combo/${comboId}`);
-        const data = await response.json();
-        
-        if (data.success) {
-            const combo = data.combo;
-            
-            // Mostrar alerta con información del combo
-            alert(`✨ Combo Seleccionado: ${combo.nombre}\n\n` +
-                  `Precio: $${combo.precioCombo}\n` +
-                  `Ahorro: $${combo.ahorro}\n\n` +
-                  `Los servicios del combo se agregarán automáticamente.`);
-            
-            // Continuar con el flujo
-            continuarAFechaHora();
-        }
-    } catch (error) {
-        console.error('Error al cargar combo:', error);
+// ✅ FUNCIÓN PARA CARGAR COMBO AUTOMÁTICAMENTE
+// ✅ FUNCIÓN PARA CARGAR COMBO AUTOMÁTICAMENTE
+function cargarComboAutomaticamente(combo) {
+    if (!combo || !combo.servicios) {
+        console.error('❌ Combo inválido:', combo);
+        return;
     }
+    
+    console.log('🎁 Cargando combo:', combo.nombre);
+    console.log('📦 Servicios a cargar:', combo.servicios);
+    
+    // Limpiar selección previa
+    reservaData.servicios = [];
+    reservaData.detalles = {};
+    reservaData.comboId = combo.idCombo;
+    
+    let serviciosMarcados = 0;
+    
+    // Agregar servicios del combo a reservaData
+    combo.servicios.forEach(servicio => {
+        console.log('➕ Procesando servicio:', servicio.nombre, 'ID:', servicio.idServicio);
+        
+        // Agregar al array de servicios
+        reservaData.servicios.push({
+            id: servicio.idServicio,
+            nombre: servicio.nombre,
+            duracion: servicio.duracionBase,
+            precio: servicio.precioBase
+        });
+        
+        // Marcar visualmente en la UI
+        const contenedor = document.querySelector(`.servicio-container[data-id="${servicio.idServicio}"]`);
+        console.log('🔍 Buscando contenedor para servicio ID:', servicio.idServicio, '→', contenedor ? 'Encontrado ✅' : 'No encontrado ❌');
+        
+        if (contenedor) {
+            contenedor.classList.add('seleccionado');
+            const item = contenedor.querySelector('.list-item-custom');
+            if (item) {
+                item.classList.add('selected');
+            }
+            serviciosMarcados++;
+            console.log('✅ Servicio marcado visualmente:', servicio.nombre);
+        } else {
+            console.warn('⚠️ No se encontró contenedor para servicio ID:', servicio.idServicio);
+        }
+    });
+    
+    console.log(`📊 Servicios agregados a reservaData: ${reservaData.servicios.length}`);
+    console.log(`✨ Servicios marcados visualmente: ${serviciosMarcados}`);
+    
+    // ✅ BLOQUEAR TODOS LOS SERVICIOS NO SELECCIONADOS
+    bloquearServiciosNoSeleccionados();
+    
+    // Actualizar resumen y calcular totales
+    actualizarResumenServicios();
+    calcularTotales();
+    
+    // Mostrar alerta informativa
+    const serviciosNombres = combo.servicios.map(s => '• ' + s.nombre).join('\n');
+    alert(`✨ Combo Seleccionado: ${combo.nombre}\n\n` +
+          `📦 Incluye:\n${serviciosNombres}\n\n` +
+          `💰 Precio Combo: $${combo.precioCombo}\n` +
+          `💎 Precio Regular: $${combo.precioRegular}\n` +
+          `🎉 Ahorro: $${combo.ahorro}\n\n` +
+          `⚠️ Los servicios del combo no pueden modificarse.\n` +
+          `Continúa al siguiente paso cuando estés listo.`);
+    
+    console.log('✅ Combo cargado completamente');
 }
+
+// ✅ BLOQUEAR SERVICIOS NO SELECCIONADOS (MODO COMBO)
+function bloquearServiciosNoSeleccionados() {
+    console.log('🔒 Bloqueando servicios no incluidos en el combo...');
+    
+    const todosContenedores = document.querySelectorAll('.servicio-container');
+    
+    todosContenedores.forEach(contenedor => {
+        const servicioId = parseInt(contenedor.dataset.id);
+        const estaEnCombo = reservaData.servicios.some(s => s.id === servicioId);
+        
+        if (!estaEnCombo) {
+            // No está en el combo, bloquear
+            contenedor.classList.add('bloqueado');
+            const item = contenedor.querySelector('.list-item-custom');
+            if (item) {
+                item.style.opacity = '0.4';
+                item.style.cursor = 'not-allowed';
+                item.style.pointerEvents = 'none';
+            }
+        } else {
+            // Está en el combo, marcar como bloqueado pero visible
+            contenedor.classList.add('combo-fijo');
+            const item = contenedor.querySelector('.list-item-custom');
+            if (item) {
+                item.style.cursor = 'not-allowed';
+                item.style.pointerEvents = 'none';
+            }
+        }
+    });
+    
+    // Deshabilitar búsqueda y filtros
+    const busqueda = document.getElementById('buscarServicioReserva');
+    if (busqueda) {
+        busqueda.disabled = true;
+        busqueda.placeholder = '🔒 Combo preseleccionado - Búsqueda deshabilitada';
+    }
+    
+    // Deshabilitar botones de filtro
+    const botonesFiltro = document.querySelectorAll('[onclick^="filtrarPorCategoria"]');
+    botonesFiltro.forEach(btn => {
+        btn.disabled = true;
+        btn.classList.add('disabled');
+    });
+    
+    console.log('✅ Servicios bloqueados');
+}
+
+// Función para cargar combo automáticamente
+function precargarCombo(comboId) {
+    // Buscar combo en la variable que Blade ya pasa a la vista
+    // serviciosCombo viene de tu controlador: collection de servicios del combo
+const combo = combos.find(c => c.idCombo == comboId); // o usa $serviciosCombo directamente
+    if (!combo) return;
+
+    // Limpiar selección anterior
+    reservaData.servicios = [];
+
+    // Recorrer servicios del combo y agregarlos a reservaData.servicios
+    combo.servicios.forEach(servicio => {
+        reservaData.servicios.push({
+            id: servicio.idServicio,
+            nombre: servicio.nombre,
+            duracion: servicio.duracionBase,
+            precio: servicio.precioBase
+        });
+
+        // Marcar visualmente como seleccionado en la lista de servicios
+        const contenedor = document.querySelector(`.servicio-container[data-id='${servicio.idServicio}']`);
+        if (contenedor) {
+            contenedor.classList.add('seleccionado');
+            const item = contenedor.querySelector('.list-item-custom');
+            if (item) item.classList.add('selected');
+        }
+    });
+
+    // Actualizar resumen y totales
+    actualizarResumenServicios();
+    calcularTotales();
+
+    // Avanzar al paso 2 automáticamente
+    continuarAFechaHora();
+}
+
+// Función para cargar combo automáticamente
+function cargarComboYSaltar(combo) {
+    if (!combo || !combo.servicios) {
+        console.warn('Combo o servicios indefinidos');
+        return;
+    }
+
+    // Limpiar cualquier selección previa
+    reservaData.servicios = [];
+    reservaData.detalles = {};
+    reservaData.comboId = combo.idCombo;
+
+    combo.servicios.forEach(serv => {
+        // Agregar al array global
+        reservaData.servicios.push({
+            id: serv.idServicio,
+            nombre: serv.nombre,
+            duracion: serv.duracionBase,
+            precio: serv.precioBase,
+            requiere_largo_cabello: serv.requiere_largo_cabello,
+            requiere_tinturado_previo: serv.requiere_tinturado_previo,
+            requiere_retiro_esmalte: serv.requiere_retiro_esmalte,
+            requiere_estilizado: serv.requiere_estilizado
+        });
+
+        // Marcar visualmente como seleccionado
+        const contenedor = document.querySelector(`.servicio-container[data-id='${servicio.idServicio}']`);
+        contenedor?.classList.add('seleccionado');
+
+        const item = contenedor?.querySelector('.list-item-custom');
+        item?.classList.add('selected');
+    });
+
+    // Actualizar resumen y totales
+    actualizarResumenServicios();
+    calcularTotales();
+
+    // Saltar al paso 2 automáticamente
+    continuarAFechaHora();
+}
+
+
 
     function cargarDatosUsuario() {
         const nombre = localStorage.getItem('clienteNombre') || 'Cliente';
@@ -911,32 +974,43 @@ async function cargarCombo(comboId) {
     // ========================================
     // PASO 1: SELECCIÓN DE SERVICIO(S)
     // ========================================
-function seleccionarServicio(id, nombre, duracion, precio) {
-    // Verificar si ya está seleccionado
-    const index = reservaData.servicios.findIndex(s => s.id === id);
-    
-    const elemento = event.target.closest('.list-item-custom');
-    
-    if (index > -1) {
-        // Ya está seleccionado, removerlo
-        reservaData.servicios.splice(index, 1);
-        delete reservaData.detalles[id];
-        elemento.classList.remove('selected');
-    } else {
-        // Agregar nuevo servicio
-        reservaData.servicios.push({
-            id: id,
-            nombre: nombre,
-            duracion: duracion,
-            precio: precio
-        });
-        elemento.classList.add('selected');
+function seleccionarServicio(event, id, nombre, duracion, precio) {
+    if (!event) return;
+
+    // ✅ BLOQUEAR SI HAY COMBO ACTIVO
+    if (reservaData.comboId) {
+        alert('⚠️ No puedes modificar los servicios de un combo.\n\n' +
+              'Si deseas seleccionar servicios individuales, cancela el combo primero usando el botón "Cancelar Combo".');
+        return;
     }
-    
-    // Actualizar resumen
+
+    const contenedor = event.currentTarget.closest('.servicio-container');
+    if (!contenedor) {
+        console.error('❌ No se encontró contenedor del servicio');
+        return;
+    }
+
+    // Resto del código permanece igual...
+    contenedor.classList.toggle('seleccionado');
+
+    const index = reservaData.servicios.findIndex(s => s.id === id);
+
+    if (contenedor.classList.contains('seleccionado')) {
+        if (index === -1) {
+            reservaData.servicios.push({ id, nombre, duracion, precio });
+            console.log('✅ Servicio agregado:', nombre);
+        }
+    } else {
+        if (index > -1) {
+            reservaData.servicios.splice(index, 1);
+            console.log('➖ Servicio removido:', nombre);
+        }
+    }
+
     actualizarResumenServicios();
     calcularTotales();
 }
+
 function actualizarResumenServicios() {
     // Actualizar resumen en el paso 1
     const contenedorTemp = document.getElementById('resumenServiciosTemp');
@@ -998,6 +1072,13 @@ function actualizarResumenServicios() {
     console.log('📋 Resumen actualizado, calculando totales...');
 }
 function removerServicio(id) {
+    // ✅ BLOQUEAR SI HAY COMBO ACTIVO
+    if (reservaData.comboId) {
+        alert('⚠️ No puedes remover servicios de un combo.\n\n' +
+              'Si deseas seleccionar servicios individuales, cancela el combo primero.');
+        return;
+    }
+    
     console.log('🗑️ Removiendo servicio:', id);
     
     const index = reservaData.servicios.findIndex(s => s.id === id);
@@ -1005,18 +1086,18 @@ function removerServicio(id) {
         reservaData.servicios.splice(index, 1);
         delete reservaData.detalles[id];
         
-        // Actualizar UI - buscar el elemento correcto
-        const elementos = document.querySelectorAll('.servicio-item');
-        elementos.forEach(elem => {
-            const onclick = elem.getAttribute('onclick');
-            if (onclick && onclick.includes(`seleccionarServicio(${id},`)) {
-                elem.classList.remove('selected');
+        // Actualizar UI
+        const contenedor = document.querySelector(`.servicio-container[data-id="${id}"]`);
+        if (contenedor) {
+            contenedor.classList.remove('seleccionado');
+            const item = contenedor.querySelector('.list-item-custom');
+            if (item) {
+                item.classList.remove('selected');
             }
-        });
+        }
         
         console.log('✅ Servicio removido. Servicios restantes:', reservaData.servicios.length);
         
-        // Actualizar resumen y recalcular
         actualizarResumenServicios();
         calcularTotales();
     }
@@ -1465,9 +1546,9 @@ async function confirmarReserva() {
     
     if (!reservaData.fecha || !reservaData.hora || !reservaData.estilistaId) {
         alert('⚠️ Error: Datos incompletos\n' +
-              `Fecha: ${reservaData.fecha}\n` +
-              `Hora: ${reservaData.hora}\n` +
-              `Estilista: ${reservaData.estilistaId}`);
+              `Fecha: ${reservaData.fecha ? '✓' : '✗'}\n` +
+              `Hora: ${reservaData.hora ? '✓' : '✗'}\n` +
+              `Estilista: ${reservaData.estilistaId ? '✓' : '✗'}`);
         return;
     }
     
@@ -1481,7 +1562,8 @@ async function confirmarReserva() {
             servicios: reservaData.servicios.map(s => s.id),
             fecha: reservaData.fecha,
             hora: reservaData.hora,
-            estilista_id: reservaData.estilistaId
+            estilista_id: reservaData.estilistaId,
+            combo_id: reservaData.comboId
         });
         
         const response = await fetch('{{ route("cliente.citas.agendar") }}', {
@@ -1507,6 +1589,7 @@ async function confirmarReserva() {
         console.log('📥 Respuesta recibida:', data);
         
         if (data.success) {
+            // Mostrar mensaje de éxito
             alert(`✅ ${data.message}\n\n` +
                   `📋 Código de cita: #${data.cita.id}\n` +
                   `📅 Fecha: ${data.cita.fecha}\n` +
@@ -1515,10 +1598,16 @@ async function confirmarReserva() {
                   `💰 Total: $${data.cita.precio_final}\n\n` +
                   `Te esperamos! 🎉`);
             
-            // Recargar página después de 2 segundos
-            setTimeout(() => {
-                location.reload();
-            }, 2000);
+            // ✅ LIMPIAR PARÁMETROS DE URL Y RECARGAR
+            console.log('🧹 Limpiando URL y recargando...');
+            
+            // Opción 1: Redirigir a URL limpia (RECOMENDADO)
+            window.location.href = '{{ route("cliente.citasCli") }}';
+            
+            // Opción 2: Si quieres usar history API (sin recargar)
+            // window.history.replaceState({}, document.title, '{{ route("cliente.citasCli") }}');
+            // setTimeout(() => { location.reload(); }, 1500);
+            
         } else {
             alert('❌ Error: ' + data.message);
             btnConfirmar.disabled = false;
@@ -1531,12 +1620,6 @@ async function confirmarReserva() {
         btnConfirmar.innerHTML = '<i class="bi bi-check-circle-fill"></i> Confirmar Reserva';
     }
 }
-    function volverAEstilistas() {
-        document.getElementById('pasoConfirmacion').style.display = 'none';
-        document.getElementById('pasoEstilista').style.display = 'block';
-        actualizarStepper(3);
-    }
-
     // ========================================
     // PROMOCIONES
     // ========================================
@@ -1722,23 +1805,31 @@ function actualizarStepper(pasoActual) {
     // ========================================
     // FUNCIONES PARA MIS CITAS ACTUALES
     // ========================================
-    function toggleMisCitas() {
-        const seccion = document.getElementById('seccionMisCitas');
-        const icono = document.getElementById('iconToggleCitas');
+function toggleMisCitas() {
+    const seccion = document.getElementById('seccionMisCitas');
+    const icon = document.getElementById('iconToggleCitas');
+    if (seccion.style.display === 'none' || seccion.style.display === '') {
+        seccion.style.display = 'block';
+        icon.classList.remove('bi-chevron-down');
+        icon.classList.add('bi-chevron-up');
+    } else {
+        seccion.style.display = 'none';
+        icon.classList.remove('bi-chevron-up');
+        icon.classList.add('bi-chevron-down');
+    }
+}
 
-        if (seccion.style.display === 'none') {
-            seccion.style.display = 'block';
-            icono.className = 'bi bi-chevron-down';
+function filtrarCitasPorEstado(estado) {
+    const citas = document.querySelectorAll('.cita-item');
+    citas.forEach(cita => {
+        if (estado === 'todas' || cita.dataset.estado === estado) {
+            cita.style.display = 'block';
         } else {
-            seccion.style.display = 'none';
-            icono.className = 'bi bi-chevron-up';
+            cita.style.display = 'none';
         }
-    }
+    });
+}
 
-    function filtrarCitasPorEstado(estado) {
-        console.log('Filtrar citas por estado:', estado);
-        // TODO: Implementar filtrado
-    }
 
     function agendarCita() {
         document.getElementById('seccionReservar').scrollIntoView({ behavior: 'smooth' });
@@ -1835,121 +1926,110 @@ function actualizarStepper(pasoActual) {
     contenedor.innerHTML = html;
 }
 
-// Al inicializar, verificar si viene combo
-document.addEventListener('DOMContentLoaded', function() {
-    cargarDatosUsuario();
-    
-    // Si viene con promoción pre-aplicada
-    if (reservaData.promocion) {
-        document.getElementById('codigoPromocion').value = reservaData.promocion;
-        setTimeout(() => {
-            validarPromocion();
-        }, 500);
-    }
-    
-    // ✅ Si viene con combo pre-seleccionado, cargar servicios y saltar al paso 2
-    if (reservaData.comboId) {
-        cargarComboYSaltar(reservaData.comboId);
-    }
-    
-    // Inicializar fecha mínima (hoy)
-    const fechaInput = document.getElementById('fechaCita');
-    if (fechaInput) {
-        const hoy = new Date().toISOString().split('T')[0];
-        fechaInput.min = hoy;
-    }
-});
-
-// Nueva función para cargar combo y saltar al paso 2
-async function cargarComboYSaltar(comboId) {
+async function verDetalleCita(idCita) {
     try {
-        console.log('🎁 Cargando combo:', comboId);
-        
-        const response = await fetch(`/cliente/promociones/combo/${comboId}`);
+        // Petición al backend para obtener los datos de la cita
+        const response = await fetch(`/cliente/cita/${idCita}`);
         const data = await response.json();
-        
-        if (data.success) {
-            const combo = data.combo;
-            
-            console.log('✅ Combo cargado:', combo);
-            
-            // Cargar servicios del combo en reservaData
-            reservaData.servicios = [];
-            combo.servicios.forEach(servicio => {
-                reservaData.servicios.push({
-                    id: servicio.idServicio,
-                    nombre: servicio.nombre,
-                    duracion: servicio.duracionBase,
-                    precio: parseFloat(servicio.precioBase)
-                });
-            });
-            
-            // Mostrar alerta informativa
-            alert(`✨ Combo Seleccionado: ${combo.nombre}\n\n` +
-                  `📦 Incluye:\n${combo.servicios.map(s => '• ' + s.nombre).join('\n')}\n\n` +
-                  `💰 Precio: $${combo.precioCombo}\n` +
-                  `💎 Ahorro: $${combo.ahorro}\n\n` +
-                  `¡Ahora selecciona fecha, hora y estilista!`);
-            
-            // Calcular totales
-            await calcularTotales();
-            
-            // Ocultar paso 1, mostrar paso 2
-            document.getElementById('pasoServicio').style.display = 'none';
-            document.getElementById('pasoFechaHora').style.display = 'block';
-            
-            // Actualizar stepper
-            actualizarStepper(2);
-            
-            // Scroll a la sección
-            document.getElementById('seccionReservar').scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-            });
-        } else {
-            alert('❌ Error al cargar el combo. Por favor intenta de nuevo.');
-            console.error('Error:', data.message);
+
+        if (!data.success) {
+            alert('No se pudo cargar la cita.');
+            return;
         }
+
+        const cita = data.cita;
+
+        // === Cargar información principal ===
+        document.getElementById('modalServicioNombre').textContent =
+            cita.servicios.map(s => s.nombre).join(', ');
+
+        document.getElementById('modalEstadoBadge').textContent = cita.estado;
+        document.getElementById('modalCodigoCita').textContent = `BR-${cita.id}`;
+        document.getElementById('modalPrecio').textContent = `$${cita.servicios.reduce((sum, s) => sum + parseFloat(s.precioBase), 0).toFixed(2)}`;
+
+        // === Fecha y hora ===
+        const fecha = new Date(cita.fecha);
+        const hora = cita.hora.slice(0, 5);
+        document.getElementById('modalFechaHora').textContent =
+            fecha.toLocaleDateString('es-ES', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }) +
+            ` - ${hora}`;
+
+        // === Duración total ===
+        const duracion = cita.servicios.reduce((sum, s) => sum + s.duracionBase, 0);
+        document.getElementById('modalDuracion').textContent = `${duracion} minutos`;
+
+        // === Estilista ===
+        document.getElementById('modalEstilista').textContent = cita.estilista?.nombre ?? 'No asignado';
+
+        // === Información adicional (ejemplo fijo, podrías traerla del backend también) ===
+        document.querySelector('.card-custom p:nth-child(1)').innerHTML = `<strong>Dirección:</strong> Calle Principal #123, Col. Escalón, San Salvador`;
+        document.querySelector('.card-custom p:nth-child(2)').innerHTML = `<strong>Teléfono del salón:</strong> (503) 2222-3333`;
+        document.querySelector('.card-custom p:nth-child(3)').innerHTML = `<strong>Reservado el:</strong> ${new Date(cita.created_at).toLocaleDateString('es-ES')}`;
+
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('modalDetalleCita'));
+        modal.show();
     } catch (error) {
-        console.error('❌ Error al cargar combo:', error);
-        alert('❌ Error al cargar el combo. Por favor intenta de nuevo.');
+        console.error('Error al cargar cita:', error);
+        alert('Ocurrió un error al cargar el detalle de la cita.');
     }
 }
+
 </script>
 <style>
-    .list-item-custom.selected {
-        border: 3px solid var(--dorado-palido) !important;
-        background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(255, 248, 240, 0.8)) !important;
-        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-        transform: scale(1.02);
-        transition: all 0.3s ease;
-    }
-    
-    .estilista-item.selected {
-        border: 3px solid var(--borgona) !important;
-        background: linear-gradient(135deg, rgba(139, 64, 73, 0.15), rgba(255, 248, 240, 0.8)) !important;
-        box-shadow: 0 4px 15px rgba(139, 64, 73, 0.3);
-        transform: scale(1.02);
-        transition: all 0.3s ease;
-    }
-    
-    .servicio-item {
-        transition: all 0.3s ease;
-    }
-    
-    .servicio-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    }
-    
-    #horariosDisponibles button {
-        margin-bottom: 10px;
-        transition: all 0.3s ease;
-    }
-    
-    #horariosDisponibles button:hover {
-        transform: scale(1.05);
-    }
+.servicio-container.seleccionado .list-item-custom {
+    border: 3px solid var(--dorado-palido) !important;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(255, 248, 240, 0.9)) !important;
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+    transform: scale(1.03);
+}
+
+.servicio-container.seleccionado::after {
+    content: '✓';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--dorado-palido);
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    z-index: 10;
+}
+
+/* ✅ ESTILOS PARA SERVICIOS BLOQUEADOS */
+.servicio-container.bloqueado {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.servicio-container.combo-fijo::after {
+    content: '🔒';
+    background: var(--borgona);
+}
+
+.servicio-container.combo-fijo .list-item-custom {
+    border: 3px solid var(--borgona) !important;
+    background: linear-gradient(135deg, rgba(139, 64, 73, 0.15), rgba(255, 248, 240, 0.9)) !important;
+}
+
+.servicio-container {
+    position: relative;
+}
+
+.servicio-item {
+    transition: all 0.3s ease;
+}
+
+.servicio-item:hover:not([style*="pointer-events: none"]) {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
 </style>
 </body>
 

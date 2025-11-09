@@ -34,9 +34,6 @@
             <a href="{{ route('cliente.citasCli') }}" class="menu-item">
                 <i class="bi bi-calendar-check"></i> Citas
             </a>
-            <a href="{{ route('cliente.serviciosCli') }}" class="menu-item">
-                <i class="bi bi-scissors"></i> Servicios
-            </a>
             <a href="{{ route('cliente.promocionesCli') }}" class="menu-item active">
                 <i class="bi bi-gift"></i> Promociones
             </a>
@@ -329,20 +326,22 @@ function agendarConPromocion(codigo) {
     window.location.href = "{{ route('cliente.citasCli') }}" + "?promo=" + codigo;
 }
 
-/*function agendarCombo(comboId) {
-    // Guardar combo en localStorage temporalmente
-    localStorage.setItem('comboTemp', comboId);
-    
-    // Redirige a la página de citas pasando el combo como parámetro GET
-    window.location.href = "{{ route('cliente.citasCli') }}" + "?combo=" + comboId;
-}*/
         // Agendar combo
-        function agendarCombo(comboId) {
-            console.log('Agendar combo:', comboId);
-            alert('Redirigiendo a página de reservas para el combo: ' + comboId);
-            window.location.href = "{{ route('cliente.citasCli') }}" + comboId;
+    function agendarCombo(comboId) {
+        // Obtener ID del cliente de la sesión (pasado desde Blade)
+        const clienteId = {{ session('clienteId') ?? 'null' }};
+
+        if (!clienteId) {
+            alert('No se detectó un cliente logueado.');
+            return;
         }
 
+        console.log('Agendar combo:', comboId, 'para cliente:', clienteId);
+
+        // Redirigir a la página de citas con comboId como query param
+        window.location.href = `/cliente/citasCli?comboId=${comboId}`;
+
+    }
         // Suscribirse a promociones
         function suscribirsePromos() {
             const email = document.getElementById('emailSuscripcion').value;
