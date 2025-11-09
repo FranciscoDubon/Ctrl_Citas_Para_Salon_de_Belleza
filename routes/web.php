@@ -105,7 +105,7 @@ Route::get('/cliente/configCli', function () {
 //Ruta Gestión de Login
 Route::get('login', function () {
     return view('login');
-})->name('logn');
+})->name('login');
 
 
 // Ruta POST para registrar cliente
