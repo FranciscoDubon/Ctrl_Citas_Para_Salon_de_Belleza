@@ -282,7 +282,7 @@ Route::prefix('cliente')->group(function () {
     Route::post('/promociones/validar', [PromocionClienteController::class, 'validarCodigo'])->name('cliente.promociones.validar');
     Route::get('/promociones/combo/{id}', [PromocionClienteController::class, 'detalleCombo'])->name('cliente.promociones.combo');
     
-    Route::post('/configuracion/actualizar', [ClienteController::class, 'actualizarConfiguracion'])->name('cliente.config.actualizar');
+    Route::post('/configuracion/actualizar', [ClienteController::class, 'actualizarConfiguracion'])->name('cliente.actualizarConfig');
 });
 Route::get('/cliente/cita/{id}', [ClienteController::class, 'verCita']);
 // Dentro del grupo Route::prefix('cliente')->group(function () {

@@ -281,15 +281,6 @@ $promoSeleccionada = request()->query('promo', '');
                     onkeyup="filtrarServicios()">
             </div>
 
-            <!-- Filtros por Categoría -->
-            <div class="d-flex gap-2 flex-wrap mb-4">
-                <button class="btn btn-sm btn-gold" onclick="filtrarPorCategoria('todos')">Todos</button>
-                <button class="btn btn-sm btn-outline-gold" onclick="filtrarPorCategoria('cabello')">Cabello</button>
-                <button class="btn btn-sm btn-outline-gold" onclick="filtrarPorCategoria('uñas')">Uñas</button>
-                <button class="btn btn-sm btn-outline-gold" onclick="filtrarPorCategoria('facial')">Facial</button>
-                <button class="btn btn-sm btn-outline-gold" onclick="filtrarPorCategoria('corporal')">Corporal</button>
-            </div>
-
 <div class="row g-3" id="listaServicios">
     @forelse($servicios as $servicio)
     <div class="col-lg-4 col-md-6 servicio-container" 

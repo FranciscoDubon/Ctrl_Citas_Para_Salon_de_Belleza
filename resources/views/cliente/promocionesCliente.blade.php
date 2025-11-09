@@ -55,8 +55,8 @@
         <div class="header-actions">
             <!-- Usuario -->
             <div class="user-info">
-                <div class="user-avatar">M</div>
-                <span class="user-name">María García - Cliente</span>
+                <div class="user-avatar"  id="avatarInicial">M</div>
+                <span class="user-name" id="nombreCliente">María García - Cliente</span>
             </div>
         </div>
     </header>
@@ -277,6 +277,23 @@
     
     <!-- Scripts -->
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    const nombre = localStorage.getItem('clienteNombre') || 'Cliente';
+    const apellido = localStorage.getItem('clienteApellido') || '';
+    const inicial = nombre.charAt(0).toUpperCase();
+
+    // Insertar nombre completo
+    const nombreSpan = document.getElementById('nombreCliente');
+    if (nombreSpan) {
+        nombreSpan.textContent = `${nombre} ${apellido}`;
+    }
+
+    // Insertar inicial como avatar
+    const avatarDiv = document.getElementById('avatarInicial');
+    if (avatarDiv) {
+        avatarDiv.textContent = inicial;
+    }
+});
         // Buscar promoción
         function buscarPromocion() {
             const termino = document.getElementById('buscarPromocion').value;
@@ -369,6 +386,7 @@ function agendarConPromocion(codigo) {
         function agendarConPromocion(codigo) {
     // Redirige a la página de citas pasando el código como parámetro GET
     window.location.href = "{{ route('cliente.citasCli') }}" + "?promo=" + codigo;
+
 }
     </script>
     
