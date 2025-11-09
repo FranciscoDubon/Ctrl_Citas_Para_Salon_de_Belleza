@@ -167,34 +167,37 @@ class PromocionClienteController extends Controller
     // ========================================
     // OBTENER DETALLE DE COMBO (AJAX)
     // ========================================
-    public function detalleCombo($id)
-    {
-        try {
-            $combo = Combo::with('servicios')->findOrFail($id);
-            
-            return response()->json([
-                'success' => true,
-                'combo' => [
-                    'id' => $combo->idCombo,
-                    'nombre' => $combo->nombre,
-                    'descripcion' => $combo->descripcion,
-                    'precioCombo' => number_format($combo->precioCombo, 2),
-                    'precioRegular' => number_format($combo->precioRegular, 2),
-                    'ahorro' => number_format($combo->ahorro, 2),
-                    'servicios' => $combo->servicios->map(function($servicio) {
-                        return [
-                            'nombre' => $servicio->nombre,
-                            'duracion' => $servicio->duracionBase
-                        ];
-                    })
-                ]
-            ]);
-            
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Combo no encontrado'
-            ], 404);
-        }
+public function detalleCombo($id)
+{
+    try {
+        $combo = Combo::with('servicios')->findOrFail($id);
+        
+        return response()->json([
+            'success' => true,
+            'combo' => [
+                'idCombo' => $combo->idCombo,
+                'nombre' => $combo->nombre,
+                'descripcion' => $combo->descripcion,
+                'precioCombo' => $combo->precioCombo,
+                'precioRegular' => $combo->precioRegular,
+                'ahorro' => $combo->ahorro,
+                'servicios' => $combo->servicios->map(function($servicio) {
+                    return [
+                        'idServicio' => $servicio->idServicio,
+                        'nombre' => $servicio->nombre,
+                        'duracionBase' => $servicio->duracionBase,
+                        'precioBase' => $servicio->precioBase
+                    ];
+                })
+            ]
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Combo no encontrado'
+        ], 404);
     }
+}
+
+    
 }

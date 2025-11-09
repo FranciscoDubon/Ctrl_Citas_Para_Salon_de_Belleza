@@ -321,17 +321,26 @@
         }
 
         // Agendar con promoción
-        function agendarConPromocion(codigo) {
-            console.log('Agendar con promoción:', codigo);
-            alert('Redirigiendo a página de reservas con el código ' + codigo + ' pre-aplicado...');
-            // window.location.href = '/cliente/reservar-cita?promo=' + codigo;
-        }
+function agendarConPromocion(codigo) {
+    // Guardar código en localStorage temporalmente
+    localStorage.setItem('promoTemp', codigo);
+    
+    // Redirige a la página de citas pasando el código como parámetro GET
+    window.location.href = "{{ route('cliente.citasCli') }}" + "?promo=" + codigo;
+}
 
+/*function agendarCombo(comboId) {
+    // Guardar combo en localStorage temporalmente
+    localStorage.setItem('comboTemp', comboId);
+    
+    // Redirige a la página de citas pasando el combo como parámetro GET
+    window.location.href = "{{ route('cliente.citasCli') }}" + "?combo=" + comboId;
+}*/
         // Agendar combo
         function agendarCombo(comboId) {
             console.log('Agendar combo:', comboId);
             alert('Redirigiendo a página de reservas para el combo: ' + comboId);
-            // window.location.href = '/cliente/reservar-cita?combo=' + comboId;
+            window.location.href = "{{ route('cliente.citasCli') }}" + comboId;
         }
 
         // Suscribirse a promociones

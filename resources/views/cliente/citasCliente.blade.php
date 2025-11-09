@@ -381,164 +381,326 @@ $promoSeleccionada = request()->query('promo', '');
             </div>
         </div>
 
-        <!-- Stepper de Progreso -->
-        <div class="row mb-4" id="seccionReservar">
-            <div class="col-12">
-                <div class="card-custom" style="padding: 2rem;">
-                    <div class="row">
-                        <div class="col-md-3 text-center" id="step1">
-                            <div style="width: 60px; height: 60px; margin: 0 auto 1rem; background: var(--borgona); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-scissors" style="color: white; font-size: 1.5rem;"></i>
-                            </div>
-                            <h6 style="color: var(--borgona); font-weight: 700;">1. Servicio</h6>
-                            <p style="margin: 0; font-size: 0.85rem; opacity: 0.7;">Selecciona el servicio</p>
+<!-- Stepper de Progreso -->
+<div class="row mb-4" id="seccionReservar">
+    <div class="col-12">
+        <div class="card-custom" style="padding: 2rem;">
+            <div class="row">
+                <div class="col-md-4 text-center" id="step1">
+                    <div style="width: 60px; height: 60px; margin: 0 auto 1rem; background: var(--borgona); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-scissors" style="color: white; font-size: 1.5rem;"></i>
+                    </div>
+                    <h6 style="color: var(--borgona); font-weight: 700;">1. Servicios</h6>
+                    <p style="margin: 0; font-size: 0.85rem; opacity: 0.7;">Selecciona los servicios</p>
+                </div>
+                <div class="col-md-4 text-center" id="step2" style="opacity: 0.4;">
+                    <div style="width: 60px; height: 60px; margin: 0 auto 1rem; background: var(--rosa-empolvado); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-calendar3" style="color: var(--borgona); font-size: 1.5rem;"></i>
+                    </div>
+                    <h6 style="color: var(--borgona); font-weight: 700;">2. Fecha, Hora y Estilista</h6>
+                    <p style="margin: 0; font-size: 0.85rem; opacity: 0.7;">Elige tu horario</p>
+                </div>
+                <div class="col-md-4 text-center" id="step3" style="opacity: 0.4;">
+                    <div style="width: 60px; height: 60px; margin: 0 auto 1rem; background: var(--rosa-empolvado); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-check-circle" style="color: var(--borgona); font-size: 1.5rem;"></i>
+                    </div>
+                    <h6 style="color: var(--borgona); font-weight: 700;">3. Confirmación</h6>
+                    <p style="margin: 0; font-size: 0.85rem; opacity: 0.7;">Revisa y confirma</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PASO 1: SELECCIÓN DE SERVICIO -->
+<div class="row g-4 mb-4" id="pasoServicio">
+    <div class="col-12">
+        <div class="card-custom">
+            <h5 class="card-title-custom">
+                <i class="bi bi-scissors"></i>
+                Paso 1: Selecciona el Servicio
+            </h5>
+
+            <!-- Búsqueda Rápida -->
+            <div class="mb-4">
+                <input
+                    type="text"
+                    class="form-control"
+                    id="buscarServicioReserva"
+                    placeholder="🔍 Buscar servicio..."
+                    onkeyup="filtrarServicios()">
+            </div>
+
+            <!-- Filtros por Categoría -->
+            <div class="d-flex gap-2 flex-wrap mb-4">
+                <button class="btn btn-sm btn-gold" onclick="filtrarPorCategoria('todos')">Todos</button>
+                <button class="btn btn-sm btn-outline-gold" onclick="filtrarPorCategoria('cabello')">Cabello</button>
+                <button class="btn btn-sm btn-outline-gold" onclick="filtrarPorCategoria('uñas')">Uñas</button>
+                <button class="btn btn-sm btn-outline-gold" onclick="filtrarPorCategoria('facial')">Facial</button>
+                <button class="btn btn-sm btn-outline-gold" onclick="filtrarPorCategoria('corporal')">Corporal</button>
+            </div>
+
+            <div class="row g-3" id="listaServicios">
+                @forelse($servicios as $servicio)
+                <!-- Servicio Seleccionable {{ $loop->iteration }} -->
+                <div class="col-lg-4 col-md-6 servicio-container" data-categoria="{{ strtolower($servicio->categoria) }}">
+                    <div class="list-item-custom servicio-item" 
+                         style="cursor: pointer; transition: all 0.3s;" 
+                         onclick="seleccionarServicio(
+                             {{ $servicio->idServicio }}, 
+                             '{{ $servicio->nombre }}', 
+                             {{ $servicio->duracionBase }}, 
+                             {{ $servicio->precioBase }},
+                             {{ $servicio->requiere_largo_cabello ? 'true' : 'false' }},
+                             {{ $servicio->requiere_tinturado_previo ? 'true' : 'false' }},
+                             {{ $servicio->requiere_retiro_esmalte ? 'true' : 'false' }},
+                             {{ $servicio->requiere_estilizado ? 'true' : 'false' }}
+                         )">
+                        <div class="list-avatar" style="background: linear-gradient(135deg, var(--borgona), var(--borgona-light));">
+                            @if(stripos($servicio->categoria, 'cabello') !== false)
+                                <i class="bi bi-scissors"></i>
+                            @elseif(stripos($servicio->categoria, 'uña') !== false)
+                                <i class="bi bi-hand-index-thumb"></i>
+                            @elseif(stripos($servicio->categoria, 'facial') !== false)
+                                <i class="bi bi-emoji-smile"></i>
+                            @elseif(stripos($servicio->categoria, 'maquillaje') !== false)
+                                <i class="bi bi-palette"></i>
+                            @else
+                                <i class="bi bi-stars"></i>
+                            @endif
                         </div>
-                        <div class="col-md-3 text-center" id="step2" style="opacity: 0.4;">
-                            <div style="width: 60px; height: 60px; margin: 0 auto 1rem; background: var(--rosa-empolvado); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-calendar3" style="color: var(--borgona); font-size: 1.5rem;"></i>
-                            </div>
-                            <h6 style="color: var(--borgona); font-weight: 700;">2. Fecha y Hora</h6>
-                            <p style="margin: 0; font-size: 0.85rem; opacity: 0.7;">Elige tu horario</p>
+                        <div class="list-content">
+                            <h6>{{ $servicio->nombre }}</h6>
+                            <p>
+                                <i class="bi bi-clock"></i> {{ $servicio->duracionBase }} min | 
+                                <strong style="color: var(--dorado-palido);">${{ number_format($servicio->precioBase, 2) }}</strong>
+                            </p>
+                            @if($servicio->descripcion)
+                            <small class="text-muted">{{ Str::limit($servicio->descripcion, 50) }}</small>
+                            @endif
                         </div>
-                        <div class="col-md-3 text-center" id="step3" style="opacity: 0.4;">
-                            <div style="width: 60px; height: 60px; margin: 0 auto 1rem; background: var(--rosa-empolvado); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-person-circle" style="color: var(--borgona); font-size: 1.5rem;"></i>
-                            </div>
-                            <h6 style="color: var(--borgona); font-weight: 700;">3. Estilista</h6>
-                            <p style="margin: 0; font-size: 0.85rem; opacity: 0.7;">Selecciona tu estilista</p>
+                        <div class="list-badge">
+                            <span class="badge badge-soft">{{ ucfirst($servicio->categoria) }}</span>
                         </div>
-                        <div class="col-md-3 text-center" id="step4" style="opacity: 0.4;">
-                            <div style="width: 60px; height: 60px; margin: 0 auto 1rem; background: var(--rosa-empolvado); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-check-circle" style="color: var(--borgona); font-size: 1.5rem;"></i>
-                            </div>
-                            <h6 style="color: var(--borgona); font-weight: 700;">4. Confirmación</h6>
-                            <p style="margin: 0; font-size: 0.85rem; opacity: 0.7;">Revisa y confirma</p>
+                    </div>
+                </div>
+                @empty
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> No hay servicios disponibles en este momento.
+                    </div>
+                </div>
+                @endforelse
+            </div>
+
+            <!-- Resumen temporal y botón continuar -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card-custom" style="background: var(--rosa-empolvado-light);">
+                        <h6 style="color: var(--borgona);">
+                            <i class="bi bi-check-circle"></i> Servicios Seleccionados:
+                        </h6>
+                        <div id="resumenServiciosTemp">
+                            <p class="text-muted">No has seleccionado ningún servicio</p>
                         </div>
+                        <div class="mt-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Duración estimada:</strong></p>
+                                    <h4 style="color: var(--borgona);" id="duracionTemporal">0 min</h4>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <p class="mb-1"><strong>Precio estimado:</strong></p>
+                                    <h4 style="color: var(--dorado-palido);" id="precioTemporal">$0.00</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-gold w-100 mt-3" onclick="continuarAFechaHora()">
+                            Continuar con la Reserva <i class="bi bi-arrow-right"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- PASO 1: SELECCIÓN DE SERVICIO -->
-        <div class="row g-4 mb-4" id="pasoServicio">
-            <div class="col-12">
-                <div class="card-custom">
-                    <h5 class="card-title-custom">
-                        <i class="bi bi-scissors"></i>
-                        Paso 1: Selecciona el Servicio
-                    </h5>
-
-                    <!-- Búsqueda Rápida -->
-                    <div class="mb-4">
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="buscarServicioReserva"
-                            placeholder="🔍 Buscar servicio..."
-                            onkeyup="filtrarServicios()">
-                    </div>
-
-                    <!-- Filtros por Categoría -->
-                    <div class="d-flex gap-2 flex-wrap mb-4">
-                        <button class="btn btn-sm btn-gold" onclick="filtrarPorCategoria('todos')">Todos</button>
-                        <button class="btn btn-sm btn-outline-gold" onclick="filtrarPorCategoria('cabello')">Cabello</button>
-                        <button class="btn btn-sm btn-outline-gold" onclick="filtrarPorCategoria('unas')">Uñas</button>
-                        <button class="btn btn-sm btn-outline-gold" onclick="filtrarPorCategoria('facial')">Facial</button>
-                        <button class="btn btn-sm btn-outline-gold" onclick="filtrarPorCategoria('combos')">Combos</button>
-                    </div>
-
-                    <div class="row g-3" id="listaServicios">
-
-                        <!-- Servicio Seleccionable 1 -->
-                        <div class="col-lg-4 col-md-6">
-                            <div class="list-item-custom servicio-item" style="cursor: pointer; transition: all 0.3s;" onclick="seleccionarServicio(1, 'Corte de Cabello', 30, 15.00)">
-                                <div class="list-avatar" style="background: linear-gradient(135deg, var(--borgona), var(--borgona-light));">
-                                    <i class="bi bi-scissors"></i>
-                                </div>
-                                <div class="list-content">
-                                    <h6>Corte de Cabello</h6>
-                                    <p><i class="bi bi-clock"></i> 30 min | <strong style="color: var(--dorado-palido);">$15.00</strong></p>
-                                    <small style="color: var(--dorado-palido);">Tu precio VIP: $13.50</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Servicio Seleccionable 2 -->
-                        <div class="col-lg-4 col-md-6">
-                            <div class="list-item-custom servicio-item" style="cursor: pointer; transition: all 0.3s;" onclick="seleccionarServicio(2, 'Tinte Completo', 90, 40.00)">
-                                <div class="list-avatar" style="background: linear-gradient(135deg, var(--dorado-palido), var(--dorado-hover));">
-                                    <i class="bi bi-palette"></i>
-                                </div>
-                                <div class="list-content">
-                                    <h6>Tinte Completo</h6>
-                                    <p><i class="bi bi-clock"></i> 90 min | <strong style="color: var(--dorado-palido);">$40.00</strong></p>
-                                    <small style="color: var(--dorado-palido);">Tu precio VIP: $36.00</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Servicio Seleccionable 3 -->
-                        <div class="col-lg-4 col-md-6">
-                            <div class="list-item-custom servicio-item" style="cursor: pointer; transition: all 0.3s;" onclick="seleccionarServicio(3, 'Manicure + Pedicure', 75, 25.00)">
-                                <div class="list-avatar" style="background: linear-gradient(135deg, var(--rosa-empolvado), var(--rosa-empolvado-light));">
-                                    <i class="bi bi-hand-index-thumb"></i>
-                                </div>
-                                <div class="list-content">
-                                    <h6>Manicure + Pedicure</h6>
-                                    <p><i class="bi bi-clock"></i> 75 min | <strong style="color: var(--dorado-palido);">$25.00</strong></p>
-                                    <small style="color: var(--dorado-palido);">Tu precio VIP: $22.50</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Servicio Seleccionable 4 -->
-                        <div class="col-lg-4 col-md-6">
-                            <div class="list-item-custom servicio-item" style="cursor: pointer; transition: all 0.3s;" onclick="seleccionarServicio(4, 'Tratamiento Capilar', 50, 50.00)">
-                                <div class="list-avatar" style="background: linear-gradient(135deg, var(--champagne), var(--champagne-light));">
-                                    <i class="bi bi-stars"></i>
-                                </div>
-                                <div class="list-content">
-                                    <h6>Tratamiento Capilar</h6>
-                                    <p><i class="bi bi-clock"></i> 50 min | <strong style="color: var(--dorado-palido);">$50.00</strong></p>
-                                    <small style="color: var(--dorado-palido);">Tu precio VIP: $45.00</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Servicio Seleccionable 5 -->
-                        <div class="col-lg-4 col-md-6">
-                            <div class="list-item-custom servicio-item" style="cursor: pointer; transition: all 0.3s;" onclick="seleccionarServicio(5, 'Limpieza Facial', 60, 35.00)">
-                                <div class="list-avatar" style="background: linear-gradient(135deg, var(--borgona), var(--borgona-light));">
-                                    <i class="bi bi-brilliance"></i>
-                                </div>
-                                <div class="list-content">
-                                    <h6>Limpieza Facial</h6>
-                                    <p><i class="bi bi-clock"></i> 60 min | <strong style="color: var(--dorado-palido);">$35.00</strong></p>
-                                    <small style="color: var(--dorado-palido);">Tu precio VIP: $31.50</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Servicio Seleccionable 6 -->
-                        <div class="col-lg-4 col-md-6">
-                            <div class="list-item-custom servicio-item" style="cursor: pointer; transition: all 0.3s;" onclick="seleccionarServicio(6, 'Peinado Especial', 60, 30.00)">
-                                <div class="list-avatar" style="background: linear-gradient(135deg, var(--dorado-palido), var(--dorado-hover));">
-                                    <i class="bi bi-gem"></i>
-                                </div>
-                                <div class="list-content">
-                                    <h6>Peinado Especial</h6>
-                                    <p><i class="bi bi-clock"></i> 60 min | <strong style="color: var(--dorado-palido);">$30.00</strong></p>
-                                    <small style="color: var(--dorado-palido);">Tu precio VIP: $27.00</small>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
+    </div>
+</div>
 
         <!-- RESTO DE PASOS (Paso 2, 3, 4, 5) - MANTENER IGUAL QUE ANTES -->
+<!-- PASO 2: SELECCIÓN DE FECHA Y HORA -->
+<div class="row g-4 mb-4" id="pasoFechaHora" style="display: none;">
+    <div class="col-12">
+        <div class="card-custom">
+            <h5 class="card-title-custom">
+                <i class="bi bi-calendar3"></i>
+                Paso 2: Selecciona Fecha y Hora
+            </h5>
+
+            <div class="row g-4">
+                <!-- Primero: Seleccionar Estilista -->
+                <div class="col-md-6">
+                    <label class="form-label">
+                        <i class="bi bi-person-circle"></i> Selecciona tu Estilista
+                    </label>
+                    <select class="form-select" id="estilistaSeleccionado" onchange="cargarHorariosDisponibles()">
+                        <option value="">-- Selecciona un estilista --</option>
+                        @foreach($estilistas as $estilista)
+                        <option value="{{ $estilista->idEmpleado }}">
+                            {{ $estilista->nombre }} {{ $estilista->apellido }}
+                        </option>
+                        @endforeach
+                    </select>
+                    <small class="text-muted">Selecciona primero el estilista para ver disponibilidad</small>
+                </div>
+
+                <!-- Selección de Fecha -->
+                <div class="col-md-6">
+                    <label class="form-label">
+                        <i class="bi bi-calendar-event"></i> Fecha de la Cita
+                    </label>
+                    <input type="date" 
+                           class="form-control" 
+                           id="fechaCita" 
+                           onchange="cargarHorariosDisponibles()">
+                    <small class="text-muted">Selecciona el día que deseas agendar</small>
+                </div>
+
+                <!-- Horarios Disponibles -->
+                <div class="col-12">
+                    <label class="form-label">
+                        <i class="bi bi-clock"></i> Horarios Disponibles
+                    </label>
+                    <div id="estadoHorarios" class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 
+                        Selecciona un estilista y una fecha para ver los horarios disponibles
+                    </div>
+                    <div id="horariosDisponibles" style="display: none;"></div>
+                </div>
+
+                <!-- Confirmación de fecha y hora -->
+                <div class="col-12" id="confirmacionFechaHora"></div>
+            </div>
+
+<div class="d-flex gap-2 mt-4">
+    <button class="btn btn-soft" onclick="volverAServicios()">
+        <i class="bi bi-arrow-left"></i> Volver
+    </button>
+    <button class="btn btn-secondary flex-fill" 
+            id="btnContinuarEstilista" 
+            onclick="continuarAConfirmacion()" 
+            disabled>
+        Continuar <i class="bi bi-arrow-right"></i>
+    </button>
+</div>
+        </div>
+    </div>
+</div>
+
+<!-- PASO 3: CONFIRMACIÓN -->
+<div class="row g-4 mb-4" id="pasoConfirmacion" style="display: none;">
+    <div class="col-12">
+        <div class="card-custom">
+            <h5 class="card-title-custom">
+                <i class="bi bi-check-circle"></i>
+                Paso 3: Confirma tu Reserva
+            </h5>
+
+            <!-- Resumen de servicios seleccionados -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h6 style="color: var(--borgona);">
+                        <i class="bi bi-scissors"></i> Servicios Seleccionados:
+                    </h6>
+                    <div id="resumenServicios" class="mb-3"></div>
+                </div>
+            </div>
+
+            <!-- Resumen Final -->
+            <div id="resumenFinal"></div>
+
+            <!-- Código Promocional -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">
+                        <i class="bi bi-gift"></i> ¿Tienes un código promocional?
+                    </label>
+                    <div class="input-group">
+                        <input type="text" 
+                               class="form-control" 
+                               id="codigoPromocion" 
+                               placeholder="Ingresa tu código"
+                               value="{{ $promoSeleccionada }}">
+                        <button class="btn btn-gold" onclick="validarPromocion()">
+                            <i class="bi bi-check-circle"></i> Aplicar
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="quitarPromocion()">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
+                    <small class="text-muted">Aplica tu código de descuento aquí</small>
+                </div>
+            </div>
+
+            <!-- Notas adicionales -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <label class="form-label">
+                        <i class="bi bi-chat-left-text"></i> Notas adicionales (opcional)
+                    </label>
+                    <textarea class="form-control" 
+                              rows="3" 
+                              placeholder="¿Alguna preferencia o comentario adicional?"
+                              onchange="reservaData.notas = this.value"></textarea>
+                </div>
+            </div>
+
+            <!-- Resumen de precios -->
+            <div class="premium-card mb-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 style="color: var(--borgona);">
+                            <i class="bi bi-clock-fill"></i> Duración Total:
+                        </h5>
+                        <h3 style="color: var(--borgona);" id="duracionTotal">0 min</h3>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <h5 style="color: var(--borgona);">
+                            <i class="bi bi-cash-stack"></i> Total a Pagar:
+                        </h5>
+                        <h2 style="color: var(--dorado-palido);" id="precioTotal">$0.00</h2>
+                        <div id="descuentoTotal"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Política de cancelación -->
+            <div class="alert-custom mb-4">
+                <i class="bi bi-info-circle-fill"></i>
+                <small>
+                    <strong>Política de cancelación:</strong> 
+                    Puedes cancelar o modificar tu cita sin costo hasta 24 horas antes de la fecha programada.
+                </small>
+            </div>
+
+            <!-- Términos y condiciones -->
+            <div class="form-check mb-4">
+                <input class="form-check-input" type="checkbox" id="aceptarTerminos">
+                <label class="form-check-label" for="aceptarTerminos">
+                    Acepto los <a href="#" style="color: var(--dorado-palido);">términos y condiciones</a> 
+                    y la <a href="#" style="color: var(--dorado-palido);">política de privacidad</a>
+                </label>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button class="btn btn-soft" onclick="volverAFechaHora()">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </button>
+                <button class="btn btn-gold flex-fill" onclick="confirmarReserva()">
+                    <i class="bi bi-check-circle-fill"></i> Confirmar Reserva
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
         <!-- ... (el código de los pasos 2-5 permanece exactamente igual) ... -->
 
     </main>
@@ -644,206 +806,1151 @@ $promoSeleccionada = request()->query('promo', '');
 
      <!-- ============================================
          FOOTER
-         ============================================ 
+         ============================================ -->
  
   <footer class="main-footer">
         <p>&copy; 2025 BeautySalon - Sistema de Control de Citas |
             Desarrollado por <a href="#">Grupo 03 - IGF115</a>
         </p>
-    </footer> -->
+    </footer> 
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Scripts -->
-    <script>
-        // ========================================
-        // FUNCIONES PARA MIS CITAS ACTUALES
-        // ========================================
+<script>
+    // ========================================
+    // VARIABLES GLOBALES
+    // ========================================
+    let reservaData = {
+        servicios: [], // Array de servicios seleccionados
+        detalles: {}, // Detalles adicionales por servicio
+        fecha: '',
+        hora: '',
+        estilistaId: null,
+        estilista: '',
+        promocion: '{{ $promoSeleccionada }}',
+        comboId: '{{ $comboSeleccionado }}',
+        notas: '',
+        duracionTotal: 0,
+        precioBase: 0,
+        descuento: 0,
+        precioFinal: 0
+    };
 
-        // Toggle mostrar/ocultar sección de citas
-        function toggleMisCitas() {
-            const seccion = document.getElementById('seccionMisCitas');
-            const icono = document.getElementById('iconToggleCitas');
+    // Obtener CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-            if (seccion.style.display === 'none') {
-                seccion.style.display = 'block';
-                icono.className = 'bi bi-chevron-down';
-            } else {
-                seccion.style.display = 'none';
-                icono.className = 'bi bi-chevron-up';
-            }
-        }
-
-        // Filtrar citas por estado
-        function filtrarCitasPorEstado(estado) {
-            console.log('Filtrar citas por estado:', estado);
-            // TODO: En producción, filtrar dinámicamente las citas mostradas
-            alert('Filtrando citas por: ' + estado);
-        }
-
-        // Ver detalle de cita en modal
-        function verDetalleCita(citaId) {
-            console.log('Ver detalle de cita:', citaId);
-            // TODO: Cargar datos específicos de la cita desde array o backend simulado
-
-            // Simulación de datos por citaId
-            const citas = {
-                1: {
-                    nombre: 'Limpieza Facial Profunda',
-                    estado: 'Pendiente',
-                    codigo: 'BR-2024-00245',
-                    precio: '$31.50',
-                    fechaHora: 'Lun, 04 Nov 2024 - 10:00 AM',
-                    duracion: '60 minutos',
-                    estilista: 'Laura Gómez Ortiz'
-                },
-                2: {
-                    nombre: 'Corte de Cabello',
-                    estado: 'Confirmada',
-                    codigo: 'BR-2024-00278',
-                    precio: '$13.50',
-                    fechaHora: 'Vie, 08 Nov 2024 - 03:00 PM',
-                    duracion: '30 minutos',
-                    estilista: 'Ana López García'
-                },
-                3: {
-                    nombre: 'Manicure + Pedicure',
-                    estado: 'Completada',
-                    codigo: 'BR-2024-00189',
-                    precio: '$22.50',
-                    fechaHora: 'Mié, 30 Oct 2024 - 11:00 AM',
-                    duracion: '75 minutos',
-                    estilista: 'Sofía Ramírez Cruz'
-                }
-            };
-
-            const cita = citas[citaId];
-            if (cita) {
-                document.getElementById('modalServicioNombre').textContent = cita.nombre;
-                document.getElementById('modalEstadoBadge').textContent = cita.estado;
-                document.getElementById('modalCodigoCita').textContent = cita.codigo;
-                document.getElementById('modalPrecio').textContent = cita.precio;
-                document.getElementById('modalFechaHora').textContent = cita.fechaHora;
-                document.getElementById('modalDuracion').textContent = cita.duracion;
-                document.getElementById('modalEstilista').textContent = cita.estilista;
-            }
-        }
-
-        // Confirmar asistencia a cita
-        function confirmarAsistenciaCita(citaId) {
-            console.log('Confirmar asistencia cita:', citaId);
-            if (confirm('¿Confirmas tu asistencia a esta cita?')) {
-                alert('✓ Asistencia confirmada exitosamente.\n\nTe hemos enviado un recordatorio por correo.');
-                // TODO: Actualizar estado de la cita
-                location.reload();
-            }
-        }
-
-        // Mostrar opciones adicionales de cita
-        function mostrarOpcionesCita(citaId) {
-            console.log('Opciones de cita:', citaId);
-            const opciones = confirm('¿Qué deseas hacer?\n\nOK = Modificar\nCancelar = Cancelar Cita');
-
-            if (opciones) {
-                modificarCita(citaId);
-            } else {
-                cancelarCita(citaId);
-            }
-        }
-
-        // Agregar al calendario
-        function agregarCalendario(citaId) {
-            console.log('Agregar al calendario:', citaId);
-            alert('✓ Función: Descargar archivo .ics para agregar a Google Calendar, Outlook, etc.');
-            // TODO: Generar archivo .ics y descargar
-        }
-
-        // Reservar otra vez (usar misma configuración)
-        function reservarOtraVez(citaId) {
-            console.log('Reservar otra vez:', citaId);
-            alert('Redirigiendo al formulario de reserva con los mismos datos de esta cita...');
-            // TODO: Pre-llenar formulario con datos de la cita anterior
-            scrollToReservar();
-        }
-
-        // Modificar cita desde modal
-        function modificarCitaModal() {
-            alert('Función: Modificar cita\n\nPermite cambiar fecha, hora o estilista.');
-            // TODO: Abrir formulario de modificación
-        }
-
-        // Cancelar cita desde modal
-        function cancelarCitaModal() {
-            if (confirm('¿Estás segura de que deseas cancelar esta cita?\n\nEsta acción no se puede deshacer.')) {
-                alert('✓ Cita cancelada exitosamente.\n\nTe hemos enviado un correo de confirmación.');
-                // TODO: Actualizar estado de la cita a "cancelada"
-                location.reload();
-            }
-        }
-
-        // Modificar cita
-        function modificarCita(citaId) {
-            console.log('Modificar cita:', citaId);
-            alert('Función: Modificar cita ' + citaId + '\n\nAbrirá formulario para cambiar fecha, hora o estilista.');
-            // TODO: Abrir modal o vista de modificación
-        }
-
-        // Cancelar cita
-        function cancelarCita(citaId) {
-            console.log('Cancelar cita:', citaId);
-            if (confirm('¿Estás segura de que deseas cancelar esta cita?')) {
-                alert('✓ Cita cancelada exitosamente.');
-                // TODO: Actualizar estado en backend
-                location.reload();
-            }
-        }
-
-        // Scroll suave a sección de reservar
-        function scrollToReservar() {
-            document.getElementById('seccionReservar').scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-
-        // ========================================
-        // RESTO DE FUNCIONES DEL SISTEMA DE RESERVAS
-        // (Mantener todas las funciones anteriores)
-        // ========================================
-
-        // Variables globales
-        let reservaData = {
-            servicioId: null,
-            servicioNombre: '',
-            duracion: 0,
-            precio: 0,
-            precioVIP: 0,
-            fecha: '',
-            hora: '',
-            estilistaId: null,
-            estilista: '',
-            promocion: '',
-            descuentoPromocion: 0,
-            notas: ''
-        };
- // Cargar nombre de usuario
-    const nombre = localStorage.getItem('clienteNombre') || 'Cliente';
-    const apellido = localStorage.getItem('clienteApellido') || '';
-    const inicial = nombre.charAt(0).toUpperCase();
-
-    const nombreSpan = document.getElementById('nombreCliente');
-    if (nombreSpan) {
-        nombreSpan.textContent = `${nombre} ${apellido}`;
+    // ========================================
+    // INICIALIZACIÓN
+    // ========================================
+document.addEventListener('DOMContentLoaded', function() {
+    // Cargar nombre de usuario
+    cargarDatosUsuario();
+    
+    // Si viene con promoción pre-aplicada
+    if (reservaData.promocion) {
+        document.getElementById('codigoPromocion').value = reservaData.promocion;
+        setTimeout(() => {
+            validarPromocion();
+        }, 500);
     }
-
-    const avatarDiv = document.getElementById('avatarInicial');
-    if (avatarDiv) {
-        avatarDiv.textContent = inicial;
+    
+    // Si viene con combo pre-seleccionado
+    if (reservaData.comboId) {
+        cargarCombo(reservaData.comboId);
     }
+    
+    // Inicializar fecha mínima (hoy)
+    const fechaInput = document.getElementById('fechaCita');
+    if (fechaInput) {
+        const hoy = new Date().toISOString().split('T')[0];
+        fechaInput.min = hoy;
+    }
+});
+
+// Función para cargar combo automáticamente
+async function cargarCombo(comboId) {
+    try {
+        const response = await fetch(`/cliente/promociones/combo/${comboId}`);
+        const data = await response.json();
         
-   
-    </script>
+        if (data.success) {
+            const combo = data.combo;
+            
+            // Mostrar alerta con información del combo
+            alert(`✨ Combo Seleccionado: ${combo.nombre}\n\n` +
+                  `Precio: $${combo.precioCombo}\n` +
+                  `Ahorro: $${combo.ahorro}\n\n` +
+                  `Los servicios del combo se agregarán automáticamente.`);
+            
+            // Continuar con el flujo
+            continuarAFechaHora();
+        }
+    } catch (error) {
+        console.error('Error al cargar combo:', error);
+    }
+}
+
+    function cargarDatosUsuario() {
+        const nombre = localStorage.getItem('clienteNombre') || 'Cliente';
+        const apellido = localStorage.getItem('clienteApellido') || '';
+        const inicial = nombre.charAt(0).toUpperCase();
+
+        const nombreSpan = document.getElementById('nombreCliente');
+        if (nombreSpan) {
+            nombreSpan.textContent = `${nombre} ${apellido}`;
+        }
+
+        const avatarDiv = document.getElementById('avatarInicial');
+        if (avatarDiv) {
+            avatarDiv.textContent = inicial;
+        }
+    }
+
+    // ========================================
+    // PASO 1: SELECCIÓN DE SERVICIO(S)
+    // ========================================
+function seleccionarServicio(id, nombre, duracion, precio) {
+    // Verificar si ya está seleccionado
+    const index = reservaData.servicios.findIndex(s => s.id === id);
+    
+    const elemento = event.target.closest('.list-item-custom');
+    
+    if (index > -1) {
+        // Ya está seleccionado, removerlo
+        reservaData.servicios.splice(index, 1);
+        delete reservaData.detalles[id];
+        elemento.classList.remove('selected');
+    } else {
+        // Agregar nuevo servicio
+        reservaData.servicios.push({
+            id: id,
+            nombre: nombre,
+            duracion: duracion,
+            precio: precio
+        });
+        elemento.classList.add('selected');
+    }
+    
+    // Actualizar resumen
+    actualizarResumenServicios();
+    calcularTotales();
+}
+function actualizarResumenServicios() {
+    // Actualizar resumen en el paso 1
+    const contenedorTemp = document.getElementById('resumenServiciosTemp');
+    
+    if (contenedorTemp) {
+        if (reservaData.servicios.length === 0) {
+            contenedorTemp.innerHTML = '<p class="text-muted">No has seleccionado ningún servicio</p>';
+        } else {
+            let html = '<ul class="list-unstyled mb-0">';
+            
+            reservaData.servicios.forEach(servicio => {
+                html += `
+                    <li class="d-flex justify-content-between align-items-center mb-2 p-2" 
+                        style="background: white; border-radius: 8px; border-left: 3px solid var(--dorado-palido);">
+                        <div>
+                            <strong>${servicio.nombre}</strong>
+                            <br>
+                            <small class="text-muted">
+                                <i class="bi bi-clock"></i> ${servicio.duracion} min | 
+                                <i class="bi bi-cash"></i> $${servicio.precio.toFixed(2)}
+                            </small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger" onclick="removerServicio(${servicio.id})">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </li>
+                `;
+            });
+            html += '</ul>';
+            contenedorTemp.innerHTML = html;
+        }
+    }
+    
+    // Actualizar resumen en confirmación
+    const contenedor = document.getElementById('resumenServicios');
+    if (contenedor) {
+        if (reservaData.servicios.length === 0) {
+            contenedor.innerHTML = '<p class="text-muted">No hay servicios seleccionados</p>';
+        } else {
+            let html = '<div class="list-group">';
+            reservaData.servicios.forEach(servicio => {
+                html += `
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">${servicio.nombre}</h6>
+                            <small class="text-muted">
+                                <i class="bi bi-clock"></i> ${servicio.duracion} min | 
+                                <i class="bi bi-cash"></i> $${servicio.precio.toFixed(2)}
+                            </small>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            contenedor.innerHTML = html;
+        }
+    }
+    
+    console.log('📋 Resumen actualizado, calculando totales...');
+}
+function removerServicio(id) {
+    console.log('🗑️ Removiendo servicio:', id);
+    
+    const index = reservaData.servicios.findIndex(s => s.id === id);
+    if (index > -1) {
+        reservaData.servicios.splice(index, 1);
+        delete reservaData.detalles[id];
+        
+        // Actualizar UI - buscar el elemento correcto
+        const elementos = document.querySelectorAll('.servicio-item');
+        elementos.forEach(elem => {
+            const onclick = elem.getAttribute('onclick');
+            if (onclick && onclick.includes(`seleccionarServicio(${id},`)) {
+                elem.classList.remove('selected');
+            }
+        });
+        
+        console.log('✅ Servicio removido. Servicios restantes:', reservaData.servicios.length);
+        
+        // Actualizar resumen y recalcular
+        actualizarResumenServicios();
+        calcularTotales();
+    }
+}
+    function continuarAFechaHora() {
+        if (reservaData.servicios.length === 0 && !reservaData.comboId) {
+            alert('⚠️ Por favor selecciona al menos un servicio');
+            return;
+        }
+        
+        // Ocultar paso 1, mostrar paso 2
+        document.getElementById('pasoServicio').style.display = 'none';
+        document.getElementById('pasoFechaHora').style.display = 'block';
+        
+        // Actualizar stepper
+        actualizarStepper(2);
+        
+        // Scroll al inicio
+        document.getElementById('seccionReservar').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ========================================
+    // PASO 2: FECHA Y HORA
+    // ========================================
+    async function cambiarFecha() {
+        const fecha = document.getElementById('fechaCita').value;
+        const estilistaId = document.getElementById('estilistaSeleccionado')?.value;
+        
+        if (!fecha || !estilistaId) {
+            return;
+        }
+        
+        reservaData.fecha = fecha;
+        
+        // Cargar horarios disponibles
+        await cargarHorariosDisponibles();
+    }
+
+async function cargarHorariosDisponibles() {
+    const estilistaId = document.getElementById('estilistaSeleccionado')?.value;
+    const fecha = document.getElementById('fechaCita')?.value;
+    
+    console.log('🔍 Cargando horarios:', { estilistaId, fecha }); // DEBUG
+    
+    const estadoHorarios = document.getElementById('estadoHorarios');
+    const contenedorHorarios = document.getElementById('horariosDisponibles');
+    const btnContinuar = document.getElementById('btnContinuarEstilista');
+    
+    // Validar que estén ambos campos
+    if (!estilistaId || !fecha) {
+        if (estadoHorarios) {
+            estadoHorarios.style.display = 'block';
+            estadoHorarios.className = 'alert alert-info';
+            estadoHorarios.innerHTML = '<i class="bi bi-info-circle"></i> Selecciona un estilista y una fecha para ver los horarios disponibles';
+        }
+        if (contenedorHorarios) contenedorHorarios.style.display = 'none';
+        if (btnContinuar) btnContinuar.disabled = true;
+        return;
+    }
+    
+    // Guardar datos
+    reservaData.estilistaId = estilistaId;
+    reservaData.fecha = fecha;
+    
+    // Mostrar loading
+    if (estadoHorarios) {
+        estadoHorarios.style.display = 'block';
+        estadoHorarios.className = 'alert alert-warning';
+        estadoHorarios.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Cargando horarios disponibles...';
+    }
+    
+    try {
+        const url = '{{ route("cliente.citas.horarios") }}';
+        console.log('📡 Enviando petición a:', url); // DEBUG
+        
+        const body = {
+            fecha: fecha,
+            estilista_id: parseInt(estilistaId),
+            duracion: reservaData.duracionTotal || 60
+        };
+        console.log('📦 Datos enviados:', body); // DEBUG
+        
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+        
+        console.log('📥 Respuesta recibida:', response.status); // DEBUG
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ Error en respuesta:', errorText);
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('✅ Datos recibidos:', data); // DEBUG
+        
+        if (data.success) {
+            if (estadoHorarios) estadoHorarios.style.display = 'none';
+            
+            if (data.horarios.length === 0) {
+                if (contenedorHorarios) {
+                    contenedorHorarios.style.display = 'block';
+                    contenedorHorarios.innerHTML = `
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i> 
+                            No hay horarios disponibles para esta fecha. Por favor selecciona otra fecha.
+                        </div>
+                    `;
+                }
+                if (btnContinuar) btnContinuar.disabled = true;
+                return;
+            }
+            
+            // Mostrar horarios
+            let html = '<div class="row g-2">';
+            data.horarios.forEach(horario => {
+                html += `
+                    <div class="col-6 col-md-3">
+                        <button class="btn btn-outline-gold w-100 btn-horario" 
+                                data-hora="${horario.hora}"
+                                onclick="seleccionarHora('${horario.hora}', '${horario.hora_formateada}')">
+                            <i class="bi bi-clock"></i> ${horario.hora_formateada}
+                        </button>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            if (contenedorHorarios) {
+                contenedorHorarios.innerHTML = html;
+                contenedorHorarios.style.display = 'block';
+            }
+            
+            console.log('✅ Horarios renderizados exitosamente'); // DEBUG
+        } else {
+            throw new Error(data.message || 'Error al cargar horarios');
+        }
+    } catch (error) {
+        console.error('❌ Error completo:', error); // DEBUG
+        if (estadoHorarios) {
+            estadoHorarios.style.display = 'block';
+            estadoHorarios.className = 'alert alert-danger';
+            estadoHorarios.innerHTML = `
+                <i class="bi bi-x-circle"></i> 
+                <strong>Error al cargar horarios:</strong><br>
+                ${error.message}<br>
+                <small>Revisa la consola del navegador para más detalles</small>
+            `;
+        }
+        if (contenedorHorarios) contenedorHorarios.style.display = 'none';
+        if (btnContinuar) btnContinuar.disabled = true;
+    }
+}
+
+function seleccionarHora(hora, horaFormateada) {
+    reservaData.hora = hora;
+    
+    console.log('⏰ Hora seleccionada:', hora, horaFormateada);
+    
+    // Marcar como seleccionado en UI
+    document.querySelectorAll('.btn-horario').forEach(btn => {
+        btn.classList.remove('btn-gold');
+        btn.classList.add('btn-outline-gold');
+    });
+    
+    event.target.classList.remove('btn-outline-gold');
+    event.target.classList.add('btn-gold');
+    
+    // Mostrar confirmación
+    const confirmacion = document.getElementById('confirmacionFechaHora');
+    if (confirmacion) {
+        const fechaFormateada = new Date(reservaData.fecha + 'T00:00:00').toLocaleDateString('es-SV', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        
+        confirmacion.innerHTML = `
+            <div class="alert alert-success">
+                <i class="bi bi-check-circle-fill"></i> 
+                <strong>Fecha y hora confirmada:</strong><br>
+                ${fechaFormateada.charAt(0).toUpperCase() + fechaFormateada.slice(1)} a las ${horaFormateada}
+            </div>
+        `;
+    }
+    
+    // ✅ HABILITAR BOTÓN CONTINUAR
+    const btnContinuar = document.getElementById('btnContinuarEstilista');
+    if (btnContinuar) {
+        btnContinuar.disabled = false;
+        btnContinuar.classList.remove('btn-secondary');
+        btnContinuar.classList.add('btn-gold');
+        console.log('✅ Botón continuar habilitado');
+    } else {
+        console.error('❌ No se encontró el botón continuar');
+    }
+}
+    function continuarAEstilista() {
+        if (!reservaData.fecha || !reservaData.hora) {
+            alert('⚠️ Por favor selecciona fecha y hora');
+            return;
+        }
+        
+        document.getElementById('pasoFechaHora').style.display = 'none';
+        document.getElementById('pasoEstilista').style.display = 'block';
+        
+        actualizarStepper(3);
+        document.getElementById('seccionReservar').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function volverAServicios() {
+        document.getElementById('pasoFechaHora').style.display = 'none';
+        document.getElementById('pasoServicio').style.display = 'block';
+        actualizarStepper(1);
+    }
+
+    // ========================================
+    // PASO 3: SELECCIÓN DE ESTILISTA
+    // ========================================
+    function seleccionarEstilista(id, nombre) {
+        reservaData.estilistaId = id;
+        reservaData.estilista = nombre;
+        
+        // Actualizar UI
+        document.querySelectorAll('.estilista-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+        
+        event.target.closest('.estilista-item').classList.add('selected');
+        
+        // Si hay fecha, cargar horarios
+        if (reservaData.fecha) {
+            cargarHorariosDisponibles();
+        }
+    }
+
+function continuarAConfirmacion() {
+    console.log('🔄 Continuando a confirmación...', {
+        fecha: reservaData.fecha,
+        hora: reservaData.hora,
+        estilistaId: reservaData.estilistaId,
+        servicios: reservaData.servicios.length
+    });
+    
+    if (!reservaData.fecha || !reservaData.hora || !reservaData.estilistaId) {
+        alert('⚠️ Por favor completa todos los campos:\n' +
+              `- Fecha: ${reservaData.fecha ? '✓' : '✗'}\n` +
+              `- Hora: ${reservaData.hora ? '✓' : '✗'}\n` +
+              `- Estilista: ${reservaData.estilistaId ? '✓' : '✗'}`);
+        return;
+    }
+    
+    // Obtener nombre del estilista
+    const selectEstilista = document.getElementById('estilistaSeleccionado');
+    if (selectEstilista && selectEstilista.selectedIndex > 0) {
+        reservaData.estilista = selectEstilista.options[selectEstilista.selectedIndex].text;
+    } else {
+        console.error('❌ No se pudo obtener el nombre del estilista');
+    }
+    
+    // Verificar que existan los elementos antes de manipularlos
+    const pasoFechaHora = document.getElementById('pasoFechaHora');
+    const pasoConfirmacion = document.getElementById('pasoConfirmacion');
+    
+    if (!pasoFechaHora || !pasoConfirmacion) {
+        console.error('❌ No se encontraron los elementos del paso:', {
+            pasoFechaHora: !!pasoFechaHora,
+            pasoConfirmacion: !!pasoConfirmacion
+        });
+        alert('Error: No se pueden mostrar los pasos. Recarga la página.');
+        return;
+    }
+    
+    // Ocultar paso 2, mostrar paso 3
+    pasoFechaHora.style.display = 'none';
+    pasoConfirmacion.style.display = 'block';
+    
+    // Actualizar stepper
+    actualizarStepper(3);
+    
+    // Mostrar resumen final
+    mostrarResumenFinal();
+    
+    // Scroll al inicio de la sección
+    const seccionReservar = document.getElementById('seccionReservar');
+    if (seccionReservar) {
+        seccionReservar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    console.log('✅ Paso de confirmación mostrado');
+}
+
+function volverAFechaHora() {
+    const pasoConfirmacion = document.getElementById('pasoConfirmacion');
+    const pasoFechaHora = document.getElementById('pasoFechaHora');
+    
+    if (pasoConfirmacion) pasoConfirmacion.style.display = 'none';
+    if (pasoFechaHora) pasoFechaHora.style.display = 'block';
+    
+    actualizarStepper(2);
+    
+    const seccionReservar = document.getElementById('seccionReservar');
+    if (seccionReservar) {
+        seccionReservar.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+    // ========================================
+    // PASO 4: CONFIRMACIÓN
+    // ========================================
+function mostrarResumenFinal() {
+    console.log('📋 Mostrando resumen final...');
+    
+    const contenedor = document.getElementById('resumenFinal');
+    if (!contenedor) {
+        console.error('❌ No se encontró el contenedor del resumen final');
+        return;
+    }
+    
+    // Formatear fecha
+    const fechaObj = new Date(reservaData.fecha + 'T00:00:00');
+    const fechaFormateada = fechaObj.toLocaleDateString('es-SV', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    
+    // Formatear hora
+    const horaObj = new Date('2000-01-01T' + reservaData.hora);
+    const horaFormateada = horaObj.toLocaleTimeString('es-SV', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
+    
+    let html = `
+        <div class="card-custom" style="background: linear-gradient(135deg, var(--rosa-empolvado-light), white);">
+            <h5 style="color: var(--borgona); margin-bottom: 1.5rem;">
+                <i class="bi bi-calendar-check-fill"></i> Resumen de tu Cita
+            </h5>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">
+                            <i class="bi bi-calendar-event"></i> Fecha
+                        </small>
+                        <strong style="color: var(--borgona); font-size: 1.1rem;">
+                            ${fechaFormateada.charAt(0).toUpperCase() + fechaFormateada.slice(1)}
+                        </strong>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">
+                            <i class="bi bi-clock"></i> Hora
+                        </small>
+                        <strong style="color: var(--borgona); font-size: 1.1rem;">${horaFormateada}</strong>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">
+                            <i class="bi bi-person-circle"></i> Estilista
+                        </small>
+                        <strong style="color: var(--borgona); font-size: 1.1rem;">${reservaData.estilista}</strong>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">
+                            <i class="bi bi-hourglass-split"></i> Duración Total
+                        </small>
+                        <strong style="color: var(--borgona); font-size: 1.1rem;">
+                            ${reservaData.duracionTotal} minutos (${Math.floor(reservaData.duracionTotal / 60)}h ${reservaData.duracionTotal % 60}min)
+                        </strong>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">
+                            <i class="bi bi-cash"></i> Precio Base
+                        </small>
+                        <strong style="color: var(--borgona); font-size: 1.1rem;">$${reservaData.precioBase.toFixed(2)}</strong>
+                    </div>
+                    ${reservaData.descuento > 0 ? `
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">
+                            <i class="bi bi-tag-fill"></i> Descuento
+                        </small>
+                        <strong style="color: #28a745; font-size: 1.1rem;">-$${reservaData.descuento.toFixed(2)}</strong>
+                    </div>
+                    ` : ''}
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">
+                            <i class="bi bi-cash-stack"></i> Total a Pagar
+                        </small>
+                        <h3 style="color: var(--dorado-palido); margin: 0;">$${reservaData.precioFinal.toFixed(2)}</h3>
+                    </div>
+                </div>
+            </div>
+            <hr style="border-color: var(--rosa-empolvado);">
+            <h6 style="color: var(--borgona);">
+                <i class="bi bi-list-check"></i> Servicios Incluidos:
+            </h6>
+            <ul style="margin: 0; padding-left: 1.5rem;">
+    `;
+    
+    reservaData.servicios.forEach(servicio => {
+        html += `
+            <li style="margin-bottom: 0.5rem;">
+                <strong>${servicio.nombre}</strong> 
+                <span class="text-muted">- ${servicio.duracion} min - $${servicio.precio.toFixed(2)}</span>
+            </li>
+        `;
+    });
+    
+    html += `
+            </ul>
+        </div>
+    `;
+    
+    contenedor.innerHTML = html;
+    
+    // Actualizar también los displays de totales
+    actualizarDisplayTotales();
+    
+    console.log('✅ Resumen final mostrado');
+}
+async function confirmarReserva() {
+    console.log('🎯 Confirmando reserva...');
+    
+    // Validar términos
+    const aceptarTerminos = document.getElementById('aceptarTerminos');
+    if (aceptarTerminos && !aceptarTerminos.checked) {
+        alert('⚠️ Debes aceptar los términos y condiciones para continuar');
+        return;
+    }
+    
+    if (!reservaData.servicios.length && !reservaData.comboId) {
+        alert('⚠️ Error: No hay servicios seleccionados');
+        return;
+    }
+    
+    if (!reservaData.fecha || !reservaData.hora || !reservaData.estilistaId) {
+        alert('⚠️ Error: Datos incompletos\n' +
+              `Fecha: ${reservaData.fecha}\n` +
+              `Hora: ${reservaData.hora}\n` +
+              `Estilista: ${reservaData.estilistaId}`);
+        return;
+    }
+    
+    // Deshabilitar botón
+    const btnConfirmar = event.target;
+    btnConfirmar.disabled = true;
+    btnConfirmar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Agendando cita...';
+    
+    try {
+        console.log('📤 Enviando datos:', {
+            servicios: reservaData.servicios.map(s => s.id),
+            fecha: reservaData.fecha,
+            hora: reservaData.hora,
+            estilista_id: reservaData.estilistaId
+        });
+        
+        const response = await fetch('{{ route("cliente.citas.agendar") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                servicios: reservaData.servicios.map(s => s.id),
+                detalles: reservaData.detalles,
+                fecha: reservaData.fecha,
+                hora: reservaData.hora,
+                estilista_id: reservaData.estilistaId,
+                codigo_promocional: reservaData.promocion,
+                combo_id: reservaData.comboId,
+                notas: reservaData.notas
+            })
+        });
+        
+        const data = await response.json();
+        console.log('📥 Respuesta recibida:', data);
+        
+        if (data.success) {
+            alert(`✅ ${data.message}\n\n` +
+                  `📋 Código de cita: #${data.cita.id}\n` +
+                  `📅 Fecha: ${data.cita.fecha}\n` +
+                  `⏰ Hora: ${data.cita.hora}\n` +
+                  `⏱️ Duración: ${data.cita.duracion_total} minutos\n` +
+                  `💰 Total: $${data.cita.precio_final}\n\n` +
+                  `Te esperamos! 🎉`);
+            
+            // Recargar página después de 2 segundos
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            alert('❌ Error: ' + data.message);
+            btnConfirmar.disabled = false;
+            btnConfirmar.innerHTML = '<i class="bi bi-check-circle-fill"></i> Confirmar Reserva';
+        }
+    } catch (error) {
+        console.error('❌ Error completo:', error);
+        alert('❌ Error al agendar la cita. Por favor intenta de nuevo.\n\nError: ' + error.message);
+        btnConfirmar.disabled = false;
+        btnConfirmar.innerHTML = '<i class="bi bi-check-circle-fill"></i> Confirmar Reserva';
+    }
+}
+    function volverAEstilistas() {
+        document.getElementById('pasoConfirmacion').style.display = 'none';
+        document.getElementById('pasoEstilista').style.display = 'block';
+        actualizarStepper(3);
+    }
+
+    // ========================================
+    // PROMOCIONES
+    // ========================================
+    async function validarPromocion() {
+        const codigo = document.getElementById('codigoPromocion').value;
+        
+        if (!codigo) {
+            alert('⚠️ Por favor ingresa un código promocional');
+            return;
+        }
+        
+        try {
+            const response = await fetch('{{ route("cliente.promociones.validar") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({ codigo: codigo })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                reservaData.promocion = codigo;
+                alert(`✅ ${data.message}\n\n${data.promocion.nombre}\n${data.promocion.descripcion}`);
+                calcularTotales();
+            } else {
+                alert('❌ ' + data.message);
+                reservaData.promocion = '';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al validar promoción');
+        }
+    }
+
+    function quitarPromocion() {
+        reservaData.promocion = '';
+        document.getElementById('codigoPromocion').value = '';
+        calcularTotales();
+        alert('Promoción removida');
+    }
+
+// ========================================
+// CALCULAR TOTALES
+// ========================================
+async function calcularTotales() {
+    if (reservaData.servicios.length === 0 && !reservaData.comboId) {
+        // Resetear valores si no hay servicios
+        reservaData.duracionTotal = 0;
+        reservaData.precioBase = 0;
+        reservaData.descuento = 0;
+        reservaData.precioFinal = 0;
+        actualizarDisplayTotales();
+        return;
+    }
+    
+    try {
+        const url = '{{ route("cliente.citas.calcular") }}';
+        console.log('💰 Calculando totales...', {
+            servicios: reservaData.servicios.map(s => s.id),
+            detalles: reservaData.detalles,
+            promocion: reservaData.promocion
+        });
+        
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                servicios: reservaData.servicios.map(s => s.id),
+                detalles: reservaData.detalles,
+                codigo_promocional: reservaData.promocion,
+                combo_id: reservaData.comboId
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Error en la petición');
+        }
+        
+        const data = await response.json();
+        console.log('✅ Totales calculados:', data);
+        
+        if (data.success) {
+            reservaData.duracionTotal = data.duracion_total;
+            reservaData.precioBase = parseFloat(data.precio_base.replace(',', ''));
+            reservaData.descuento = parseFloat(data.descuento.replace(',', ''));
+            reservaData.precioFinal = parseFloat(data.precio_final.replace(',', ''));
+            
+            // Actualizar UI
+            actualizarDisplayTotales();
+        }
+    } catch (error) {
+        console.error('❌ Error al calcular totales:', error);
+        
+        // Calcular totales de forma local como fallback
+        let duracionTotal = 0;
+        let precioTotal = 0;
+        
+        reservaData.servicios.forEach(servicio => {
+            duracionTotal += servicio.duracion;
+            precioTotal += servicio.precio;
+        });
+        
+        reservaData.duracionTotal = duracionTotal;
+        reservaData.precioBase = precioTotal;
+        reservaData.descuento = 0;
+        reservaData.precioFinal = precioTotal;
+        
+        actualizarDisplayTotales();
+    }
+}
+
+function actualizarDisplayTotales() {
+    // Actualizar en el paso 1 (resumen temporal)
+    const duracionTemp = document.getElementById('duracionTemporal');
+    const precioTemp = document.getElementById('precioTemporal');
+    
+    if (duracionTemp) {
+        duracionTemp.textContent = `${reservaData.duracionTotal} min`;
+    }
+    
+    if (precioTemp) {
+        precioTemp.textContent = `$${reservaData.precioFinal.toFixed(2)}`;
+    }
+    
+    // Actualizar en el paso de confirmación
+    const duracionDisplay = document.getElementById('duracionTotal');
+    const precioDisplay = document.getElementById('precioTotal');
+    const descuentoDisplay = document.getElementById('descuentoTotal');
+    
+    if (duracionDisplay) {
+        duracionDisplay.textContent = `${reservaData.duracionTotal} min`;
+    }
+    
+    if (precioDisplay) {
+        precioDisplay.textContent = `$${reservaData.precioFinal.toFixed(2)}`;
+    }
+    
+    if (descuentoDisplay) {
+        if (reservaData.descuento > 0) {
+            descuentoDisplay.innerHTML = `
+                <small class="text-success">
+                    <i class="bi bi-tag-fill"></i> Descuento aplicado: -$${reservaData.descuento.toFixed(2)}
+                </small>
+            `;
+        } else {
+            descuentoDisplay.innerHTML = '';
+        }
+    }
+    
+    console.log('📊 Display actualizado:', {
+        duracion: reservaData.duracionTotal,
+        precio: reservaData.precioFinal
+    });
+}
+
+    // ========================================
+    // STEPPER
+    // ========================================
+function actualizarStepper(pasoActual) {
+    for (let i = 1; i <= 3; i++) {
+        const step = document.getElementById(`step${i}`);
+        if (!step) continue;
+        
+        if (i < pasoActual) {
+            step.style.opacity = '0.6';
+            step.querySelector('div').style.background = 'var(--dorado-palido)';
+        } else if (i === pasoActual) {
+            step.style.opacity = '1';
+            step.querySelector('div').style.background = 'var(--borgona)';
+        } else {
+            step.style.opacity = '0.4';
+            step.querySelector('div').style.background = 'var(--rosa-empolvado)';
+        }
+    }
+}
+    // ========================================
+    // FUNCIONES PARA MIS CITAS ACTUALES
+    // ========================================
+    function toggleMisCitas() {
+        const seccion = document.getElementById('seccionMisCitas');
+        const icono = document.getElementById('iconToggleCitas');
+
+        if (seccion.style.display === 'none') {
+            seccion.style.display = 'block';
+            icono.className = 'bi bi-chevron-down';
+        } else {
+            seccion.style.display = 'none';
+            icono.className = 'bi bi-chevron-up';
+        }
+    }
+
+    function filtrarCitasPorEstado(estado) {
+        console.log('Filtrar citas por estado:', estado);
+        // TODO: Implementar filtrado
+    }
+
+    function agendarCita() {
+        document.getElementById('seccionReservar').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function scrollToReservar() {
+        document.getElementById('seccionReservar').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Filtrar servicios
+    function filtrarServicios() {
+        const termino = document.getElementById('buscarServicioReserva').value.toLowerCase();
+        const servicios = document.querySelectorAll('.servicio-item');
+        
+        servicios.forEach(servicio => {
+            const texto = servicio.textContent.toLowerCase();
+            if (texto.includes(termino)) {
+                servicio.closest('.col-lg-4').style.display = 'block';
+            } else {
+                servicio.closest('.col-lg-4').style.display = 'none';
+            }
+        });
+    }
+
+    function filtrarPorCategoria(categoria) {
+        console.log('Filtrar por categoría:', categoria);
+        // TODO: Implementar filtrado por categoría
+    }
+
+    // Agregar estilos CSS para elementos seleccionados
+    const style = document.createElement('style');
+    style.textContent = `
+        .list-item-custom.selected {
+            border: 2px solid var(--dorado-palido) !important;
+            background: rgba(212, 175, 55, 0.1) !important;
+        }
+        
+        .estilista-item.selected {
+            border: 2px solid var(--borgona) !important;
+            background: rgba(139, 64, 73, 0.1) !important;
+        }
+    `;
+    document.head.appendChild(style);
+
+    function actualizarResumenServicios() {
+    // Actualizar resumen en el paso 1
+    const contenedorTemp = document.getElementById('resumenServiciosTemp');
+    if (contenedorTemp) {
+        if (reservaData.servicios.length === 0) {
+            contenedorTemp.innerHTML = '<p class="text-muted">No has seleccionado ningún servicio</p>';
+        } else {
+            let html = '<ul class="list-unstyled mb-0">';
+            reservaData.servicios.forEach(servicio => {
+                html += `
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <strong>${servicio.nombre}</strong>
+                            <br>
+                            <small>${servicio.duracion} min | $${servicio.precio.toFixed(2)}</small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger" onclick="removerServicio(${servicio.id})">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </li>
+                `;
+            });
+            html += '</ul>';
+            contenedorTemp.innerHTML = html;
+        }
+    }
+    
+    // Actualizar resumen en confirmación
+    const contenedor = document.getElementById('resumenServicios');
+    if (!contenedor) return;
+    
+    if (reservaData.servicios.length === 0) {
+        contenedor.innerHTML = '<p class="text-muted">No hay servicios seleccionados</p>';
+        return;
+    }
+    
+    let html = '<div class="list-group">';
+    reservaData.servicios.forEach(servicio => {
+        html += `
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">${servicio.nombre}</h6>
+                    <small class="text-muted">${servicio.duracion} min | $${servicio.precio.toFixed(2)}</small>
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    
+    contenedor.innerHTML = html;
+}
+
+// Al inicializar, verificar si viene combo
+document.addEventListener('DOMContentLoaded', function() {
+    cargarDatosUsuario();
+    
+    // Si viene con promoción pre-aplicada
+    if (reservaData.promocion) {
+        document.getElementById('codigoPromocion').value = reservaData.promocion;
+        setTimeout(() => {
+            validarPromocion();
+        }, 500);
+    }
+    
+    // ✅ Si viene con combo pre-seleccionado, cargar servicios y saltar al paso 2
+    if (reservaData.comboId) {
+        cargarComboYSaltar(reservaData.comboId);
+    }
+    
+    // Inicializar fecha mínima (hoy)
+    const fechaInput = document.getElementById('fechaCita');
+    if (fechaInput) {
+        const hoy = new Date().toISOString().split('T')[0];
+        fechaInput.min = hoy;
+    }
+});
+
+// Nueva función para cargar combo y saltar al paso 2
+async function cargarComboYSaltar(comboId) {
+    try {
+        console.log('🎁 Cargando combo:', comboId);
+        
+        const response = await fetch(`/cliente/promociones/combo/${comboId}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            const combo = data.combo;
+            
+            console.log('✅ Combo cargado:', combo);
+            
+            // Cargar servicios del combo en reservaData
+            reservaData.servicios = [];
+            combo.servicios.forEach(servicio => {
+                reservaData.servicios.push({
+                    id: servicio.idServicio,
+                    nombre: servicio.nombre,
+                    duracion: servicio.duracionBase,
+                    precio: parseFloat(servicio.precioBase)
+                });
+            });
+            
+            // Mostrar alerta informativa
+            alert(`✨ Combo Seleccionado: ${combo.nombre}\n\n` +
+                  `📦 Incluye:\n${combo.servicios.map(s => '• ' + s.nombre).join('\n')}\n\n` +
+                  `💰 Precio: $${combo.precioCombo}\n` +
+                  `💎 Ahorro: $${combo.ahorro}\n\n` +
+                  `¡Ahora selecciona fecha, hora y estilista!`);
+            
+            // Calcular totales
+            await calcularTotales();
+            
+            // Ocultar paso 1, mostrar paso 2
+            document.getElementById('pasoServicio').style.display = 'none';
+            document.getElementById('pasoFechaHora').style.display = 'block';
+            
+            // Actualizar stepper
+            actualizarStepper(2);
+            
+            // Scroll a la sección
+            document.getElementById('seccionReservar').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        } else {
+            alert('❌ Error al cargar el combo. Por favor intenta de nuevo.');
+            console.error('Error:', data.message);
+        }
+    } catch (error) {
+        console.error('❌ Error al cargar combo:', error);
+        alert('❌ Error al cargar el combo. Por favor intenta de nuevo.');
+    }
+}
+</script>
+<style>
+    .list-item-custom.selected {
+        border: 3px solid var(--dorado-palido) !important;
+        background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(255, 248, 240, 0.8)) !important;
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        transform: scale(1.02);
+        transition: all 0.3s ease;
+    }
+    
+    .estilista-item.selected {
+        border: 3px solid var(--borgona) !important;
+        background: linear-gradient(135deg, rgba(139, 64, 73, 0.15), rgba(255, 248, 240, 0.8)) !important;
+        box-shadow: 0 4px 15px rgba(139, 64, 73, 0.3);
+        transform: scale(1.02);
+        transition: all 0.3s ease;
+    }
+    
+    .servicio-item {
+        transition: all 0.3s ease;
+    }
+    
+    .servicio-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    #horariosDisponibles button {
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    #horariosDisponibles button:hover {
+        transform: scale(1.05);
+    }
+</style>
 </body>
 
 </html>

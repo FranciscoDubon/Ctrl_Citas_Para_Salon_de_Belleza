@@ -1002,4 +1002,477 @@ public function validarPromocion(Request $request)
     }
 }
 
+// ========================================
+// MÉTODOS PARA CLIENTE
+// ========================================
+
+public function mostrarCitasCliente()
+{
+    $clienteId = session('clienteId');
+    
+    if (!$clienteId) {
+        return redirect()->route('login')->with('error', 'Debes iniciar sesión');
+    }
+    
+    $cliente = Cliente::findOrFail($clienteId);
+    
+    // Obtener citas del cliente
+    $citas = Cita::with(['servicios', 'estilista', 'promocion'])
+        ->where('idCliente', $clienteId)
+        ->orderBy('fecha', 'desc')
+        ->orderBy('hora', 'desc')
+        ->get();
+    
+    // Obtener servicios activos con configuraciones
+    $servicios = Servicio::select(
+        'idServicio',
+        'nombre',
+        'descripcion',
+        'precioBase',
+        'duracionBase',
+        'categoria',
+        'requiere_largo_cabello',
+        'requiere_tinturado_previo',
+        'requiere_retiro_esmalte',
+        'requiere_estilizado',
+        'tiempo_adicional_largo',
+        'tiempo_adicional_tinturado',
+        'tiempo_adicional_esmalte',
+        'tiempo_adicional_estilizado'
+    )
+    ->where('activo', 1)
+    ->get();
+    
+    // Obtener estilistas activos
+    $estilistas = Empleado::where('idRol', 1)
+        ->where('activo', 1)
+        ->get();
+    
+    // Obtener combos activos
+    $combos = \App\Models\Combo::with('servicios')
+        ->where('activo', 1)
+        ->get();
+    
+    // KPIs del cliente
+    $visitas = $citas->where('estado', 'COMPLETADA')->count();
+    $ultimaCita = $citas->where('estado', 'COMPLETADA')->first();
+    $proximaCita = Cita::where('idCliente', $clienteId)
+        ->whereIn('estado', ['PENDIENTE', 'CONFIRMADA'])
+        ->where(function($query) {
+            $query->where('fecha', '>', Carbon::today())
+                  ->orWhere(function($q) {
+                      $q->where('fecha', '=', Carbon::today())
+                        ->where('hora', '>', Carbon::now()->format('H:i:s'));
+                  });
+        })
+        ->orderBy('fecha', 'asc')
+        ->orderBy('hora', 'asc')
+        ->first();
+    
+    // Obtener código de promoción desde URL si existe
+    $promoSeleccionada = request()->query('promo', '');
+    $comboSeleccionado = request()->query('combo', '');
+    
+    return view('cliente.citasCliente', compact(
+        'cliente',
+        'citas',
+        'servicios',
+        'estilistas',
+        'combos',
+        'visitas',
+        'ultimaCita',
+        'proximaCita',
+        'promoSeleccionada',
+        'comboSeleccionado'
+    ));
+}
+
+// AGENDAR CITA DESDE CLIENTE
+public function agendarCitaCliente(Request $request)
+{
+    $request->validate([
+        'servicios' => 'required|array|min:1',
+        'servicios.*' => 'exists:servicio,idServicio',
+        'fecha' => 'required|date|after_or_equal:today',
+        'hora' => 'required',
+        'estilista_id' => 'required|exists:empleado,idEmpleado',
+        'codigo_promocional' => 'nullable|string',
+        'combo_id' => 'nullable|exists:combo,idCombo'
+    ]);
+
+    $clienteId = session('clienteId');
+    
+    if (!$clienteId) {
+        return response()->json([
+            'success' => false, 
+            'message' => 'Debes iniciar sesión'
+        ], 401);
+    }
+
+    DB::beginTransaction();
+
+    try {
+        // Calcular duración total y precio base
+        $duracionTotal = 0;
+        $precioTotal = 0;
+        $serviciosSeleccionados = [];
+        $promocionId = null;
+        
+        // Si es un combo
+        if ($request->filled('combo_id')) {
+            $combo = \App\Models\Combo::with('servicios')->findOrFail($request->combo_id);
+            
+            foreach ($combo->servicios as $servicio) {
+                $serviciosSeleccionados[] = $servicio->idServicio;
+                $duracionTotal += $servicio->duracionBase;
+            }
+            
+            $precioTotal = $combo->precioCombo;
+        } else {
+            // Servicios individuales
+            foreach ($request->servicios as $servicioId) {
+                $servicio = Servicio::findOrFail($servicioId);
+                $serviciosSeleccionados[] = $servicioId;
+                
+                $duracionServicio = $servicio->duracionBase;
+                $tiempoAdicional = 0;
+                
+                // Calcular tiempo adicional por servicio
+                $detalles = $request->detalles[$servicioId] ?? [];
+                
+                if (isset($detalles['largo_cabello']) && $detalles['largo_cabello'] === 'largo') {
+                    $tiempoAdicional += $servicio->tiempo_adicional_largo ?? 0;
+                }
+                
+                if (isset($detalles['tinturado_previo']) && $detalles['tinturado_previo'] == 1) {
+                    $tiempoAdicional += $servicio->tiempo_adicional_tinturado ?? 0;
+                }
+                
+                if (isset($detalles['retiro_esmalte']) && $detalles['retiro_esmalte'] == 1) {
+                    $tiempoAdicional += $servicio->tiempo_adicional_esmalte ?? 0;
+                }
+                
+                if (isset($detalles['con_estilizado']) && $detalles['con_estilizado'] == 1) {
+                    $tiempoAdicional += $servicio->tiempo_adicional_estilizado ?? 0;
+                }
+                
+                $duracionTotal += $duracionServicio + $tiempoAdicional;
+                $precioTotal += $servicio->precioBase;
+            }
+        }
+        
+        // Aplicar promoción si existe
+        $descuento = 0;
+        if ($request->filled('codigo_promocional')) {
+            $promocion = Promocion::where('codigoPromocional', $request->codigo_promocional)
+                ->where('activo', true)
+                ->whereDate('fechaInicio', '<=', now())
+                ->whereDate('fechaFin', '>=', now())
+                ->first();
+
+            if ($promocion && $promocion->puedeUsarse()) {
+                $promocionId = $promocion->idPromocion;
+                
+                // Calcular descuento
+                if ($promocion->tipoDescuento === 'porcentaje') {
+                    $descuento = $precioTotal * ($promocion->valorDescuento / 100);
+                } else {
+                    $descuento = $promocion->valorDescuento;
+                }
+                
+                $promocion->increment('usosActuales');
+            }
+        }
+        
+        $precioFinal = max(0, $precioTotal - $descuento);
+        
+        // Crear la cita con promoción
+        $cita = Cita::create([
+            'idCliente' => $clienteId,
+            'idEstilista' => $request->estilista_id,
+            'idPromocion' => $promocionId, // ✅ Ahora funciona
+            'fecha' => $request->fecha,
+            'hora' => $request->hora,
+            'estado' => 'PENDIENTE',
+            'duracion' => $duracionTotal
+        ]);
+        
+        // Asociar servicios
+        $cita->servicios()->attach($serviciosSeleccionados);
+        
+        // Guardar detalles adicionales si existen
+        if (!$request->filled('combo_id') && !empty($request->detalles)) {
+            foreach ($request->detalles as $servicioId => $detalle) {
+                if (!empty($detalle)) {
+                    $tiempoAdicional = 0;
+                    
+                    $servicio = Servicio::find($servicioId);
+                    if ($servicio) {
+                        if (isset($detalle['largo_cabello']) && $detalle['largo_cabello'] === 'largo') {
+                            $tiempoAdicional += $servicio->tiempo_adicional_largo ?? 0;
+                        }
+                        
+                        if (isset($detalle['tinturado_previo']) && $detalle['tinturado_previo'] == 1) {
+                            $tiempoAdicional += $servicio->tiempo_adicional_tinturado ?? 0;
+                        }
+                        
+                        if (isset($detalle['retiro_esmalte']) && $detalle['retiro_esmalte'] == 1) {
+                            $tiempoAdicional += $servicio->tiempo_adicional_esmalte ?? 0;
+                        }
+                        
+                        if (isset($detalle['con_estilizado']) && $detalle['con_estilizado'] == 1) {
+                            $tiempoAdicional += $servicio->tiempo_adicional_estilizado ?? 0;
+                        }
+                    }
+                    
+                    DB::table('cita_detalles')->insert([
+                        'idCita' => $cita->idCita,
+                        'largo_cabello' => $detalle['largo_cabello'] ?? null,
+                        'tinturado_previo' => $detalle['tinturado_previo'] ?? 0,
+                        'retiro_esmalte' => $detalle['retiro_esmalte'] ?? 0,
+                        'con_estilizado' => $detalle['con_estilizado'] ?? 0,
+                        'tiempo_adicional_total' => $tiempoAdicional
+                    ]);
+                }
+            }
+        }
+
+        DB::commit();
+
+        return response()->json([
+            'success' => true, 
+            'message' => '¡Cita agendada exitosamente!',
+            'cita' => [
+                'id' => $cita->idCita,
+                'fecha' => Carbon::parse($cita->fecha)->format('d M Y'),
+                'hora' => Carbon::parse($cita->hora)->format('h:i A'),
+                'duracion_total' => $duracionTotal,
+                'precio_base' => number_format($precioTotal, 2),
+                'descuento' => number_format($descuento, 2),
+                'precio_final' => number_format($precioFinal, 2)
+            ]
+        ]);
+        
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::error('Error al agendar cita cliente', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        
+        return response()->json([
+            'success' => false, 
+            'message' => 'Error al agendar cita: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
+// OBTENER HORARIOS DISPONIBLES
+// OBTENER HORARIOS DISPONIBLES
+public function obtenerHorariosDisponibles(Request $request)
+{
+    try {
+        $fecha = $request->input('fecha');
+        $estilistaId = $request->input('estilista_id');
+        $duracion = $request->input('duracion', 60); // duración en minutos
+        
+        \Log::info('Buscando horarios disponibles', [
+            'fecha' => $fecha,
+            'estilista_id' => $estilistaId,
+            'duracion' => $duracion
+        ]);
+        
+        // Horario de trabajo (ejemplo: 9:00 AM - 6:00 PM)
+        $horaInicio = '09:00:00';
+        $horaFin = '18:00:00';
+        
+        // Obtener citas del estilista en esa fecha
+        $citasOcupadas = Cita::where('idEstilista', $estilistaId)
+            ->whereDate('fecha', $fecha)
+            ->whereIn('estado', ['PENDIENTE', 'CONFIRMADA', 'EN_PROCESO'])
+            ->orderBy('hora')
+            ->get();
+        
+        \Log::info('Citas ocupadas encontradas', ['total' => $citasOcupadas->count()]);
+        
+        // Generar bloques de tiempo disponibles (cada 30 minutos)
+        $horariosDisponibles = [];
+        $horaActual = Carbon::parse($horaInicio);
+        $horaFinTrabajo = Carbon::parse($horaFin);
+        $hoy = Carbon::today();
+        $fechaBusqueda = Carbon::parse($fecha);
+        $ahora = Carbon::now();
+        
+        while ($horaActual->lt($horaFinTrabajo)) {
+            $horaString = $horaActual->format('H:i:s');
+            $disponible = true;
+            
+            // Si es hoy, no mostrar horarios que ya pasaron
+            if ($fechaBusqueda->isSameDay($hoy) && $horaActual->lte($ahora)) {
+                $horaActual->addMinutes(30);
+                continue;
+            }
+            
+            // Verificar si hay conflicto con citas existentes
+            foreach ($citasOcupadas as $cita) {
+                $inicioCita = Carbon::parse($cita->hora);
+                $finCita = $inicioCita->copy()->addMinutes($cita->duracion);
+                
+                $finBloque = $horaActual->copy()->addMinutes($duracion);
+                
+                // Verificar solapamiento
+                if ($horaActual->lt($finCita) && $finBloque->gt($inicioCita)) {
+                    $disponible = false;
+                    break;
+                }
+            }
+            
+            if ($disponible) {
+                $horariosDisponibles[] = [
+                    'hora' => $horaString,
+                    'hora_formateada' => $horaActual->format('h:i A')
+                ];
+            }
+            
+            $horaActual->addMinutes(30);
+        }
+        
+        \Log::info('Horarios disponibles generados', ['total' => count($horariosDisponibles)]);
+        
+        return response()->json([
+            'success' => true,
+            'horarios' => $horariosDisponibles
+        ]);
+        
+    } catch (\Exception $e) {
+        \Log::error('Error al obtener horarios disponibles', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Error al cargar horarios: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
+// CALCULAR COSTO Y DURACIÓN TOTAL
+// CALCULAR COSTO Y DURACIÓN TOTAL
+public function calcularTotalServicios(Request $request)
+{
+    try {
+        $servicios = $request->input('servicios', []);
+        $detalles = $request->input('detalles', []);
+        $codigoPromocional = $request->input('codigo_promocional');
+        $comboId = $request->input('combo_id');
+        
+        \Log::info('Calculando totales', [
+            'servicios' => $servicios,
+            'promocion' => $codigoPromocional,
+            'combo' => $comboId
+        ]);
+        
+        $duracionTotal = 0;
+        $precioTotal = 0;
+        
+        // Si es combo
+        if ($comboId) {
+            $combo = \App\Models\Combo::with('servicios')->find($comboId);
+            if ($combo) {
+                foreach ($combo->servicios as $servicio) {
+                    $duracionTotal += $servicio->duracionBase;
+                }
+                $precioTotal = $combo->precioCombo;
+            }
+        } else {
+            // Servicios individuales
+            foreach ($servicios as $servicioId) {
+                $servicio = Servicio::find($servicioId);
+                if (!$servicio) continue;
+                
+                $duracionServicio = $servicio->duracionBase;
+                $tiempoAdicional = 0;
+                
+                $detallesServicio = $detalles[$servicioId] ?? [];
+                
+                if (isset($detallesServicio['largo_cabello']) && $detallesServicio['largo_cabello'] === 'largo') {
+                    $tiempoAdicional += $servicio->tiempo_adicional_largo ?? 0;
+                }
+                
+                if (isset($detallesServicio['tinturado_previo']) && $detallesServicio['tinturado_previo'] == 1) {
+                    $tiempoAdicional += $servicio->tiempo_adicional_tinturado ?? 0;
+                }
+                
+                if (isset($detallesServicio['retiro_esmalte']) && $detallesServicio['retiro_esmalte'] == 1) {
+                    $tiempoAdicional += $servicio->tiempo_adicional_esmalte ?? 0;
+                }
+                
+                if (isset($detallesServicio['con_estilizado']) && $detallesServicio['con_estilizado'] == 1) {
+                    $tiempoAdicional += $servicio->tiempo_adicional_estilizado ?? 0;
+                }
+                
+                $duracionTotal += $duracionServicio + $tiempoAdicional;
+                $precioTotal += $servicio->precioBase;
+            }
+        }
+        
+        // Aplicar descuento por promoción
+        $descuento = 0;
+        $promocionInfo = null;
+        
+        if ($codigoPromocional) {
+            $promocion = Promocion::where('codigoPromocional', $codigoPromocional)
+                ->where('activo', true)
+                ->whereDate('fechaInicio', '<=', now())
+                ->whereDate('fechaFin', '>=', now())
+                ->first();
+            
+            if ($promocion && $promocion->puedeUsarse()) {
+                if ($promocion->tipoDescuento === 'porcentaje') {
+                    $descuento = $precioTotal * ($promocion->valorDescuento / 100);
+                } else {
+                    $descuento = $promocion->valorDescuento;
+                }
+                
+                $promocionInfo = [
+                    'nombre' => $promocion->nombre,
+                    'codigo' => $promocion->codigoPromocional,
+                    'tipo' => $promocion->tipoDescuento,
+                    'valor' => $promocion->valorDescuento
+                ];
+            }
+        }
+        
+        $precioFinal = max(0, $precioTotal - $descuento);
+        
+        \Log::info('Totales calculados', [
+            'duracion' => $duracionTotal,
+            'precio_base' => $precioTotal,
+            'descuento' => $descuento,
+            'precio_final' => $precioFinal
+        ]);
+        
+        return response()->json([
+            'success' => true,
+            'duracion_total' => $duracionTotal,
+            'precio_base' => number_format($precioTotal, 2),
+            'descuento' => number_format($descuento, 2),
+            'precio_final' => number_format($precioFinal, 2),
+            'promocion' => $promocionInfo
+        ]);
+        
+    } catch (\Exception $e) {
+        \Log::error('Error al calcular totales', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Error al calcular totales: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
 }

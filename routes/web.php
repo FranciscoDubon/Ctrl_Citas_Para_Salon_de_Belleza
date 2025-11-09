@@ -259,3 +259,15 @@ Route::prefix('cliente')->name('cliente.')->group(function () {
 Route::prefix('cliente')->name('cliente.')->group(function () {
     Route::get('/promocionesCli', [PromocionClienteController::class, 'index'])->name('promocionesCli');
 });
+
+Route::prefix('cliente')->name('cliente.')->group(function () {
+    Route::get('/citasCli', [CitaController::class, 'mostrarCitasCliente'])->name('citasCli');
+    Route::post('/citas/agendar', [CitaController::class, 'agendarCitaCliente'])->name('citas.agendar');
+    Route::post('/citas/horarios-disponibles', [CitaController::class, 'obtenerHorariosDisponibles'])->name('citas.horarios');
+    Route::post('/citas/calcular-total', [CitaController::class, 'calcularTotalServicios'])->name('citas.calcular');
+    
+    // Promociones
+    Route::get('/promocionesCli', [PromocionClienteController::class, 'index'])->name('promocionesCli');
+    Route::post('/promociones/validar-codigo', [PromocionClienteController::class, 'validarCodigo'])->name('promociones.validar');
+    Route::get('/promociones/combo/{id}', [PromocionClienteController::class, 'detalleCombo'])->name('promociones.combo');
+});

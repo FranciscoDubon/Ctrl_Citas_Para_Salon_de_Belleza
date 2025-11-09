@@ -15,6 +15,7 @@ class Cita extends Model
         'idEstilista',
         'fecha',
         'hora',
+        'idPromocion',
         'estado',
         'duracion'
     ];
