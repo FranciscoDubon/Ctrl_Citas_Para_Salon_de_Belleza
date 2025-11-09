@@ -858,26 +858,26 @@
         function redirigirSegunRol(rol) {
             switch(rol) {
                 case 'admin':
-                    console.log('Redirigir a: /admin/dashboard');
+                    
                     alert('Redirigiendo al Dashboard de Administrador...');
                     window.location.href = '/admin/dashboard';
                     break;
                 case 'estilista':
-                    console.log('Redirigir a: /estilista/citasEsti');
+                    
                     alert('Redirigiendo al Dashboard de Estilista...');
                     window.location.href = '/estilista/citasEsti';
                     break;
 
                 case 'recepcionista':
-                    console.log('Redirigir a: /recepcionista/dashboard');
+                    
                     alert('Redirigiendo al Dashboard de recepcionista...');
                     window.location.href = '/recepcionista/dashboard';
                     break;
 
                 case 'CLIENTE':
-                    console.log('Redirigir a: /cliente/dashboard');
+                    
                     alert('Redirigiendo al Dashboard de Cliente...');
-                    window.location.href = '/cliente/dashboard';
+                    window.location.href = '/cliente/citasCli';
                     break;
                 default:
                     console.log('Rol desconocido');
