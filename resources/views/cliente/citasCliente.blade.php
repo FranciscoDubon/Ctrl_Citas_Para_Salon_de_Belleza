@@ -187,14 +187,16 @@ $promoSeleccionada = request()->query('promo', '');
                 </div>
 
                 <div class="d-flex gap-2 w-100">
-                    @if($cita->estado == 'PENDIENTE')
-                        <button class="btn btn-gold btn-sm flex-fill" onclick="confirmarAsistenciaCita({{ $cita->id }})">
-                            <i class="bi bi-check-circle"></i> Confirmar Asistencia
-                        </button>
-                    @endif
-                    <button class="btn btn-outline-gold btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetalleCita" onclick="verDetalleCita({{ $cita->id }})">
-                        <i class="bi bi-eye"></i> Ver Detalles
-                    </button>
+@if($cita->estado == 'PENDIENTE')
+    <button class="btn btn-gold btn-sm flex-fill" 
+            onclick="confirmarAsistenciaCita({{ $cita->idCita }})">
+        <i class="bi bi-check-circle"></i> Confirmar Asistencia
+    </button>
+@endif
+<button class="btn btn-outline-gold btn-sm" 
+        onclick="verDetalleCita({{ $cita->idCita }})">
+    <i class="bi bi-eye"></i> Ver Detalles
+</button>
                 </div>
             </div>
         </div>
@@ -640,15 +642,15 @@ $promoSeleccionada = request()->query('promo', '');
                         <small><strong>Política de cancelación:</strong> Puedes cancelar o modificar sin costo hasta 24 horas antes.</small>
                     </div>
                 </div>
-                <div class="modal-footer" style="border-top: 1px solid var(--rosa-empolvado);">
-                    <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-outline-gold" onclick="modificarCitaModal()">
-                        <i class="bi bi-pencil"></i> Modificar
-                    </button>
-                    <button type="button" class="btn btn-premium" onclick="cancelarCitaModal()">
-                        <i class="bi bi-x-circle"></i> Cancelar Cita
-                    </button>
-                </div>
+<div class="modal-footer" style="border-top: 1px solid var(--rosa-empolvado);">
+    <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cerrar</button>
+    <button type="button" 
+            class="btn btn-premium" 
+            id="btnCancelarCita"
+            onclick="cancelarCitaModal()">
+        <i class="bi bi-x-circle"></i> Cancelar Cita
+    </button>
+</div>
                 
             </div>
         </div>
@@ -1926,53 +1928,207 @@ function filtrarCitasPorEstado(estado) {
     contenedor.innerHTML = html;
 }
 
+// ========================================
+// FUNCIONES PARA GESTIÓN DE CITAS
+// ========================================
+
 async function verDetalleCita(idCita) {
+    console.log('👁️ Cargando detalle de cita:', idCita);
+    
     try {
-        // Petición al backend para obtener los datos de la cita
-        const response = await fetch(`/cliente/cita/${idCita}`);
+        const response = await fetch(`/cliente/cita/${idCita}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            }
+        });
+        
         const data = await response.json();
-
-        if (!data.success) {
-            alert('No se pudo cargar la cita.');
-            return;
+        console.log('📥 Datos de cita recibidos:', data);
+        
+        if (data.success) {
+            const cita = data.cita;
+            
+            // === Cargar información principal ===
+            document.getElementById('modalServicioNombre').textContent = 
+                cita.servicios.map(s => s.nombre).join(', ');
+            
+            // Estado con badge dinámico
+            const estadoBadge = document.getElementById('modalEstadoBadge');
+            estadoBadge.textContent = cita.estado;
+            estadoBadge.className = 'badge';
+            
+            switch(cita.estado) {
+                case 'PENDIENTE':
+                    estadoBadge.classList.add('bg-warning', 'text-dark');
+                    break;
+                case 'CONFIRMADA':
+                    estadoBadge.classList.add('bg-info');
+                    break;
+                case 'EN_PROCESO':
+                    estadoBadge.classList.add('bg-primary');
+                    break;
+                case 'COMPLETADA':
+                    estadoBadge.classList.add('bg-success');
+                    break;
+                case 'CANCELADA':
+                    estadoBadge.classList.add('bg-danger');
+                    break;
+            }
+            
+            document.getElementById('modalCodigoCita').textContent = `BR-${cita.idCita}`;
+            
+            // Calcular precio total
+            const precioTotal = cita.servicios.reduce((sum, s) => sum + parseFloat(s.precioBase), 0);
+            let precioFinal = precioTotal;
+            
+            // Si hay promoción, calcular descuento
+            if (cita.promocion) {
+                let descuento = 0;
+                if (cita.promocion.tipoDescuento === 'porcentaje') {
+                    descuento = precioTotal * (cita.promocion.valorDescuento / 100);
+                } else {
+                    descuento = cita.promocion.valorDescuento;
+                }
+                precioFinal = precioTotal - descuento;
+            }
+            
+            document.getElementById('modalPrecio').textContent = `$${precioFinal.toFixed(2)}`;
+            
+            // === Fecha y hora ===
+            const fecha = new Date(cita.fecha + 'T00:00:00');
+            const fechaFormateada = fecha.toLocaleDateString('es-SV', { 
+                weekday: 'short', 
+                day: '2-digit', 
+                month: 'short', 
+                year: 'numeric' 
+            });
+            const horaFormateada = cita.hora.substring(0, 5);
+            
+            document.getElementById('modalFechaHora').textContent = 
+                `${fechaFormateada} - ${horaFormateada}`;
+            
+            // === Duración total ===
+            const duracionTotal = cita.servicios.reduce((sum, s) => sum + s.duracionBase, 0);
+            document.getElementById('modalDuracion').textContent = `${duracionTotal} minutos`;
+            
+            // === Estilista ===
+            document.getElementById('modalEstilista').textContent = 
+                `${cita.estilista.nombre} ${cita.estilista.apellido}`;
+            
+            // === Configurar botones del modal según estado ===
+            configurarBotonesModal(cita);
+            
+            // Mostrar modal
+            const modal = new bootstrap.Modal(document.getElementById('modalDetalleCita'));
+            modal.show();
+            
+        } else {
+            alert('❌ Error: ' + data.message);
         }
-
-        const cita = data.cita;
-
-        // === Cargar información principal ===
-        document.getElementById('modalServicioNombre').textContent =
-            cita.servicios.map(s => s.nombre).join(', ');
-
-        document.getElementById('modalEstadoBadge').textContent = cita.estado;
-        document.getElementById('modalCodigoCita').textContent = `BR-${cita.id}`;
-        document.getElementById('modalPrecio').textContent = `$${cita.servicios.reduce((sum, s) => sum + parseFloat(s.precioBase), 0).toFixed(2)}`;
-
-        // === Fecha y hora ===
-        const fecha = new Date(cita.fecha);
-        const hora = cita.hora.slice(0, 5);
-        document.getElementById('modalFechaHora').textContent =
-            fecha.toLocaleDateString('es-ES', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }) +
-            ` - ${hora}`;
-
-        // === Duración total ===
-        const duracion = cita.servicios.reduce((sum, s) => sum + s.duracionBase, 0);
-        document.getElementById('modalDuracion').textContent = `${duracion} minutos`;
-
-        // === Estilista ===
-        document.getElementById('modalEstilista').textContent = cita.estilista?.nombre ?? 'No asignado';
-
-        // === Información adicional (ejemplo fijo, podrías traerla del backend también) ===
-        document.querySelector('.card-custom p:nth-child(1)').innerHTML = `<strong>Dirección:</strong> Calle Principal #123, Col. Escalón, San Salvador`;
-        document.querySelector('.card-custom p:nth-child(2)').innerHTML = `<strong>Teléfono del salón:</strong> (503) 2222-3333`;
-        document.querySelector('.card-custom p:nth-child(3)').innerHTML = `<strong>Reservado el:</strong> ${new Date(cita.created_at).toLocaleDateString('es-ES')}`;
-
-        // Mostrar modal
-        const modal = new bootstrap.Modal(document.getElementById('modalDetalleCita'));
-        modal.show();
+        
     } catch (error) {
-        console.error('Error al cargar cita:', error);
-        alert('Ocurrió un error al cargar el detalle de la cita.');
+        console.error('❌ Error al cargar cita:', error);
+        alert('❌ Error al cargar el detalle de la cita. Por favor intenta de nuevo.');
     }
+}
+
+function configurarBotonesModal(cita) {
+    const btnCancelar = document.getElementById('btnCancelarCita');
+    
+    // Ocultar/mostrar botón cancelar según estado
+    if (cita.estado === 'COMPLETADA' || cita.estado === 'CANCELADA') {
+        btnCancelar.style.display = 'none';
+    } else {
+        btnCancelar.style.display = 'inline-block';
+        btnCancelar.onclick = () => cancelarCitaModal(cita.idCita);
+    }
+}
+
+async function confirmarAsistenciaCita(idCita) {
+    console.log('✅ Confirmando asistencia a cita:', idCita);
+    
+    if (!confirm('¿Deseas confirmar tu asistencia a esta cita?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/cliente/cita/${idCita}/confirmar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        console.log('📥 Respuesta:', data);
+        
+        if (data.success) {
+            alert('✅ ' + data.message);
+            // Recargar la página para mostrar el nuevo estado
+            location.reload();
+        } else {
+            alert('❌ ' + data.message);
+        }
+        
+    } catch (error) {
+        console.error('❌ Error:', error);
+        alert('❌ Error al confirmar la cita. Por favor intenta de nuevo.');
+    }
+}
+
+async function cancelarCitaModal(idCita) {
+    console.log('❌ Cancelando cita:', idCita);
+    
+    if (!confirm('⚠️ ¿Estás seguro de que deseas cancelar esta cita?\n\n' +
+                 'Recuerda que debes cancelar con al menos 24 horas de anticipación.\n\n' +
+                 'Esta acción no se puede deshacer.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/cliente/cita/${idCita}/cancelar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        console.log('📥 Respuesta:', data);
+        
+        if (data.success) {
+            alert('✅ ' + data.message);
+            
+            // Cerrar modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalDetalleCita'));
+            if (modal) {
+                modal.hide();
+            }
+            
+            // Recargar la página para mostrar el nuevo estado
+            setTimeout(() => {
+                location.reload();
+            }, 500);
+        } else {
+            alert('❌ ' + data.message);
+        }
+        
+    } catch (error) {
+        console.error('❌ Error:', error);
+        alert('❌ Error al cancelar la cita. Por favor intenta de nuevo.');
+    }
+}
+
+// Función auxiliar para modificar cita (puedes implementarla después)
+function modificarCitaModal() {
+    alert('⚠️ Función en desarrollo.\n\nPor favor contacta al salón para modificar tu cita:\n📞 (503) 2222-3333');
+
 }
 
 </script>

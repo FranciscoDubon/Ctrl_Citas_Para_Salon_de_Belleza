@@ -234,23 +234,177 @@ public function mostrarCitasCliente()
 public function verCita($id)
 {
     try {
-        $cita = \App\Models\Cita::with(['servicios', 'estilista'])->find($id);
-
+        \Log::info('📋 Intentando cargar cita:', [
+            'id' => $id,
+            'clienteId' => session('clienteId')
+        ]);
+        
+        // Buscar la cita
+        $cita = \App\Models\Cita::with(['servicios', 'estilista', 'cliente', 'promocion'])
+            ->where('idCita', $id)
+            ->first();
+        
         if (!$cita) {
-            return response()->json(['success' => false, 'message' => 'Cita no encontrada']);
+            \Log::warning('❌ Cita no encontrada:', ['id' => $id]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Cita no encontrada'
+            ], 404);
         }
-
+        
+        // Verificar que la cita pertenece al cliente logueado
+        if ($cita->idCliente != session('clienteId')) {
+            \Log::warning('🚫 Cliente sin permiso:', [
+                'citaClienteId' => $cita->idCliente,
+                'sessionClienteId' => session('clienteId')
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permiso para ver esta cita'
+            ], 403);
+        }
+        
+        \Log::info('✅ Cita cargada exitosamente:', ['id' => $id]);
+        
         return response()->json([
             'success' => true,
-            'cita' => $cita
+            'cita' => [
+                'idCita' => $cita->idCita,
+                'fecha' => $cita->fecha,
+                'hora' => $cita->hora,
+                'estado' => $cita->estado,
+                'duracion' => $cita->duracion,
+                'servicios' => $cita->servicios->map(function($servicio) {
+                    return [
+                        'nombre' => $servicio->nombre,
+                        'duracionBase' => $servicio->duracionBase,
+                        'precioBase' => $servicio->precioBase
+                    ];
+                }),
+                'estilista' => [
+                    'nombre' => $cita->estilista->nombre ?? 'No asignado',
+                    'apellido' => $cita->estilista->apellido ?? ''
+                ],
+                'promocion' => $cita->promocion ? [
+                    'nombre' => $cita->promocion->nombre,
+                    'codigo' => $cita->promocion->codigoPromocional,
+                    'tipoDescuento' => $cita->promocion->tipoDescuento,
+                    'valorDescuento' => $cita->promocion->valorDescuento
+                ] : null,
+                'created_at' => $cita->created_at
+            ]
         ]);
+        
     } catch (\Exception $e) {
+        \Log::error('❌ Error al ver cita:', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+            'id' => $id
+        ]);
+        
         return response()->json([
             'success' => false,
-            'message' => 'Error en el servidor: ' . $e->getMessage()
+            'message' => 'Error al cargar la cita: ' . $e->getMessage()
+        ], 500);
+    }
+}
+public function confirmarCita($id)
+{
+    try {
+        $cita = \App\Models\Cita::findOrFail($id);
+        
+        // Verificar que la cita pertenece al cliente logueado
+        if ($cita->idCliente != session('clienteId')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permiso para confirmar esta cita'
+            ], 403);
+        }
+        
+        // Solo se puede confirmar si está PENDIENTE
+        if ($cita->estado !== 'PENDIENTE') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Solo puedes confirmar citas en estado PENDIENTE'
+            ], 400);
+        }
+        
+        $cita->estado = 'CONFIRMADA';
+        $cita->save();
+        
+        return response()->json([
+            'success' => true,
+            'message' => '¡Cita confirmada exitosamente!',
+            'nuevo_estado' => 'CONFIRMADA'
         ]);
+        
+    } catch (\Exception $e) {
+        \Log::error('Error al confirmar cita:', [
+            'error' => $e->getMessage(),
+            'id' => $id
+        ]);
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Error al confirmar la cita'
+        ], 500);
     }
 }
 
-
+public function cancelarCita($id)
+{
+    try {
+        $cita = \App\Models\Cita::findOrFail($id);
+        
+        // Verificar que la cita pertenece al cliente logueado
+        if ($cita->idCliente != session('clienteId')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permiso para cancelar esta cita'
+            ], 403);
+        }
+        
+        // No se puede cancelar si ya está COMPLETADA o CANCELADA
+        if (in_array($cita->estado, ['COMPLETADA', 'CANCELADA'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No puedes cancelar una cita que ya está ' . strtolower($cita->estado)
+            ], 400);
+        }
+        
+        // Verificar que la cita sea con al menos 24 horas de anticipación
+        $fechaHoraCita = \Carbon\Carbon::parse($cita->fecha . ' ' . $cita->hora);
+        $horasAnticipacion = \Carbon\Carbon::now()->diffInHours($fechaHoraCita, false);
+        
+        if ($horasAnticipacion < 24) {
+            return response()->json([
+                'success' => false,
+                'message' => '⚠️ Debes cancelar con al menos 24 horas de anticipación.\n\n' .
+                            'Por favor contacta al salón directamente:\n' .
+                            '📞 Teléfono: (503) 2222-3333'
+            ], 400);
+        }
+        
+        $cita->estado = 'CANCELADA';
+        $cita->save();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Cita cancelada exitosamente',
+            'nuevo_estado' => 'CANCELADA'
+        ]);
+        
+    } catch (\Exception $e) {
+        \Log::error('Error al cancelar cita:', [
+            'error' => $e->getMessage(),
+            'id' => $id
+        ]);
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Error al cancelar la cita'
+        ], 500);
+    }
+}
 }

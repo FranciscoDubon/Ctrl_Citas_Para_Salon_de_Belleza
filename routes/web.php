@@ -260,16 +260,29 @@ Route::prefix('cliente')->name('cliente.')->group(function () {
     Route::get('/promocionesCli', [PromocionClienteController::class, 'index'])->name('promocionesCli');
 });
 
-Route::prefix('cliente')->name('cliente.')->group(function () {
-    Route::get('/citasCli', [CitaController::class, 'mostrarCitasCliente'])->name('citasCli');
-    Route::post('/citas/agendar', [CitaController::class, 'agendarCitaCliente'])->name('citas.agendar');
-    Route::post('/citas/horarios-disponibles', [CitaController::class, 'obtenerHorariosDisponibles'])->name('citas.horarios');
-    Route::post('/citas/calcular-total', [CitaController::class, 'calcularTotalServicios'])->name('citas.calcular');
+// Rutas de Cliente
+// Rutas de Cliente (SIN middleware auth.cliente)
+Route::prefix('cliente')->group(function () {
+    Route::get('/citasCli', [CitaController::class, 'mostrarCitasCliente'])->name('cliente.citasCli');
+    Route::get('/serviciosCli', [ServicioClienteController::class, 'index'])->name('cliente.serviciosCli');
+    Route::get('/promocionesCli', [PromocionClienteController::class, 'index'])->name('cliente.promocionesCli');
+    Route::get('/configCli', [ClienteController::class, 'mostrarConfigCliente'])->name('cliente.configCli');
     
-    // Promociones
-    Route::get('/promocionesCli', [PromocionClienteController::class, 'index'])->name('promocionesCli');
-    Route::post('/promociones/validar-codigo', [PromocionClienteController::class, 'validarCodigo'])->name('promociones.validar');
-    Route::get('/promociones/combo/{id}', [PromocionClienteController::class, 'detalleCombo'])->name('promociones.combo');
+    // Rutas para gestión de citas
+    Route::get('/cita/{id}', [ClienteController::class, 'verCita'])->name('cliente.cita.ver');
+    Route::post('/cita/{id}/confirmar', [ClienteController::class, 'confirmarCita'])->name('cliente.cita.confirmar');
+    Route::post('/cita/{id}/cancelar', [ClienteController::class, 'cancelarCita'])->name('cliente.cita.cancelar');
+    
+    // Rutas de citas
+    Route::post('/citas/agendar', [CitaController::class, 'agendarCitaCliente'])->name('cliente.citas.agendar');
+    Route::post('/citas/horarios-disponibles', [CitaController::class, 'obtenerHorariosDisponibles'])->name('cliente.citas.horarios');
+    Route::post('/citas/calcular', [CitaController::class, 'calcularTotalServicios'])->name('cliente.citas.calcular');
+    
+    // Rutas de promociones
+    Route::post('/promociones/validar', [PromocionClienteController::class, 'validarCodigo'])->name('cliente.promociones.validar');
+    Route::get('/promociones/combo/{id}', [PromocionClienteController::class, 'detalleCombo'])->name('cliente.promociones.combo');
+    
+    Route::post('/configuracion/actualizar', [ClienteController::class, 'actualizarConfiguracion'])->name('cliente.config.actualizar');
 });
-
 Route::get('/cliente/cita/{id}', [ClienteController::class, 'verCita']);
+// Dentro del grupo Route::prefix('cliente')->group(function () {
