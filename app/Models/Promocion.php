@@ -25,12 +25,16 @@ class Promocion extends Model
         'activo'
     ];
 
+        // ✅ AGREGAR ESTE CAST
     protected $casts = [
-        'diasAplicables' => 'array',
+        'diasAplicables' => 'array', // Convierte automáticamente JSON a array
         'activo' => 'boolean',
+        'valorDescuento' => 'decimal:2',
+        'descuento' => 'decimal:2',
         'fechaInicio' => 'date',
-        'fechaFin' => 'date',
+        'fechaFin' => 'date'
     ];
+
 
     // Verificar si la promoción está vigente
     public function estaVigente()

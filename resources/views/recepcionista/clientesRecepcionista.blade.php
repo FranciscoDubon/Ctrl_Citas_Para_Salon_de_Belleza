@@ -71,29 +71,6 @@
         
         <!-- Barra de Búsqueda y Acciones -->
         <div class="row mb-4">
-            <div class="col-lg-8">
-                <div class="card-custom" style="padding: 1rem;">
-                    <div class="row g-3 align-items-end">
-                        <div class="col-md-10">
-                            <label class="form-label" style="margin-bottom: 0.5rem;">
-                                <i class="bi bi-search"></i> Buscar Cliente
-                            </label>
-                            <input 
-                                type="text" 
-                                class="form-control" 
-                                id="busquedaCliente" 
-                                placeholder="Buscar por nombre, apellido, teléfono o email..."
-                                onkeyup="buscarCliente()"
-                            >
-                        </div>
-                        <div class="col-md-2">
-                            <button class="btn btn-gold w-100" onclick="buscarCliente()">
-                                <i class="bi bi-search"></i> Buscar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
             
             <div class="col-lg-4">
                 <div class="d-grid gap-2" style="margin-top: 1.8rem;">

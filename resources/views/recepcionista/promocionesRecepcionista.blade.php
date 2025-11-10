@@ -254,7 +254,7 @@
         data-fecha-fin="{{ \Carbon\Carbon::parse($promocion->fechaFin)->format('Y-m-d') }}"
         data-usos-maximos="{{ $promocion->usosMaximos }}"
         data-usos-cliente="{{ $promocion->usosPorCliente }}"
-        data-dias='@json(json_decode($promocion->diasAplicables))'
+        data-dias="$promocion->diasAplicables ?? []"
         data-activo="{{ $promocion->activo }}">
     <i class="bi bi-pencil"></i>
 </button>
