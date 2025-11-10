@@ -32,6 +32,9 @@
             <a href="{{ route('estilista.citasEsti') }}" class="menu-item active">
                 <i class="bi bi-calendar-check"></i> Citas
             </a>
+                        <a href="{{ route('logn') }}" class="menu-item">
+                 Cerrar Sesión
+            </a>
         </nav>
     </div>
 

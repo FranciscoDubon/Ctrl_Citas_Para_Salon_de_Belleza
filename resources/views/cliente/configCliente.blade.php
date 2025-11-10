@@ -41,6 +41,9 @@
             <a href="{{ route('cliente.configCli') }}" class="menu-item active">
                 <i class="bi bi-gear"></i> Configuración
             </a>
+                        <a href="{{ route('logn') }}" class="menu-item">
+                 Cerrar Sesión
+            </a>
         </nav>
     </div>
 

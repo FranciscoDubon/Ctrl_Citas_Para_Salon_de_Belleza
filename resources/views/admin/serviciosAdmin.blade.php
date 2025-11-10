@@ -45,6 +45,9 @@
             <a href="{{ route('admin.reportesAdm') }}" class="menu-item">
                 <i class="bi bi-graph-up"></i> Reportes
             </a>
+                        <a href="{{ route('logn') }}" class="menu-item">
+                 Cerrar Sesión
+            </a>
         </nav>
     </div>
 

@@ -44,6 +44,9 @@
             <a href="{{ route('recepcionista.promocionesRecep') }}" class="menu-item">
                 <i class="bi bi-gift"></i> Promociones
             </a>
+                        <a href="{{ route('logn') }}" class="menu-item">
+                 Cerrar Sesión
+            </a>
         </nav>
     </div>
 

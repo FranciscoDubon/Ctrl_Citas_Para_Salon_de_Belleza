@@ -45,6 +45,9 @@ $promoSeleccionada = request()->query('promo', '');
             <a href="{{ route('cliente.configCli') }}" class="menu-item">
                 <i class="bi bi-gear"></i> Configuración
             </a>
+                        <a href="{{ route('logn') }}" class="menu-item">
+                 Cerrar Sesión
+            </a>
         </nav>
     </div>
 
